@@ -26,17 +26,17 @@ class SettingModel {
         return null;
     }
 
-    public boolean updateSettings(Settings s) {
+    public boolean updateSettings(Settings setting) {
         String sql = "UPDATE SETTING SET max_borrow_date = ?, borrow_fee_per_loan = ?, "
                    + "late_fee_per_day = ?, deposit_per_loan = ? WHERE id = ?";
         try (Connection connect = ConnectDB.connection();
              PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
             
-        	preparedStatement.setInt(1, s.getMax_borrow_date());
-        	preparedStatement.setDouble(2, s.getBorrow_fee_per_loan());
-        	preparedStatement.setDouble(3, s.getLate_fee_per_day());
-        	preparedStatement.setDouble(4, s.getDeposit_per_loan());
-        	preparedStatement.setInt(5, s.getId());
+        	preparedStatement.setInt(1, setting.getMax_borrow_date());
+        	preparedStatement.setDouble(2, setting.getBorrow_fee_per_loan());
+        	preparedStatement.setDouble(3, setting.getLate_fee_per_day());
+        	preparedStatement.setDouble(4, setting.getDeposit_per_loan());
+        	preparedStatement.setInt(5, setting.getId());
             
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
