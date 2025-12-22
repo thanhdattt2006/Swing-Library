@@ -4,7 +4,7 @@ import java.sql.*;
 
 import entities.Settings;
 
-class SettingModel {
+public class SettingModel {
     public Settings getSettings() {
         String sql = "SELECT * FROM SETTING LIMIT 1"; 
         try (Connection connect = ConnectDB.connection();
@@ -17,7 +17,9 @@ class SettingModel {
                 	result.getInt("max_borrow_date"),
                 	result.getDouble("borrow_fee_per_loan"),
                 	result.getDouble("late_fee_per_day"),
-                	result.getDouble("deposit_per_loan")
+                	result.getDouble("deposit_per_loan"),
+                	result.getDouble("lost_compensation_fee"),
+                	result.getDouble("damaged_compensation_fee")
                 );
             }
         } catch (SQLException e) {
@@ -36,6 +38,8 @@ class SettingModel {
         	preparedStatement.setDouble(2, setting.getBorrow_fee_per_loan());
         	preparedStatement.setDouble(3, setting.getLate_fee_per_day());
         	preparedStatement.setDouble(4, setting.getDeposit_per_loan());
+        	preparedStatement.setDouble(4, setting.getLost_compensation_fee());
+        	preparedStatement.setDouble(4, setting.getDamaged_compensation_fee());
         	preparedStatement.setInt(5, setting.getId());
             
             return preparedStatement.executeUpdate() > 0;
