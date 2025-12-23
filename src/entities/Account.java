@@ -2,7 +2,7 @@ package entities;
 
 import java.util.Date;
 
-public class account {
+public class Account {
 	private int id;
 	private String employee_id;
 	private String username;
@@ -94,7 +94,7 @@ public class account {
 				+ ", gender=" + gender + ", birthday=" + birthday + ", photo=" + photo + ", address=" + address
 				+ ", phone=" + phone + "]";
 	}
-	public account(int id, String employee_id, String username, String password, String name, int department_id,
+	public Account(int id, String employee_id, String username, String password, String name, int department_id,
 			int role_id, String gender, Date birthday, String photo, String address, int phone) {
 		super();
 		this.id = id;
@@ -110,7 +110,7 @@ public class account {
 		this.address = address;
 		this.phone = phone;
 	}
-	public account() {
+	public Account() {
 		super();
 	}
 	
