@@ -1,0 +1,5 @@
+package app.enums;
+
+public enum MenuType {
+	EMPLOYEE, SETTINGS, BOOK, AUTHOR, CATEGORY, CHECKOUT, LOAN_HISTORY, SEARCH, MY_LOANS, LOGOUT
+}

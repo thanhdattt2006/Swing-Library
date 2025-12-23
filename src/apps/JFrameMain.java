@@ -92,7 +92,7 @@ public class JFrameMain extends JFrame {
 		JButton btnNewButton_2 = new JButton("New button");
 		jpanelNavigate.add(btnNewButton_2);
 		
-		JButton btnNewButton_3 = new JButton("New button");
+		JButton btnNewButton_3 = new JButton("Log Out");
 		jpanelNavigate.add(btnNewButton_3);
 		
 		jpanelMainPage = new JPanel();
