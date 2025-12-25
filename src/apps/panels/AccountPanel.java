@@ -1,8 +1,13 @@
 package apps.panels;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.*;
+
+import entities.*;
+import models.*;
 
 public class AccountPanel extends JPanel {
 
@@ -10,15 +15,22 @@ public class AccountPanel extends JPanel {
 
 	private JTable jtableAccountList;
 	private DefaultTableModel tableModel;
-	private JComboBox<String> jcomboBoxRole;
-	private JComboBox<String> jcomboBoxDepartment;
+
+	private JComboBox<Role> jcomboBoxRole;
+	private JComboBox<Department> jcomboBoxDepartment;
+
+	private Map<Integer, Role> roleMap = new HashMap<>();
+	private Map<Integer, Department> departmentMap = new HashMap<>();
 
 	public AccountPanel() {
 		setLayout(new BorderLayout());
 		initUI();
-		loadDemoComboData();
+		loadComboData();
+		loadTableData();
+		initRenderer();
 	}
 
+	// ================= UI =================
 	private void initUI() {
 
 		// ===== NORTH - FILTER =====
@@ -26,7 +38,7 @@ public class AccountPanel extends JPanel {
 
 		jpanelFilter.add(new JLabel("Role:"));
 		jcomboBoxRole = new JComboBox<>();
-		jcomboBoxRole.setPreferredSize(new Dimension(120, 25));
+		jcomboBoxRole.setPreferredSize(new Dimension(150, 25));
 		jpanelFilter.add(jcomboBoxRole);
 
 		jpanelFilter.add(new JLabel("Department:"));
@@ -40,8 +52,8 @@ public class AccountPanel extends JPanel {
 		add(jpanelFilter, BorderLayout.NORTH);
 
 		// ===== CENTER - TABLE =====
-		String[] columns = { "ID", "Employee_Id", "Username", "Password", "Name", "Phone", "Address", "Birthday",
-				"Photo", "Role", "Department" };
+		String[] columns = { "ID", "Employee ID", "Username", "Name", "Phone", "Address", "Birthday", "Role",
+				"Department" };
 
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
@@ -53,51 +65,106 @@ public class AccountPanel extends JPanel {
 		jtableAccountList = new JTable(tableModel);
 		jtableAccountList.setRowHeight(25);
 
-		JScrollPane jscrollPane = new JScrollPane(jtableAccountList);
-		add(jscrollPane, BorderLayout.CENTER);
+		add(new JScrollPane(jtableAccountList), BorderLayout.CENTER);
 
 		// ===== SOUTH - ACTION =====
 		JPanel jpanelAction = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 
-		JButton jbuttonAdd = new JButton("Add");
-		JButton jbuttonEdit = new JButton("Edit");
-		JButton jbuttonDelete = new JButton("Delete");
-		JButton jbuttonRefresh = new JButton("Refresh");
-
-		jpanelAction.add(jbuttonAdd);
-		jpanelAction.add(jbuttonEdit);
-		jpanelAction.add(jbuttonDelete);
-		jpanelAction.add(jbuttonRefresh);
+		jpanelAction.add(new JButton("Add"));
+		jpanelAction.add(new JButton("Edit"));
+		jpanelAction.add(new JButton("Delete"));
+		jpanelAction.add(new JButton("Refresh"));
 
 		add(jpanelAction, BorderLayout.SOUTH);
-
-		// demo table data
-		addDemoData();
 	}
 
-	private void loadDemoComboData() {
-		// ROLE
-		jcomboBoxRole.addItem("ALL");
-		jcomboBoxRole.addItem("ADMIN");
-		jcomboBoxRole.addItem("LIBRARIAN");
-		jcomboBoxRole.addItem("EMPLOYEE");
+	private void loadComboData() {
 
-		// DEPARTMENT
-		jcomboBoxDepartment.addItem("ALL");
-		jcomboBoxDepartment.addItem("IT");
-		jcomboBoxDepartment.addItem("LIBRARY");
-		jcomboBoxDepartment.addItem("SERVICE");
+		// ===== ROLE =====
+		DefaultComboBoxModel<Role> roleModel = new DefaultComboBoxModel<>();
+		roleModel.addElement(null); // ALL
+
+		for (Role r : new RoleModel().findAll()) {
+			roleModel.addElement(r);
+			roleMap.put(r.getId(), r);
+		}
+
+		jcomboBoxRole.setModel(roleModel);
+		jcomboBoxRole.setRenderer(new RoleComboRenderer());
+
+		// ===== DEPARTMENT =====
+		DefaultComboBoxModel<Department> deptModel = new DefaultComboBoxModel<>();
+		deptModel.addElement(null); // ALL
+
+		for (Department d : new DepartmentModel().findAll()) {
+			deptModel.addElement(d);
+			departmentMap.put(d.getId(), d);
+		}
+
+		jcomboBoxDepartment.setModel(deptModel);
+		jcomboBoxDepartment.setRenderer(new DepartmentComboRenderer());
 	}
 
-	private void addDemoData() {
+	private void loadTableData() {
+		tableModel.setRowCount(0);
 
-		tableModel.addRow(new Object[] { 1, "EMP001", "admin@gmail.com", "******", "Nguyen Van Admin", "0909123456",
-				"Ha Noi", "1995-01-01", null, "ADMIN", "IT" });
+		AccountModel model = new AccountModel();
+		for (Account acc : model.findAll()) {
 
-		tableModel.addRow(new Object[] { 2, "EMP002", "thuthu@gmail.com", "******", "Tran Thi Thu Thu", "0911222333",
-				"Da Nang", "1997-06-12", null, "LIBRARIAN", "LIBRARY" });
+			tableModel.addRow(new Object[] { acc.getId(), acc.getEmployee_id(), acc.getUsername(), acc.getName(),
+					acc.getPhone(), acc.getAddress(), acc.getBirthday(), acc.getRole_id(), // ID → renderer xử lý
+					acc.getDepartment_id() });
+		}
+	}
 
-		tableModel.addRow(new Object[] { 3, "EMP003", "nhanvien@gmail.com", "******", "Le Van Nhan Vien", "0988777666",
-				"Ho Chi Minh", "2000-03-20", null, "EMPLOYEE", "SERVICE" });
+	private void initRenderer() {
+		jtableAccountList.getColumnModel().getColumn(7).setCellRenderer(new RoleTableRenderer());
+
+		jtableAccountList.getColumnModel().getColumn(8).setCellRenderer(new DepartmentTableRenderer());
+	}
+
+	// ===== TABLE RENDERERS =====
+	private class RoleTableRenderer extends DefaultTableCellRenderer {
+		@Override
+		protected void setValue(Object value) {
+			Role r = roleMap.get(value);
+			setText(r != null ? r.getName() : "");
+		}
+	}
+
+	private class DepartmentTableRenderer extends DefaultTableCellRenderer {
+		@Override
+		protected void setValue(Object value) {
+			Department d = departmentMap.get(value);
+			setText(d != null ? d.getName() : "");
+		}
+	}
+
+	private class RoleComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			if (value == null) {
+				return super.getListCellRendererComponent(list, "ALL", index, isSelected, cellHasFocus);
+			}
+
+			Role r = (Role) value;
+			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
+		}
+	}
+
+	private class DepartmentComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			if (value == null) {
+				return super.getListCellRendererComponent(list, "ALL", index, isSelected, cellHasFocus);
+			}
+
+			Department d = (Department) value;
+			return super.getListCellRendererComponent(list, d.getName(), index, isSelected, cellHasFocus);
+		}
 	}
 }
