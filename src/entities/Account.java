@@ -14,79 +14,104 @@ public class Account {
 	private Date birthday;
 	private String photo;
 	private String address;
-	private int phone;
+	private String phone;
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public String getEmployee_id() {
 		return employee_id;
 	}
+
 	public void setEmployee_id(String employee_id) {
 		this.employee_id = employee_id;
 	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public int getDepartment_id() {
 		return department_id;
 	}
+
 	public void setDepartment_id(int department_id) {
 		this.department_id = department_id;
 	}
+
 	public int getRole_id() {
 		return role_id;
 	}
+
 	public void setRole_id(int role_id) {
 		this.role_id = role_id;
 	}
+
 	public String getGender() {
 		return gender;
 	}
+
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
+
 	public Date getBirthday() {
 		return birthday;
 	}
+
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
+
 	public String getPhoto() {
 		return photo;
 	}
+
 	public void setPhoto(String photo) {
 		this.photo = photo;
 	}
+
 	public String getAddress() {
 		return address;
 	}
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public int getPhone() {
+
+	public String getPhone() {
 		return phone;
 	}
-	public void setPhone(int phone) {
+
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
 	@Override
 	public String toString() {
 		return "account [id=" + id + ", employee_id=" + employee_id + ", username=" + username + ", password="
@@ -94,8 +119,9 @@ public class Account {
 				+ ", gender=" + gender + ", birthday=" + birthday + ", photo=" + photo + ", address=" + address
 				+ ", phone=" + phone + "]";
 	}
+
 	public Account(int id, String employee_id, String username, String password, String name, int department_id,
-			int role_id, String gender, Date birthday, String photo, String address, int phone) {
+			int role_id, String gender, Date birthday, String photo, String address, String phone) {
 		super();
 		this.id = id;
 		this.employee_id = employee_id;
@@ -110,8 +136,9 @@ public class Account {
 		this.address = address;
 		this.phone = phone;
 	}
+
 	public Account() {
 		super();
 	}
-	
+
 }

@@ -10,6 +10,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
+import entities.Account;
+import models.LoginModel;
 
 public class JFrameLogin extends JFrame {
 
@@ -18,9 +22,6 @@ public class JFrameLogin extends JFrame {
 	private JTextField jtextFieldUsername;
 	private JPasswordField jpasswordFieldPassword;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -28,25 +29,21 @@ public class JFrameLogin extends JFrame {
 			e.printStackTrace();
 		}
 
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					JFrameLogin frame = new JFrameLogin();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		EventQueue.invokeLater(() -> {
+			try {
+				JFrameLogin frame = new JFrameLogin();
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public JFrameLogin() {
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 408, 261);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -57,7 +54,6 @@ public class JFrameLogin extends JFrame {
 		contentPane.add(lblNewLabel);
 
 		jtextFieldUsername = new JTextField();
-		jtextFieldUsername.setColumns(10);
 		jtextFieldUsername.setBounds(140, 40, 210, 28);
 		contentPane.add(jtextFieldUsername);
 
@@ -77,5 +73,31 @@ public class JFrameLogin extends JFrame {
 		jbuttonCancel.setBounds(200, 155, 99, 28);
 		contentPane.add(jbuttonCancel);
 
+		// ===== EVENTS =====
+		jbuttonLogin.addActionListener(e -> doLogin());
+		jbuttonCancel.addActionListener(e -> System.exit(0));
+	}
+
+	private void doLogin() {
+		String username = jtextFieldUsername.getText().trim();
+		String password = new String(jpasswordFieldPassword.getPassword());
+
+		if (username.isEmpty() || password.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Please enter username and password");
+			return;
+		}
+
+		LoginModel model = new LoginModel();
+		Account account = model.login(username, password);
+
+		if (account == null) {
+			JOptionPane.showMessageDialog(this, "Invalid username or password");
+			return;
+		}
+
+		// Login success
+		JFrameMain mainFrame = new JFrameMain(account);
+		mainFrame.setVisible(true);
+		this.dispose();
 	}
 }

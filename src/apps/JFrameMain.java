@@ -1,134 +1,130 @@
 package apps;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
+import java.awt.*;
+import java.util.List;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.JMenuBar;
-import java.awt.BorderLayout;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import java.awt.FlowLayout;
-import java.awt.SystemColor;
-import javax.swing.JTextArea;
-import java.awt.Font;
-import java.awt.Color;
+
+import apps.panels.AccountPanel;
+import app.enums.MenuType;
+import entities.Account;
 
 public class JFrameMain extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+
 	private JPanel contentPane;
+	private JPanel panelNavigate;
 	private JPanel jpanelMainPage;
+	private CardLayout cardLayout;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	private Account currentAccount;
 
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					JFrameMain frame = new JFrameMain();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	// ===== MENU CONFIG =====
+	private final List<MenuType> ADMIN_MENU = List.of(MenuType.ACCOUNT, MenuType.SETTINGS, MenuType.LOGOUT);
+
+	public JFrameMain(Account account) {
+		this.currentAccount = account;
+		initUI();
+		initMenuByRole();
 	}
 
-	/**
-	 * Create the frame.
-	 */
+	// chỉ dùng khi test giao diện
 	public JFrameMain() {
+		initUI();
+		buildMenu(ADMIN_MENU);
+		jpanelMainPage.add(new AccountPanel(), MenuType.ACCOUNT.name());
+		cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
+	}
+
+	private void initUI() {
+		setTitle("Library Management System");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 614, 570);
-		contentPane = new JPanel();
+
+		contentPane = new JPanel(new BorderLayout());
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
-		
-		JPanel jpanelTopPage = new JPanel();
-		contentPane.add(jpanelTopPage, BorderLayout.NORTH);
-		jpanelTopPage.setLayout(new BorderLayout(0, 0));
-		
-		JPanel jpanelNameSystem = new JPanel();
-		jpanelTopPage.add(jpanelNameSystem, BorderLayout.CENTER);
-		
-		JLabel lblNewLabel_1_1 = new JLabel("Library Management System");
-		lblNewLabel_1_1.setFont(new Font("SansSerif", Font.PLAIN, 17));
-		jpanelNameSystem.add(lblNewLabel_1_1);
-		
+
+		// ===== TOP =====
+		JPanel jpanelTopPage = new JPanel(new BorderLayout());
+
 		JPanel jpanelNameCompany = new JPanel();
+		JLabel lblCompany = new JLabel("Mohan Ltd");
+		lblCompany.setFont(new Font("SansSerif", Font.BOLD | Font.ITALIC, 25));
+		jpanelNameCompany.add(lblCompany);
+
+		JPanel jpanelNameSystem = new JPanel();
+		JLabel lblSystem = new JLabel("Library Management System");
+		lblSystem.setFont(new Font("SansSerif", Font.PLAIN, 17));
+		jpanelNameSystem.add(lblSystem);
+
+		panelNavigate = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+		panelNavigate.setBackground(SystemColor.activeCaption);
+
 		jpanelTopPage.add(jpanelNameCompany, BorderLayout.NORTH);
-		
-		JLabel lblNewLabel_1 = new JLabel("Mohan Ltd");
-		lblNewLabel_1.setFont(new Font("SansSerif", Font.BOLD | Font.ITALIC, 25));
-		jpanelNameCompany.add(lblNewLabel_1);
-		
-		JPanel jpanelNavigate = new JPanel();
-		jpanelNavigate.setBackground(SystemColor.activeCaption);
-		jpanelTopPage.add(jpanelNavigate, BorderLayout.SOUTH);
-		
-		JButton btnNewButton = new JButton("New button");
-		jpanelNavigate.add(btnNewButton);
-		
-		JButton btnNewButton_1 = new JButton("New button");
-		jpanelNavigate.add(btnNewButton_1);
-		
-		JButton btnNewButton_2 = new JButton("New button");
-		jpanelNavigate.add(btnNewButton_2);
-		
-		JButton btnNewButton_3 = new JButton("Log Out");
-		jpanelNavigate.add(btnNewButton_3);
-		
-		jpanelMainPage = new JPanel();
+		jpanelTopPage.add(jpanelNameSystem, BorderLayout.CENTER);
+		jpanelTopPage.add(panelNavigate, BorderLayout.SOUTH);
+
+		contentPane.add(jpanelTopPage, BorderLayout.NORTH);
+
+		// ===== MAIN PAGE =====
+		cardLayout = new CardLayout();
+		jpanelMainPage = new JPanel(cardLayout);
 		contentPane.add(jpanelMainPage, BorderLayout.CENTER);
-		jpanelMainPage.setLayout(new BorderLayout(0, 0));
-		
-		JPanel jpanelBottomPage = new JPanel();
-		jpanelBottomPage.setBackground(SystemColor.windowText);
-		contentPane.add(jpanelBottomPage, BorderLayout.SOUTH);
-		jpanelBottomPage.setLayout(new BorderLayout(0, 0));
-		
-		JPanel jpanelBotLine1 = new JPanel();
-		jpanelBotLine1.setBackground(SystemColor.desktop);
-		jpanelBottomPage.add(jpanelBotLine1, BorderLayout.SOUTH);
-		
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setForeground(SystemColor.activeCaption);
-		jpanelBotLine1.add(lblNewLabel);
-		
-		JPanel jpanelBotLine2 = new JPanel();
-		jpanelBotLine2.setBackground(SystemColor.desktop);
-		jpanelBottomPage.add(jpanelBotLine2, BorderLayout.NORTH);
-		
-		JLabel lblNewLabel_3 = new JLabel("New label");
-		lblNewLabel_3.setForeground(SystemColor.activeCaption);
-		jpanelBotLine2.add(lblNewLabel_3);
-		
-		JPanel jpanelBotLine3 = new JPanel();
-		jpanelBotLine3.setBackground(SystemColor.desktop);
-		jpanelBottomPage.add(jpanelBotLine3, BorderLayout.CENTER);
-		
-		JLabel lblNewLabel_4 = new JLabel("New label");
-		lblNewLabel_4.setForeground(SystemColor.activeCaption);
-		jpanelBotLine3.add(lblNewLabel_4);
 
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
+	}
 
+	// ===== ROLE HANDLING =====
+	private void initMenuByRole() {
+		int roleId = currentAccount.getRole_id();
+
+		jpanelMainPage.removeAll();
+
+		// 1 = ADMIN
+		if (roleId == 1) {
+			jpanelMainPage.add(new AccountPanel(), MenuType.ACCOUNT.name());
+			// sau này add thêm SettingsPanel
+
+			buildMenu(ADMIN_MENU);
+			cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
+		}
+
+		jpanelMainPage.revalidate();
+		jpanelMainPage.repaint();
+	}
+
+	// ===== BUILD MENU =====
+	private void buildMenu(List<MenuType> menus) {
+		panelNavigate.removeAll();
+
+		for (MenuType type : menus) {
+			JButton btn = new JButton(type.name());
+			btn.addActionListener(e -> onMenuClick(type));
+			panelNavigate.add(btn);
+		}
+
+		panelNavigate.revalidate();
+		panelNavigate.repaint();
+	}
+
+	private void onMenuClick(MenuType type) {
+		switch (type) {
+		case ACCOUNT:
+			cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
+			break;
+
+		case LOGOUT:
+			logout();
+			break;
+
+		default:
+			JOptionPane.showMessageDialog(this, "Chưa implement: " + type);
+		}
+	}
+
+	private void logout() {
+		dispose();
+		new JFrameLogin().setVisible(true);
 	}
 }
