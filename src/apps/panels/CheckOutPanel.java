@@ -2,113 +2,119 @@ package apps.panels;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 public class CheckOutPanel extends JPanel {
-    // Khai báo 3 ô tìm kiếm riêng biệt
-    private JTextField txtSearchName;
-    private JTextField txtSearchAuthor;
-    private JTextField txtSearchCategory;
-    
-    private JTable table;
-    private DefaultTableModel model;
-    private TableRowSorter<DefaultTableModel> rowSorter;
+    private JTable tableCart;
+    private DefaultTableModel cartModel;
+    private JLabel lblTotalAmount;
+    private JButton btnPay, btnRemove;
 
     public CheckOutPanel() {
         setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createTitledBorder("Thông Tin Thanh Toán Cọc"));
 
-        // --- PHẦN 1: TẠO KHUNG TÌM KIẾM (3 Ô) ---
-        JPanel panelTop = new JPanel(new GridLayout(2, 3, 10, 5)); // Dùng GridLayout để chia cột đều đẹp
+        // --- PHẦN 1: BẢNG SÁCH ĐÃ CHỌN ---
+        // Cột: Mã, Tên, Tác giả, Thể loại, Tiền cọc
+        String[] columns = {"Mã Sách", "Tên Sách", "Tác Giả", "Thể Loại", "Tiền Cọc (VND)"};
+        cartModel = new DefaultTableModel(columns, 0);
+        tableCart = new JTable(cartModel);
         
-        // Tạo label và textfield cho Tên sách
-        panelTop.add(new JLabel("Tên sách:"));
-        panelTop.add(new JLabel("Tác giả:"));
-        panelTop.add(new JLabel("Thể loại:"));
-        
-        txtSearchName = new JTextField();
-        txtSearchAuthor = new JTextField();
-        txtSearchCategory = new JTextField();
-
-        panelTop.add(txtSearchName);
-        panelTop.add(txtSearchAuthor);
-        panelTop.add(txtSearchCategory);
-
-        // Đặt panel tìm kiếm vào khung chính, thêm padding cho đẹp
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
-        wrapperPanel.add(panelTop, BorderLayout.CENTER);
-        wrapperPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10)); // Căn lề
-        add(wrapperPanel, BorderLayout.NORTH);
-
-        // --- PHẦN 2: TẠO BẢNG (TABLE) ---
-        String[] columnNames = {"Mã", "Tên Sách", "Tác Giả", "Thể Loại", "Giá Tiền"};
-        model = new DefaultTableModel(columnNames, 0);
-        table = new JTable(model);
-        
-        // Thêm thanh cuộn
-        JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = new JScrollPane(tableCart);
+        scrollPane.setPreferredSize(new Dimension(600, 300)); // Kích thước bảng
         add(scrollPane, BorderLayout.CENTER);
 
-        // --- PHẦN 3: XỬ LÝ LOGIC TÌM KIẾM ---
-        rowSorter = new TableRowSorter<>(model);
-        table.setRowSorter(rowSorter);
+        // --- PHẦN 2: KHU VỰC TÍNH TIỀN & NÚT BẤM (Bên dưới) ---
+        JPanel panelBottom = new JPanel(new BorderLayout());
+        panelBottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Tạo sự kiện lắng nghe khi gõ phím cho cả 3 ô
-        KeyAdapter keyListener = new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                filterData(); // Gọi hàm lọc chung
+        // Hiển thị tổng tiền
+        JPanel panelTotal = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel lblText = new JLabel("Tổng tiền cọc phải trả: ");
+        lblText.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        lblTotalAmount = new JLabel("0 VND");
+        lblTotalAmount.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTotalAmount.setForeground(Color.RED);
+        
+        panelTotal.add(lblText);
+        panelTotal.add(lblTotalAmount);
+
+        // Các nút chức năng
+        JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnRemove = new JButton("Xóa sách chọn");
+        btnPay = new JButton("Xác nhận Thanh toán");
+        btnPay.setBackground(new Color(0, 153, 76)); // Màu xanh lá
+        btnPay.setForeground(Color.WHITE);
+        
+        panelButtons.add(btnRemove);
+        panelButtons.add(btnPay);
+
+        panelBottom.add(panelTotal, BorderLayout.NORTH);
+        panelBottom.add(panelButtons, BorderLayout.SOUTH);
+
+        add(panelBottom, BorderLayout.SOUTH);
+
+        // --- SỰ KIỆN XỬ LÝ ---
+        // 1. Nút Xóa sách khỏi danh sách cọc
+        btnRemove.addActionListener(e -> {
+            int selectedRow = tableCart.getSelectedRow();
+            if (selectedRow != -1) {
+                cartModel.removeRow(selectedRow);
+                updateTotal(); // Tính lại tiền sau khi xóa
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn sách cần xóa!");
             }
-        };
+        });
 
-        txtSearchName.addKeyListener(keyListener);
-        txtSearchAuthor.addKeyListener(keyListener);
-        txtSearchCategory.addKeyListener(keyListener);
-
-        // --- PHẦN 4: THÊM DỮ LIỆU GIẢ ---
-        loadData();
+        // 2. Nút Thanh toán
+        btnPay.addActionListener(e -> {
+            if (cartModel.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "Chưa có sách nào để thanh toán!");
+                return;
+            }
+            // Code lưu vào database sẽ viết ở đây
+            JOptionPane.showMessageDialog(this, "Thanh toán thành công! In hóa đơn...");
+            cartModel.setRowCount(0); // Xóa hết sau khi thanh toán
+            updateTotal();
+        });
+        
+        // --- DỮ LIỆU GIẢ (Demo khi chạy thử) ---
+        addSampleData();
     }
 
-    // Hàm xử lý logic lọc kết hợp
-    private void filterData() {
-        List<RowFilter<Object, Object>> filters = new ArrayList<>();
-
-        // 1. Lấy text từ ô Tên Sách -> Lọc cột thứ 1 (Index 1)
-        String nameText = txtSearchName.getText();
-        if (!nameText.isEmpty()) {
-            filters.add(RowFilter.regexFilter("(?i)" + nameText, 1));
+    // Hàm cập nhật tổng tiền
+    private void updateTotal() {
+        double total = 0;
+        for (int i = 0; i < cartModel.getRowCount(); i++) {
+            // Lấy giá trị cột "Tiền Cọc" (Cột index 4)
+            Object value = cartModel.getValueAt(i, 4);
+            if (value instanceof Number) {
+                total += ((Number) value).doubleValue();
+            }
         }
-
-        // 2. Lấy text từ ô Tác Giả -> Lọc cột thứ 2 (Index 2)
-        String authorText = txtSearchAuthor.getText();
-        if (!authorText.isEmpty()) {
-            filters.add(RowFilter.regexFilter("(?i)" + authorText, 2));
-        }
-
-        // 3. Lấy text từ ô Thể Loại -> Lọc cột thứ 3 (Index 3)
-        String categoryText = txtSearchCategory.getText();
-        if (!categoryText.isEmpty()) {
-            filters.add(RowFilter.regexFilter("(?i)" + categoryText, 3));
-        }
-
-        // Kết hợp các bộ lọc lại với nhau (AND)
-        if (filters.isEmpty()) {
-            rowSorter.setRowFilter(null); // Nếu không nhập gì thì hiện hết
-        } else {
-            rowSorter.setRowFilter(RowFilter.andFilter(filters));
-        }
+        DecimalFormat df = new DecimalFormat("#,### VND");
+        lblTotalAmount.setText(df.format(total));
     }
 
-    private void loadData() {
-        model.addRow(new Object[]{"B001", "Dế Mèn Phiêu Lưu Ký", "Tô Hoài", "Truyện thiếu nhi", 50000});
-        model.addRow(new Object[]{"B002", "Harry Potter", "J.K. Rowling", "Viễn tưởng", 150000});
-        model.addRow(new Object[]{"B003", "Lập trình Java", "FPT Poly", "Giáo trình", 90000});
-        model.addRow(new Object[]{"B004", "Sherlock Holmes", "Conan Doyle", "Trinh thám", 120000});
-        model.addRow(new Object[]{"B005", "Đắc Nhân Tâm", "Dale Carnegie", "Kỹ năng sống", 75000});
-        model.addRow(new Object[]{"B006", "Java Nâng Cao", "FPT Poly", "Giáo trình", 95000});
+    // Hàm thêm sách vào bảng (Sẽ được gọi từ CheckOutDetails sau này)
+    public void addBookToCart(String id, String name, String author, String category, double price) {
+        // Kiểm tra xem sách đã có trong giỏ chưa (tùy chọn)
+        for (int i=0; i < cartModel.getRowCount(); i++) {
+            if (cartModel.getValueAt(i, 0).equals(id)) {
+                JOptionPane.showMessageDialog(this, "Sách này đã được chọn rồi!");
+                return;
+            }
+        }
+        cartModel.addRow(new Object[]{id, name, author, category, price});
+        updateTotal();
+    }
+
+    private void addSampleData() {
+        addBookToCart("B001", "Dế Mèn Phiêu Lưu Ký", "Tô Hoài", "Truyện", 50000);
+        addBookToCart("B005", "Đắc Nhân Tâm", "Dale Carnegie", "Kỹ năng", 75000);
     }
 }
