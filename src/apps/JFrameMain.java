@@ -23,6 +23,13 @@ public class JFrameMain extends JFrame {
 	// ===== MENU CONFIG =====
 	private final List<MenuType> ADMIN_MENU = List.of(MenuType.ACCOUNT, MenuType.SETTINGS, MenuType.LOGOUT);
 
+	private final List<MenuType> LIBRARIAN_MENU = List.of(MenuType.BOOK, MenuType.LOAN_HISTORY, MenuType.SEARCH,
+			MenuType.AUTHOR, MenuType.CATEGORY, MenuType.CHECKOUT, MenuType.LOGOUT);
+
+	private final List<MenuType> EMPLOYEE_MENU = List.of(MenuType.SEARCH, MenuType.BOOK, MenuType.AUTHOR,
+			MenuType.CATEGORY, MenuType.MY_LOANS, MenuType.LOGOUT);
+
+	// ===== CONSTRUCTOR =====
 	public JFrameMain(Account account) {
 		this.currentAccount = account;
 		initUI();
@@ -37,6 +44,7 @@ public class JFrameMain extends JFrame {
 		cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
 	}
 
+	// ===== INIT UI =====
 	private void initUI() {
 		setTitle("Library Management System");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,19 +83,44 @@ public class JFrameMain extends JFrame {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 
-	// ===== ROLE HANDLING =====
+	// ===== MENU BY ROLE =====
 	private void initMenuByRole() {
 		int roleId = currentAccount.getRole_id();
 
 		jpanelMainPage.removeAll();
 
-		// 1 = ADMIN
-		if (roleId == 1) {
-			jpanelMainPage.add(new AccountPanel(), MenuType.ACCOUNT.name());
-			// sau này add thêm SettingsPanel
+		switch (roleId) {
 
+		case 1: // ADMIN
+			jpanelMainPage.add(new AccountPanel(), MenuType.ACCOUNT.name());
+			// sau này add SettingsPanel
 			buildMenu(ADMIN_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
+			break;
+
+		case 2: // LIBRARIAN
+			// panel placeholder để test
+			jpanelMainPage.add(new JPanel(), MenuType.LOAN_HISTORY.name());
+			jpanelMainPage.add(new JPanel(), MenuType.BOOK.name());
+			jpanelMainPage.add(new JPanel(), MenuType.SEARCH.name());
+			jpanelMainPage.add(new JPanel(), MenuType.AUTHOR.name());
+			jpanelMainPage.add(new JPanel(), MenuType.CATEGORY.name());
+			jpanelMainPage.add(new JPanel(), MenuType.CHECKOUT.name());
+
+			buildMenu(LIBRARIAN_MENU);
+			cardLayout.show(jpanelMainPage, MenuType.LOAN_HISTORY.name());
+			break;
+
+		case 3: // EMPLOYEE
+			jpanelMainPage.add(new JPanel(), MenuType.SEARCH.name());
+			jpanelMainPage.add(new JPanel(), MenuType.BOOK.name());
+			jpanelMainPage.add(new JPanel(), MenuType.AUTHOR.name());
+			jpanelMainPage.add(new JPanel(), MenuType.CATEGORY.name());
+			jpanelMainPage.add(new JPanel(), MenuType.MY_LOANS.name());
+
+			buildMenu(EMPLOYEE_MENU);
+			cardLayout.show(jpanelMainPage, MenuType.SEARCH.name());
+			break;
 		}
 
 		jpanelMainPage.revalidate();
@@ -108,19 +141,15 @@ public class JFrameMain extends JFrame {
 		panelNavigate.repaint();
 	}
 
+	// ===== MENU CLICK =====
 	private void onMenuClick(MenuType type) {
-		switch (type) {
-		case ACCOUNT:
-			cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
-			break;
 
-		case LOGOUT:
+		if (type == MenuType.LOGOUT) {
 			logout();
-			break;
-
-		default:
-			JOptionPane.showMessageDialog(this, "Chưa implement: " + type);
+			return;
 		}
+
+		cardLayout.show(jpanelMainPage, type.name());
 	}
 
 	private void logout() {
