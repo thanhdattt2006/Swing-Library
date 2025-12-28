@@ -8,6 +8,8 @@ import java.util.*;
 
 import entities.*;
 import models.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class AccountPanel extends JPanel {
 
@@ -70,8 +72,20 @@ public class AccountPanel extends JPanel {
 		// ===== SOUTH - ACTION =====
 		JPanel jpanelAction = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 
-		jpanelAction.add(new JButton("Add"));
-		jpanelAction.add(new JButton("Edit"));
+		JButton button = new JButton("Add");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_button_actionPerformed(e);
+			}
+		});
+		jpanelAction.add(button);
+		JButton button_1 = new JButton("Edit");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_button_1_actionPerformed(e);
+			}
+		});
+		jpanelAction.add(button_1);
 		jpanelAction.add(new JButton("Delete"));
 		jpanelAction.add(new JButton("Refresh"));
 
@@ -140,7 +154,7 @@ public class AccountPanel extends JPanel {
 		}
 	}
 
-	private class RoleComboRenderer extends DefaultListCellRenderer {
+	public class RoleComboRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
@@ -154,7 +168,7 @@ public class AccountPanel extends JPanel {
 		}
 	}
 
-	private class DepartmentComboRenderer extends DefaultListCellRenderer {
+	public class DepartmentComboRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
@@ -166,5 +180,27 @@ public class AccountPanel extends JPanel {
 			Department d = (Department) value;
 			return super.getListCellRendererComponent(list, d.getName(), index, isSelected, cellHasFocus);
 		}
+	}
+	protected void do_button_actionPerformed(ActionEvent e) {
+		 // Tạo JDialog
+	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Thêm Nhân Viên Mới", true);
+	    
+	    // Tạo JPanel cho form
+	    AddEmployPanel addPanel = new AddEmployPanel(dialog, this );
+	    
+	    // Thêm panel vào dialog
+	    dialog.getContentPane().add(addPanel);
+	    
+	    // Cài đặt dialog
+	    dialog.setSize(630, 620);
+	    dialog.setLocationRelativeTo(this); // Hiển thị giữa màn hình
+	    dialog.setVisible(true);
+	}
+	public void refreshTable() {
+	    loadTableData();
+	}
+	
+	protected void do_button_1_actionPerformed(ActionEvent e) {
+	   
 	}
 }
