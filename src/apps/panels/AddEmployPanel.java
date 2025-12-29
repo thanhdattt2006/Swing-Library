@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
+import java.awt.SystemColor;
 
 public class AddEmployPanel extends JPanel {
 
@@ -66,7 +67,7 @@ public class AddEmployPanel extends JPanel {
 		// Header Panel
         JPanel headerPanel = new JPanel();
         headerPanel.setBounds(0, 0, 616, 81);
-        headerPanel.setBackground(new Color(102, 126, 234));
+        headerPanel.setBackground(SystemColor.activeCaption);
         headerPanel.setLayout(null);
         JLabel lblTitle = new JLabel("Thêm Nhân Viên Mới");
         lblTitle.setBounds(190, 26, 241, 28);
