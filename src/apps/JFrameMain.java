@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import apps.panels.AccountPanel;
+import apps.panels.CheckOutPanel;
 import app.enums.MenuType;
 import entities.Account;
 
@@ -23,11 +24,10 @@ public class JFrameMain extends JFrame {
 	// ===== MENU CONFIG =====
 	private final List<MenuType> ADMIN_MENU = List.of(MenuType.ACCOUNT, MenuType.SETTINGS, MenuType.LOGOUT);
 
-	private final List<MenuType> LIBRARIAN_MENU = List.of(MenuType.BOOK, MenuType.LOAN_HISTORY, MenuType.AUTHOR,
-			MenuType.CATEGORY, MenuType.CHECKOUT, MenuType.LOGOUT);
+	private final List<MenuType> LIBRARIAN_MENU = List.of(MenuType.AUTHOR, MenuType.CATEGORY, MenuType.BOOK,
+			MenuType.CHECKOUT, MenuType.LOAN_HISTORY, MenuType.LOGOUT);
 
-	private final List<MenuType> EMPLOYEE_MENU = List.of(MenuType.BOOK, MenuType.AUTHOR, MenuType.CATEGORY,
-			MenuType.MY_LOANS, MenuType.LOGOUT);
+	private final List<MenuType> EMPLOYEE_MENU = List.of(MenuType.BOOK, MenuType.MY_LOANS, MenuType.LOGOUT);
 
 	// ===== CONSTRUCTOR =====
 	public JFrameMain(Account account) {
@@ -104,7 +104,7 @@ public class JFrameMain extends JFrame {
 			jpanelMainPage.add(new JPanel(), MenuType.BOOK.name());
 			jpanelMainPage.add(new JPanel(), MenuType.AUTHOR.name());
 			jpanelMainPage.add(new JPanel(), MenuType.CATEGORY.name());
-			jpanelMainPage.add(new JPanel(), MenuType.CHECKOUT.name());
+			jpanelMainPage.add(new CheckOutPanel(), MenuType.CHECKOUT.name());
 
 			buildMenu(LIBRARIAN_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.LOAN_HISTORY.name());
