@@ -23,6 +23,10 @@ public class AccountPanel extends JPanel {
 
 	private Map<Integer, Role> roleMap = new HashMap<>();
 	private Map<Integer, Department> departmentMap = new HashMap<>();
+	private JButton jbuttonDelete;
+	private JButton jbuttonRefresh;
+	private JButton jbuttonAdd;
+	private JButton jbuttonEdit;
 
 	public AccountPanel() {
 		setLayout(new BorderLayout());
@@ -67,27 +71,35 @@ public class AccountPanel extends JPanel {
 		jtableAccountList = new JTable(tableModel);
 		jtableAccountList.setRowHeight(25);
 
+		jtableAccountList.getTableHeader().setReorderingAllowed(false);
 		add(new JScrollPane(jtableAccountList), BorderLayout.CENTER);
 
 		// ===== SOUTH - ACTION =====
 		JPanel jpanelAction = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 
-		JButton button = new JButton("Add");
-		button.addActionListener(new ActionListener() {
+		jbuttonAdd = new JButton("Add");
+		jbuttonAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				do_button_actionPerformed(e);
 			}
 		});
-		jpanelAction.add(button);
-		JButton button_1 = new JButton("Edit");
-		button_1.addActionListener(new ActionListener() {
+		jpanelAction.add(jbuttonAdd);
+		jbuttonEdit = new JButton("Edit");
+		jbuttonEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				do_button_1_actionPerformed(e);
 			}
 		});
-		jpanelAction.add(button_1);
-		jpanelAction.add(new JButton("Delete"));
-		jpanelAction.add(new JButton("Refresh"));
+		jpanelAction.add(jbuttonEdit);
+		jbuttonDelete = new JButton("Delete");
+		jbuttonDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_jbuttonDelete_actionPerformed(e);
+			}
+		});
+		jpanelAction.add(jbuttonDelete);
+		jbuttonRefresh = new JButton("Refresh");
+		jpanelAction.add(jbuttonRefresh);
 
 		add(jpanelAction, BorderLayout.SOUTH);
 	}
@@ -181,7 +193,7 @@ public class AccountPanel extends JPanel {
 			return super.getListCellRendererComponent(list, d.getName(), index, isSelected, cellHasFocus);
 		}
 	}
-	protected void do_button_actionPerformed(ActionEvent e) {
+	protected void do_button_actionPerformed(ActionEvent e) {//button add
 		 // Tạo JDialog
 	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Thêm Nhân Viên Mới", true);
 	    
@@ -200,7 +212,80 @@ public class AccountPanel extends JPanel {
 	    loadTableData();
 	}
 	
-	protected void do_button_1_actionPerformed(ActionEvent e) {
-	   
+	protected void do_button_1_actionPerformed(ActionEvent e) { //button Edit
+	    try {
+	        // Kiểm tra xem có chọn hàng không
+	        int selectedRow = jtableAccountList.getSelectedRow();
+	        if (selectedRow == -1) {
+	            throw new Exception("Vui lòng chọn một nhân viên để sửa!");
+	        }
+	        
+	        // Lấy ID từ row được chọn
+	        int id = Integer.parseInt(jtableAccountList.getValueAt(selectedRow, 0).toString());
+	        Map<String, Object> data = new HashMap<String, Object>();
+	        data.put("id", id);
+	        
+	        // Tạo JDialog
+	        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Sửa Nhân Viên ", true);
+	        
+	        // Tạo JPanel cho form
+	        EditEmployPanel addPanel = new EditEmployPanel(dialog, this, data);
+	        
+	        // Thêm panel vào dialog
+	        dialog.getContentPane().add(addPanel);
+	        
+	        // Cài đặt dialog
+	        dialog.setSize(630, 620);
+	        dialog.setLocationRelativeTo(this);
+	        dialog.setVisible(true);
+	        
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            ex.getMessage(), 
+	            "Lỗi", 
+	            JOptionPane.ERROR_MESSAGE);
+	    }
 	}
+	protected void do_jbuttonDelete_actionPerformed(ActionEvent e) {
+		try {
+	        int selectedRow = jtableAccountList.getSelectedRow();
+	        if (selectedRow == -1) {
+	            throw new Exception("Vui lòng chọn một nhân viên để xóa!");
+	        }
+	        
+	        // Lấy ID từ row được chọn
+	        int id = Integer.parseInt(jtableAccountList.getValueAt(selectedRow, 0).toString());
+	        String name = jtableAccountList.getValueAt(selectedRow, 3).toString();
+	        
+	        // Xác nhận trước khi xóa
+	        int confirm = JOptionPane.showConfirmDialog(this, 
+	            "Bạn có chắc muốn xóa nhân viên: " + name + "?", 
+	            "Xác nhận xóa", 
+	            JOptionPane.YES_NO_OPTION,
+	            JOptionPane.WARNING_MESSAGE);
+	        
+	        if (confirm == JOptionPane.YES_OPTION) {
+	            AccountModel accountModel = new AccountModel();
+	            if (accountModel.delete(id)) {
+	                JOptionPane.showMessageDialog(this, 
+	                    "Xóa thành công!", 
+	                    "Thành công", 
+	                    JOptionPane.INFORMATION_MESSAGE);
+	                refreshTable(); // Làm mới bảng
+	            } else {
+	                JOptionPane.showMessageDialog(this, 
+	                    "Xóa thất bại!", 
+	                    "Lỗi", 
+	                    JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	        
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            ex.getMessage(), 
+	            "Lỗi", 
+	            JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
 }
