@@ -70,7 +70,7 @@ public class AddEmployPanel extends JPanel {
         headerPanel.setBackground(SystemColor.activeCaption);
         headerPanel.setLayout(null);
         JLabel lblTitle = new JLabel("Add New Employee");
-        lblTitle.setBounds(139, 30, 241, 28);
+        lblTitle.setBounds(138, 30, 241, 28);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
         headerPanel.add(lblTitle);
