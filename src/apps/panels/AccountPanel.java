@@ -195,7 +195,7 @@ public class AccountPanel extends JPanel {
 	}
 	protected void do_button_actionPerformed(ActionEvent e) {//button add
 		 // Tạo JDialog
-	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Thêm Nhân Viên Mới", true);
+	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add New Employee", true);
 	    
 	    // Tạo JPanel cho form
 	    AddEmployPanel addPanel = new AddEmployPanel(dialog, this );
@@ -217,7 +217,7 @@ public class AccountPanel extends JPanel {
 	        // Kiểm tra xem có chọn hàng không
 	        int selectedRow = jtableAccountList.getSelectedRow();
 	        if (selectedRow == -1) {
-	            throw new Exception("Vui lòng chọn một nhân viên để sửa!");
+	            throw new Exception("Please select an employee to edit!");
 	        }
 	        
 	        // Lấy ID từ row được chọn
@@ -242,7 +242,7 @@ public class AccountPanel extends JPanel {
 	    } catch (Exception ex) {
 	        JOptionPane.showMessageDialog(this, 
 	            ex.getMessage(), 
-	            "Lỗi", 
+	            "Error", 
 	            JOptionPane.ERROR_MESSAGE);
 	    }
 	}
@@ -250,7 +250,7 @@ public class AccountPanel extends JPanel {
 		try {
 	        int selectedRow = jtableAccountList.getSelectedRow();
 	        if (selectedRow == -1) {
-	            throw new Exception("Vui lòng chọn một nhân viên để xóa!");
+	            throw new Exception("Please select an employee to delete!");
 	        }
 	        
 	        // Lấy ID từ row được chọn
@@ -259,8 +259,8 @@ public class AccountPanel extends JPanel {
 	        
 	        // Xác nhận trước khi xóa
 	        int confirm = JOptionPane.showConfirmDialog(this, 
-	            "Bạn có chắc muốn xóa nhân viên: " + name + "?", 
-	            "Xác nhận xóa", 
+	            "Are you sure you want to delete the employee: " + name + "?", 
+	            "Confirm Delete", 
 	            JOptionPane.YES_NO_OPTION,
 	            JOptionPane.WARNING_MESSAGE);
 	        
@@ -268,14 +268,16 @@ public class AccountPanel extends JPanel {
 	            AccountModel accountModel = new AccountModel();
 	            if (accountModel.delete(id)) {
 	                JOptionPane.showMessageDialog(this, 
-	                    "Xóa thành công!", 
-	                    "Thành công", 
+	                		"Deleted successfully!",
+	                		"Success",
+
 	                    JOptionPane.INFORMATION_MESSAGE);
 	                refreshTable(); // Làm mới bảng
 	            } else {
 	                JOptionPane.showMessageDialog(this, 
-	                    "Xóa thất bại!", 
-	                    "Lỗi", 
+	                		"Deletion failed!",
+	                		"Error",
+
 	                    JOptionPane.ERROR_MESSAGE);
 	            }
 	        }
@@ -283,7 +285,7 @@ public class AccountPanel extends JPanel {
 	    } catch (Exception ex) {
 	        JOptionPane.showMessageDialog(this, 
 	            ex.getMessage(), 
-	            "Lỗi", 
+	            "Error", 
 	            JOptionPane.ERROR_MESSAGE);
 	    }
 	}
