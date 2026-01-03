@@ -66,11 +66,11 @@ public class AddEmployPanel extends JPanel {
 		setLayout(null);
 		// Header Panel
         JPanel headerPanel = new JPanel();
-        headerPanel.setBounds(0, 0, 616, 81);
+        headerPanel.setBounds(0, 0, 519, 81);
         headerPanel.setBackground(SystemColor.activeCaption);
         headerPanel.setLayout(null);
-        JLabel lblTitle = new JLabel("Thêm Nhân Viên Mới");
-        lblTitle.setBounds(190, 26, 241, 28);
+        JLabel lblTitle = new JLabel("Add New Employee");
+        lblTitle.setBounds(139, 30, 241, 28);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
         headerPanel.add(lblTitle);
@@ -78,83 +78,83 @@ public class AddEmployPanel extends JPanel {
 
         
         JLabel lblNewLabel = new JLabel("Employee ID: ");
-        lblNewLabel.setBounds(62, 92, 81, 23);
+        lblNewLabel.setBounds(79, 117, 81, 23);
         add(lblNewLabel);
         
         JLabel lblNewLabel_1 = new JLabel("Username(Emali):");
-        lblNewLabel_1.setBounds(62, 139, 136, 23);
+        lblNewLabel_1.setBounds(79, 164, 136, 23);
         add(lblNewLabel_1);
         
         JLabel lblPassword = new JLabel("Password:");
-        lblPassword.setBounds(62, 184, 81, 23);
+        lblPassword.setBounds(79, 209, 81, 23);
         add(lblPassword);
         
         JLabel lblName = new JLabel("Name:");
-        lblName.setBounds(62, 235, 81, 23);
+        lblName.setBounds(79, 260, 81, 23);
         add(lblName);
         
         JLabel lblPhone = new JLabel("Phone:");
-        lblPhone.setBounds(62, 285, 81, 23);
+        lblPhone.setBounds(79, 310, 81, 23);
         add(lblPhone);
         
         JLabel lblBrithday = new JLabel("Birthday");
-        lblBrithday.setBounds(62, 330, 81, 23);
+        lblBrithday.setBounds(79, 355, 81, 23);
         add(lblBrithday);
         
         JLabel lblDepartment = new JLabel("Department:");
-        lblDepartment.setBounds(62, 416, 81, 23);
+        lblDepartment.setBounds(79, 441, 81, 23);
         add(lblDepartment);
         
         JLabel lblAddress = new JLabel("Address");
-        lblAddress.setBounds(62, 459, 81, 23);
+        lblAddress.setBounds(79, 484, 81, 23);
         add(lblAddress);
         
         jEmployeeID = new JTextField();
-        jEmployeeID.setBounds(174, 92, 225, 23);
+        jEmployeeID.setBounds(191, 117, 225, 23);
         add(jEmployeeID);
         jEmployeeID.setColumns(10);
         
         jUsername = new JTextField();
         jUsername.setColumns(10);
-        jUsername.setBounds(173, 139, 226, 23);
+        jUsername.setBounds(190, 164, 226, 23);
         add(jUsername);
         
         jName = new JTextField();
         jName.setColumns(10);
-        jName.setBounds(173, 235, 226, 23);
+        jName.setBounds(190, 260, 226, 23);
         add(jName);
         
         jPhone = new JTextField();
         jPhone.setColumns(10);
-        jPhone.setBounds(173, 285, 226, 23);
+        jPhone.setBounds(190, 310, 226, 23);
         add(jPhone);
         
         jAddress = new JTextField();
         jAddress.setColumns(10);
-        jAddress.setBounds(173, 459, 226, 23);
+        jAddress.setBounds(190, 484, 226, 23);
         add(jAddress);
         
         jdateChooser = new JDateChooser();
         jdateChooser.setDateFormatString("dd/MM/yyyy");
-        jdateChooser.setBounds(174, 330, 225, 29);
+        jdateChooser.setBounds(191, 355, 225, 29);
         add(jdateChooser);
         
         jpasswordField = new JPasswordField();
-        jpasswordField.setBounds(174, 185, 225, 23);
+        jpasswordField.setBounds(191, 210, 225, 23);
         add(jpasswordField);
         
         jcomboBoxDepartment = new JComboBox();
-        jcomboBoxDepartment.setBounds(174, 416, 225, 23);
+        jcomboBoxDepartment.setBounds(191, 441, 225, 23);
         add(jcomboBoxDepartment);
         
-        btnNewButton = new JButton("ADD");
+        btnNewButton = new JButton("Add");
         btnNewButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		do_btnNewButton_actionPerformed(e);
         	}
         });
         btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
-        btnNewButton.setBounds(344, 493, 91, 29);
+        btnNewButton.setBounds(191, 538, 81, 23);
         add(btnNewButton);
         
         JCancel = new JButton("Cancel");
@@ -165,15 +165,15 @@ public class AddEmployPanel extends JPanel {
         });
         JCancel.setFont(new Font("Tahoma", Font.PLAIN, 17));
         JCancel.setForeground(Color.BLACK);
-        JCancel.setBounds(198, 493, 101, 33);
+        JCancel.setBounds(311, 538, 81, 23);
         add(JCancel);
         
         jcomboBoxRole = new JComboBox();
-        jcomboBoxRole.setBounds(174, 370, 225, 23);
+        jcomboBoxRole.setBounds(191, 395, 225, 23);
         add(jcomboBoxRole);
         
         lblRole = new JLabel("Role:");
-        lblRole.setBounds(62, 370, 81, 23);
+        lblRole.setBounds(79, 395, 81, 23);
         add(lblRole);
     }
 	public AddEmployPanel(Dialog dialog, AccountPanel accountPanel) {
@@ -257,16 +257,16 @@ public class AddEmployPanel extends JPanel {
         // 1. Employee ID
         if (jEmployeeID.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Employee ID không được để trống!", 
-                "Lỗi", 
+                "Employee ID must not be empty!", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
             jEmployeeID.requestFocus();
             return;
         }
         if (jUsername.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Username không được để trống!", 
-                "Lỗi", 
+                "Username must not be empty!", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
             jUsername.requestFocus();
             return;
@@ -276,8 +276,8 @@ public class AddEmployPanel extends JPanel {
         String password = new String(jpasswordField.getPassword()).trim();
         if (password.isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Password không được để trống!", 
-                "Lỗi", 
+                "Password must not be empty!", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
             jpasswordField.requestFocus();
             return;
@@ -286,8 +286,8 @@ public class AddEmployPanel extends JPanel {
         // . Name
         if (jName.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, 
-                "Name không được để trống!", 
-                "Lỗi", 
+                "Name must not be empty!", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
             jName.requestFocus();
             return;
@@ -297,8 +297,8 @@ public class AddEmployPanel extends JPanel {
         Role role = (Role) jcomboBoxRole.getSelectedItem();
         if (role == null) {
             JOptionPane.showMessageDialog(this, 
-                "Vui lòng chọn Role!", 
-                "Lỗi", 
+                "Please select a role!", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -307,8 +307,8 @@ public class AddEmployPanel extends JPanel {
         Department dept = (Department) jcomboBoxDepartment.getSelectedItem();
         if (dept == null) {
             JOptionPane.showMessageDialog(this, 
-                "Vui lòng chọn Department!", 
-                "Lỗi", 
+                "Please select a department!", 
+                "Error", 
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -335,8 +335,8 @@ public class AddEmployPanel extends JPanel {
         AccountModel accountModel = new AccountModel();
         if (accountModel.create(account)) {
             JOptionPane.showMessageDialog(this, 
-                "Thêm nhân viên thành công!", 
-                "Thành công",
+                "Employee added successfully!", 
+                "Success",
                 JOptionPane.INFORMATION_MESSAGE);
             if (accountPanel != null) {
                 accountPanel.refreshTable();
@@ -344,8 +344,8 @@ public class AddEmployPanel extends JPanel {
             parentDialog.dispose();
         } else {
             JOptionPane.showMessageDialog(this, 
-                "Thêm nhân viên thất bại!", 
-                "Lỗi",
+                "Failed to add employee!", 
+                "Error",
                 JOptionPane.ERROR_MESSAGE);
         }
 

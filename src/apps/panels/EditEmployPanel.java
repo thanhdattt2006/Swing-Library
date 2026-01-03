@@ -71,7 +71,7 @@ public class EditEmployPanel extends JPanel {
         headerPanel.setBounds(0, 0, 616, 81);
         headerPanel.setBackground(SystemColor.activeCaption);
         headerPanel.setLayout(null);
-        JLabel lblTitle = new JLabel("Sửa Nhân viên");
+        JLabel lblTitle = new JLabel("Edit Employee");
         lblTitle.setBounds(190, 26, 241, 28);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
@@ -80,73 +80,73 @@ public class EditEmployPanel extends JPanel {
 
         
         JLabel lblNewLabel = new JLabel("Employee ID: ");
-        lblNewLabel.setBounds(64, 140, 81, 23);
+        lblNewLabel.setBounds(95, 158, 81, 23);
         add(lblNewLabel);
         
         JLabel lblNewLabel_1 = new JLabel("Username(Emali):");
-        lblNewLabel_1.setBounds(64, 187, 136, 23);
+        lblNewLabel_1.setBounds(95, 205, 136, 23);
         add(lblNewLabel_1);
         
         JLabel lblPassword = new JLabel("Password:");
-        lblPassword.setBounds(64, 232, 81, 23);
+        lblPassword.setBounds(95, 250, 81, 23);
         add(lblPassword);
         
         JLabel lblName = new JLabel("Name:");
-        lblName.setBounds(64, 283, 81, 23);
+        lblName.setBounds(95, 301, 81, 23);
         add(lblName);
         
         JLabel lblPhone = new JLabel("Phone:");
-        lblPhone.setBounds(64, 333, 81, 23);
+        lblPhone.setBounds(95, 351, 81, 23);
         add(lblPhone);
         
         JLabel lblBrithday = new JLabel("Birthday");
-        lblBrithday.setBounds(64, 378, 81, 23);
+        lblBrithday.setBounds(95, 396, 81, 23);
         add(lblBrithday);
         
         JLabel lblDepartment = new JLabel("Department:");
-        lblDepartment.setBounds(64, 464, 81, 23);
+        lblDepartment.setBounds(95, 482, 81, 23);
         add(lblDepartment);
         
         JLabel lblAddress = new JLabel("Address");
-        lblAddress.setBounds(64, 507, 81, 23);
+        lblAddress.setBounds(95, 525, 81, 23);
         add(lblAddress);
         
         jEmployeeID = new JTextField();
-        jEmployeeID.setBounds(176, 140, 225, 23);
+        jEmployeeID.setBounds(207, 158, 225, 23);
         add(jEmployeeID);
         jEmployeeID.setColumns(10);
         
         jUsername = new JTextField();
         jUsername.setColumns(10);
-        jUsername.setBounds(175, 187, 226, 23);
+        jUsername.setBounds(206, 205, 226, 23);
         add(jUsername);
         
         jName = new JTextField();
         jName.setColumns(10);
-        jName.setBounds(175, 283, 226, 23);
+        jName.setBounds(206, 301, 226, 23);
         add(jName);
         
         jPhone = new JTextField();
         jPhone.setColumns(10);
-        jPhone.setBounds(175, 333, 226, 23);
+        jPhone.setBounds(206, 351, 226, 23);
         add(jPhone);
         
         jAddress = new JTextField();
         jAddress.setColumns(10);
-        jAddress.setBounds(175, 507, 226, 23);
+        jAddress.setBounds(206, 525, 226, 23);
         add(jAddress);
         
         jBirthday = new JDateChooser();
         jBirthday.setDateFormatString("dd/MM/yyyy");
-        jBirthday.setBounds(176, 378, 225, 29);
+        jBirthday.setBounds(207, 396, 225, 29);
         add(jBirthday);
         
         jpasswordField = new JPasswordField();
-        jpasswordField.setBounds(176, 233, 225, 23);
+        jpasswordField.setBounds(207, 251, 225, 23);
         add(jpasswordField);
         
         jcomboBoxDepartment = new JComboBox();
-        jcomboBoxDepartment.setBounds(176, 464, 225, 23);
+        jcomboBoxDepartment.setBounds(207, 482, 225, 23);
         add(jcomboBoxDepartment);
         
         btnNewButton = new JButton("Submit");
@@ -156,7 +156,7 @@ public class EditEmployPanel extends JPanel {
         	}
         });
         btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
-        btnNewButton.setBounds(346, 541, 91, 29);
+        btnNewButton.setBounds(186, 573, 100, 23);
         add(btnNewButton);
         
         JCancel = new JButton("Cancel");
@@ -167,24 +167,24 @@ public class EditEmployPanel extends JPanel {
         });
         JCancel.setFont(new Font("Tahoma", Font.PLAIN, 17));
         JCancel.setForeground(Color.BLACK);
-        JCancel.setBounds(200, 541, 101, 33);
+        JCancel.setBounds(308, 573, 81, 23);
         add(JCancel);
         
         jcomboBoxRole = new JComboBox();
-        jcomboBoxRole.setBounds(176, 418, 225, 23);
+        jcomboBoxRole.setBounds(207, 436, 225, 23);
         add(jcomboBoxRole);
         
         lblRole = new JLabel("Role:");
-        lblRole.setBounds(64, 418, 81, 23);
+        lblRole.setBounds(95, 436, 81, 23);
         add(lblRole);
         
         JLabel lblNewLabel_2 = new JLabel("ID");
-        lblNewLabel_2.setBounds(64, 101, 46, 14);
+        lblNewLabel_2.setBounds(95, 119, 46, 14);
         add(lblNewLabel_2);
         
         jId = new JTextField();
         jId.setEnabled(false);
-        jId.setBounds(176, 98, 225, 23);
+        jId.setBounds(207, 116, 225, 23);
         add(jId);
         jId.setColumns(10);
     }
