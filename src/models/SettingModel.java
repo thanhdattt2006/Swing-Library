@@ -1,7 +1,5 @@
 package models;
-
 import java.sql.*;
-
 import entities.Settings;
 
 public class SettingModel {
@@ -14,11 +12,10 @@ public class SettingModel {
             if (result.next()) {
                 return new Settings(
                 	result.getInt("id"),
-                	result.getInt("max_borrow_date"),
-                	result.getDouble("borrow_fee_per_loan"),
+                	result.getInt("max_borrow_days"),  // ← SỬA: max_borrow_date → max_borrow_days
+                	result.getDouble("deposit_fee_per_loan"),  // ← SỬA: borrow_fee_per_loan → deposit_fee_per_loan
                 	result.getDouble("late_fee_per_day"),
-                	result.getDouble("deposit_per_loan"),
-                	result.getDouble("lost_compensation_fee"),
+                	result.getDouble("lost_compensation_fee"),  // ← SỬA: deposit_per_loan → lost_compensation_fee
                 	result.getDouble("damaged_compensation_fee")
                 );
             }
@@ -27,20 +24,20 @@ public class SettingModel {
         }
         return null;
     }
-
+    
     public boolean updateSettings(Settings setting) {
-        String sql = "UPDATE SETTING SET max_borrow_date = ?, borrow_fee_per_loan = ?, "
-                   + "late_fee_per_day = ?, deposit_per_loan = ? WHERE id = ?";
+        String sql = "UPDATE SETTING SET max_borrow_days = ?, deposit_fee_per_loan = ?, "
+                   + "late_fee_per_day = ?, lost_compensation_fee = ?, "
+                   + "damaged_compensation_fee = ? WHERE id = ?";  // ← SỬA: thêm 2 cột còn thiếu
         try (Connection connect = ConnectDB.connection();
              PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
             
-        	preparedStatement.setInt(1, setting.getMax_borrow_date());
-        	preparedStatement.setDouble(2, setting.getBorrow_fee_per_loan());
+        	preparedStatement.setInt(1, setting.getMax_borrow_days());  // ← SỬA tên method
+        	preparedStatement.setDouble(2, setting.getDeposit_fee_per_loan());  // ← SỬA tên method
         	preparedStatement.setDouble(3, setting.getLate_fee_per_day());
-        	preparedStatement.setDouble(4, setting.getDeposit_per_loan());
-        	preparedStatement.setDouble(4, setting.getLost_compensation_fee());
-        	preparedStatement.setDouble(4, setting.getDamaged_compensation_fee());
-        	preparedStatement.setInt(5, setting.getId());
+        	preparedStatement.setDouble(4, setting.getLost_compensation_fee());  // ← SỬA số thứ tự: 4 thay vì trùng
+        	preparedStatement.setDouble(5, setting.getDamaged_compensation_fee());  // ← SỬA số thứ tự: 5 thay vì trùng
+        	preparedStatement.setInt(6, setting.getId());  // ← SỬA số thứ tự: 6 thay vì 5
             
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
