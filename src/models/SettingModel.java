@@ -14,7 +14,7 @@ public class SettingModel {
             if (result.next()) {
                 return new Settings(
                 	result.getInt("id"),
-                	result.getInt("max_borrow_date"),
+                	result.getInt("max_borrow_date"), 
                 	result.getDouble("borrow_fee_per_loan"),
                 	result.getDouble("late_fee_per_day"),
                 	result.getDouble("deposit_per_loan"),
