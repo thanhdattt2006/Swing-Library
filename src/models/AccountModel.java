@@ -4,6 +4,7 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 import entities.Account;
+import models.ConnectDB;
 
 
 public class AccountModel {
@@ -82,7 +83,98 @@ public class AccountModel {
 	    }
 	    return result;
 	}
-	
+	public Account findbyId(int Id ) {
+		Account account = null;
+		try {
+			PreparedStatement preparedStatement = ConnectDB.connection()
+					.prepareStatement("select * from account where id =?");
+			preparedStatement.setInt(1, Id);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				account = new Account();
+				account.setEmployee_id(resultSet.getString("employee_id"));
+				account.setUsername(resultSet.getString("username"));
+				account.setPassword(resultSet.getString("password"));
+				account.setName(resultSet.getString("name"));
+				account.setDepartment_id(resultSet.getInt("department_id"));
+				account.setRole_id(resultSet.getInt("role_id"));
+				account.setBirthday(resultSet.getDate("birthday"));
+				account.setEmployee_id(resultSet.getString("employee_id"));
+				account.setAddress(resultSet.getString("address"));
+				account.setPhone(resultSet.getString("phone"));
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			account = null;
+			// TODO: handle exception
+		}
+		finally {
+			ConnectDB.disconnect();
+		}
+		
+		return account;
+	}
+	public boolean update(Account account) {
+	    boolean result = false;
+	    try {
+	        PreparedStatement preparedStatement = ConnectDB.connection()
+	            .prepareStatement(
+	                "UPDATE account SET " +
+	                "employee_id = ?, username = ?, `password` = ?, `name` = ?, " +
+	                "department_id = ?, role_id = ?, birthday = ?, address = ?, phone = ? " +
+	                "WHERE id = ?"
+	            );
+
+	        preparedStatement.setString(1, account.getEmployee_id());
+	        preparedStatement.setString(2, account.getUsername());
+	        preparedStatement.setString(3, account.getPassword());
+	        preparedStatement.setString(4, account.getName());
+	        preparedStatement.setInt(5, account.getDepartment_id());
+	        preparedStatement.setInt(6, account.getRole_id());
+
+	        // FIX DATE
+	        if (account.getBirthday() != null) {
+	            preparedStatement.setDate(
+	                7,
+	                new java.sql.Date(account.getBirthday().getTime())
+	            );
+	        } else {
+	            preparedStatement.setNull(7, java.sql.Types.DATE);
+	        }
+
+	        preparedStatement.setString(8, account.getAddress());
+	        preparedStatement.setString(9, account.getPhone());
+	        preparedStatement.setInt(10, account.getId()); // WHERE id = ?
+
+	        result = preparedStatement.executeUpdate() > 0;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result = false;
+	    } finally {
+	        ConnectDB.disconnect();
+	    }
+	    return result;
+	}
+	public boolean delete(int id) {
+	    boolean result = false;
+	    try {
+	        PreparedStatement preparedStatement = ConnectDB.connection()
+	            .prepareStatement("DELETE FROM account WHERE id = ?");
+	        
+	        preparedStatement.setInt(1, id);
+	        
+	        result = preparedStatement.executeUpdate() > 0;
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result = false;
+	    } finally {
+	        ConnectDB.disconnect();
+	    }
+	    return result;
+	}
 
 
 
