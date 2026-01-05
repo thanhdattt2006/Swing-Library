@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.*;
 import entities.Department;
 
+
+
 public class DepartmentModel {
 
 	public List<Department> findAll() {

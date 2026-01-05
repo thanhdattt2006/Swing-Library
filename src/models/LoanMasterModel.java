@@ -2,8 +2,8 @@ package models;
 
 import java.sql.*;
 
-import entities.Settings;
 import entities.Loan_Master;
+import entities.Settings;
 
 class LoanMasterModel {
 	public int createLoan(Loan_Master loan) {

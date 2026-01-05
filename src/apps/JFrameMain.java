@@ -18,7 +18,6 @@ public class JFrameMain extends JFrame {
 	private JPanel panelNavigate;
 	private JPanel jpanelMainPage;
 	private CardLayout cardLayout;
-
 	private Account currentAccount;
 
 	// ===== MENU CONFIG =====
