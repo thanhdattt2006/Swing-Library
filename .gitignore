@@ -7,3 +7,5 @@ target/
 .project
 .classpath
 .DS_Store
+.env
+config.properties
