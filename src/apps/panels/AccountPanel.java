@@ -236,7 +236,7 @@ public class AccountPanel extends JPanel {
 	        dialog.getContentPane().add(addPanel);
 	        
 	        // Cài đặt dialog
-	        dialog.setSize(511, 670);
+	        dialog.setSize(464, 600);
 	        dialog.setResizable(false);
 	        dialog.setLocationRelativeTo(this);
 	        dialog.setVisible(true);

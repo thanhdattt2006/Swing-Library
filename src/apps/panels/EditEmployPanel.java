@@ -60,143 +60,144 @@ public class EditEmployPanel extends JPanel {
 	private AccountPanel accountPanel;
 	private Map<String, Object> data;
 	private JTextField jId;
-	
+
 	/**
 	 * Create the panel.
 	 */
 	public EditEmployPanel() {
 		setLayout(null);
 		// Header Panel
-        JPanel headerPanel = new JPanel();
-        headerPanel.setBounds(0, 0, 616, 81);
-        headerPanel.setBackground(SystemColor.activeCaption);
-        headerPanel.setLayout(null);
-        JLabel lblTitle = new JLabel("Edit Employee");
-        lblTitle.setBounds(149, 26, 171, 28);
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTitle.setForeground(Color.WHITE);
-        headerPanel.add(lblTitle);
-        add(headerPanel);
+		JPanel headerPanel = new JPanel();
+		headerPanel.setBounds(0, 0, 616, 81);
+		headerPanel.setBackground(SystemColor.activeCaption);
+		headerPanel.setLayout(null);
+		JLabel lblTitle = new JLabel("Edit Employee");
+		lblTitle.setBounds(149, 26, 171, 28);
+		lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+		lblTitle.setForeground(Color.WHITE);
+		headerPanel.add(lblTitle);
+		add(headerPanel);
 
-        
-        JLabel lblNewLabel = new JLabel("Employee ID: ");
-        lblNewLabel.setBounds(56, 159, 81, 23);
-        add(lblNewLabel);
-        
-        JLabel lblNewLabel_1 = new JLabel("Username(Emali):");
-        lblNewLabel_1.setBounds(56, 193, 136, 23);
-        add(lblNewLabel_1);
-        
-        JLabel lblPassword = new JLabel("Password:");
-        lblPassword.setBounds(56, 226, 81, 23);
-        add(lblPassword);
-        
-        JLabel lblName = new JLabel("Name:");
-        lblName.setBounds(56, 259, 81, 23);
-        add(lblName);
-        
-        JLabel lblPhone = new JLabel("Phone:");
-        lblPhone.setBounds(56, 292, 81, 23);
-        add(lblPhone);
-        
-        JLabel lblBrithday = new JLabel("Birthday");
-        lblBrithday.setBounds(56, 325, 81, 23);
-        add(lblBrithday);
-        
-        JLabel lblDepartment = new JLabel("Department:");
-        lblDepartment.setBounds(56, 397, 81, 23);
-        add(lblDepartment);
-        
-        JLabel lblAddress = new JLabel("Address");
-        lblAddress.setBounds(56, 430, 81, 23);
-        add(lblAddress);
-        
-        jEmployeeID = new JTextField();
-        jEmployeeID.setBounds(168, 159, 225, 23);
-        add(jEmployeeID);
-        jEmployeeID.setColumns(10);
-        
-        jUsername = new JTextField();
-        jUsername.setColumns(10);
-        jUsername.setBounds(167, 193, 226, 23);
-        add(jUsername);
-        
-        jName = new JTextField();
-        jName.setColumns(10);
-        jName.setBounds(167, 259, 226, 23);
-        add(jName);
-        
-        jPhone = new JTextField();
-        jPhone.setColumns(10);
-        jPhone.setBounds(167, 292, 226, 23);
-        add(jPhone);
-        
-        jAddress = new JTextField();
-        jAddress.setColumns(10);
-        jAddress.setBounds(167, 430, 226, 23);
-        add(jAddress);
-        
-        jBirthday = new JDateChooser();
-        jBirthday.setDateFormatString("dd/MM/yyyy");
-        jBirthday.setBounds(168, 325, 225, 29);
-        add(jBirthday);
-        
-        jpasswordField = new JPasswordField();
-        jpasswordField.setBounds(168, 227, 225, 23);
-        add(jpasswordField);
-        
-        jcomboBoxDepartment = new JComboBox();
-        jcomboBoxDepartment.setBounds(168, 397, 225, 23);
-        add(jcomboBoxDepartment);
-        
-        btnNewButton = new JButton("Submit");
-        btnNewButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		do_btnNewButton_actionPerformed(e);
-        	}
-        });
-        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
-        btnNewButton.setBounds(126, 489, 100, 23);
-        add(btnNewButton);
-        
-        JCancel = new JButton("Cancel");
-        JCancel.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		do_btnNewButton_1_actionPerformed(e);
-        	}
-        });
-        JCancel.setFont(new Font("Tahoma", Font.PLAIN, 17));
-        JCancel.setForeground(Color.BLACK);
-        JCancel.setBounds(248, 489, 81, 23);
-        add(JCancel);
-        
-        jcomboBoxRole = new JComboBox();
-        jcomboBoxRole.setBounds(168, 364, 225, 23);
-        add(jcomboBoxRole);
-        
-        lblRole = new JLabel("Role:");
-        lblRole.setBounds(56, 364, 81, 23);
-        add(lblRole);
-        
-        JLabel lblNewLabel_2 = new JLabel("ID");
-        lblNewLabel_2.setBounds(56, 129, 46, 14);
-        add(lblNewLabel_2);
-        
-        jId = new JTextField();
-        jId.setEnabled(false);
-        jId.setBounds(168, 126, 225, 23);
-        add(jId);
-        jId.setColumns(10);
-        setBounds(0, 0, 462, 561);
+		JLabel lblNewLabel = new JLabel("Employee ID: ");
+		lblNewLabel.setBounds(56, 159, 81, 23);
+		add(lblNewLabel);
 
-    }
-	public EditEmployPanel(Dialog dialog, AccountPanel accountPanel, Map<String, Object> data) {
-		  this();
-		  this.parentDialog = dialog;
-		  this.accountPanel = accountPanel;
-		  this.data = data; 
-		  init();
+		JLabel lblNewLabel_1 = new JLabel("Username(Emali):");
+		lblNewLabel_1.setBounds(56, 193, 136, 23);
+		add(lblNewLabel_1);
+
+		JLabel lblPassword = new JLabel("Password:");
+		lblPassword.setBounds(56, 226, 81, 23);
+		add(lblPassword);
+
+		JLabel lblName = new JLabel("Name:");
+		lblName.setBounds(56, 259, 81, 23);
+		add(lblName);
+
+		JLabel lblPhone = new JLabel("Phone:");
+		lblPhone.setBounds(56, 292, 81, 23);
+		add(lblPhone);
+
+		JLabel lblBrithday = new JLabel("Birthday");
+		lblBrithday.setBounds(56, 325, 81, 23);
+		add(lblBrithday);
+
+		JLabel lblDepartment = new JLabel("Department:");
+		lblDepartment.setBounds(56, 397, 81, 23);
+		add(lblDepartment);
+
+		JLabel lblAddress = new JLabel("Address");
+		lblAddress.setBounds(56, 430, 81, 23);
+		add(lblAddress);
+
+		jEmployeeID = new JTextField();
+		jEmployeeID.setBounds(168, 159, 225, 23);
+		add(jEmployeeID);
+		jEmployeeID.setColumns(10);
+
+		jUsername = new JTextField();
+		jUsername.setColumns(10);
+		jUsername.setBounds(167, 193, 226, 23);
+		add(jUsername);
+
+		jName = new JTextField();
+		jName.setColumns(10);
+		jName.setBounds(167, 259, 226, 23);
+		add(jName);
+
+		jPhone = new JTextField();
+		jPhone.setColumns(10);
+		jPhone.setBounds(167, 292, 226, 23);
+		add(jPhone);
+
+		jAddress = new JTextField();
+		jAddress.setColumns(10);
+		jAddress.setBounds(167, 430, 226, 23);
+		add(jAddress);
+
+		jBirthday = new JDateChooser();
+		jBirthday.setDateFormatString("dd/MM/yyyy");
+		jBirthday.setBounds(168, 325, 225, 29);
+		add(jBirthday);
+
+		jpasswordField = new JPasswordField();
+		jpasswordField.setBounds(168, 227, 225, 23);
+		add(jpasswordField);
+
+		jcomboBoxDepartment = new JComboBox();
+		jcomboBoxDepartment.setBounds(168, 397, 225, 23);
+		add(jcomboBoxDepartment);
+
+		btnNewButton = new JButton("Submit");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_btnNewButton_actionPerformed(e);
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		btnNewButton.setBounds(126, 489, 100, 23);
+		add(btnNewButton);
+
+		JCancel = new JButton("Cancel");
+		JCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_btnNewButton_1_actionPerformed(e);
+			}
+		});
+		JCancel.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JCancel.setForeground(Color.BLACK);
+		JCancel.setBounds(248, 489, 81, 23);
+		add(JCancel);
+
+		jcomboBoxRole = new JComboBox();
+		jcomboBoxRole.setBounds(168, 364, 225, 23);
+		add(jcomboBoxRole);
+
+		lblRole = new JLabel("Role:");
+		lblRole.setBounds(56, 364, 81, 23);
+		add(lblRole);
+
+		JLabel lblNewLabel_2 = new JLabel("ID");
+		lblNewLabel_2.setBounds(56, 129, 46, 14);
+		add(lblNewLabel_2);
+
+		jId = new JTextField();
+		jId.setEnabled(false);
+		jId.setBounds(168, 126, 225, 23);
+		add(jId);
+		jId.setColumns(10);
+		setBounds(0, 0, 464, 566);
+
 	}
+
+	public EditEmployPanel(Dialog dialog, AccountPanel accountPanel, Map<String, Object> data) {
+		this();
+		this.parentDialog = dialog;
+		this.accountPanel = accountPanel;
+		this.data = data;
+		init();
+	}
+
 	private void init() {
 		DefaultComboBoxModel<Department> deptModel = new DefaultComboBoxModel<>();
 		deptModel.addElement(null); // ALL
@@ -208,15 +209,15 @@ public class EditEmployPanel extends JPanel {
 
 		jcomboBoxDepartment.setModel(deptModel);
 		jcomboBoxDepartment.setRenderer(new DepartmentComboRenderer());
-		
+
 		DefaultComboBoxModel<Role> roleModel = new DefaultComboBoxModel<>();
 		roleModel.addElement(null); // nếu cần item rỗng
 
 		for (Role r : new RoleModel().findAll()) {
-		    if (!"Admin".equalsIgnoreCase(r.getName())) {
-		        roleModel.addElement(r);
-		        roleMap.put(r.getId(), r);
-		    }
+			if (!"Admin".equalsIgnoreCase(r.getName())) {
+				roleModel.addElement(r);
+				roleMap.put(r.getId(), r);
+			}
 		}
 
 		jcomboBoxRole.setModel(roleModel);
@@ -232,13 +233,14 @@ public class EditEmployPanel extends JPanel {
 		jPhone.setText(account.getPhone());
 		jBirthday.setDate(account.getBirthday());
 		Role selectedRole = roleMap.get(account.getRole_id());
-	    jcomboBoxRole.setSelectedItem(selectedRole);
-	    
-	    // Lấy Department từ departmentMap bằng department_id
-	    Department selectedDept = departmentMap.get(account.getDepartment_id());
-	    jcomboBoxDepartment.setSelectedItem(selectedDept);
+		jcomboBoxRole.setSelectedItem(selectedRole);
+
+		// Lấy Department từ departmentMap bằng department_id
+		Department selectedDept = departmentMap.get(account.getDepartment_id());
+		jcomboBoxDepartment.setSelectedItem(selectedDept);
 		jAddress.setText(account.getAddress());
 	}
+
 //		ProductModel productModel = new ProductModel();
 //		int id = Integer.parseInt(data.get("id").toString());
 //		Product product = productModel.findById(id);
@@ -266,6 +268,7 @@ public class EditEmployPanel extends JPanel {
 			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
 		}
 	}
+
 	private class DepartmentComboRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -279,10 +282,7 @@ public class EditEmployPanel extends JPanel {
 			return super.getListCellRendererComponent(list, d.getName(), index, isSelected, cellHasFocus);
 		}
 	}
-	
-		
-	
-	
+
 //	public static void main(String[] args) {
 //	    SwingUtilities.invokeLater(() -> {
 //	        JFrame frame = new JFrame("Test AddEmployPanel");
@@ -296,63 +296,59 @@ public class EditEmployPanel extends JPanel {
 //	}
 
 	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
-	    try {
-	        Account account = new Account();
+		try {
+			Account account = new Account();
 
-	        account.setId(Integer.parseInt(jId.getText().trim()));
-	        account.setEmployee_id(jEmployeeID.getText().trim());
-	        account.setUsername(jUsername.getText().trim());
-	        account.setPassword(new String(jpasswordField.getPassword()));
-	        account.setName(jName.getText().trim());
-	        account.setPhone(jPhone.getText().trim());
-	        Date utilDate = jBirthday.getDate();
-	        if (utilDate == null) {
-	            JOptionPane.showMessageDialog(this, "Please select birthday");
-	            return;
-	        }
-	        account.setBirthday(new java.sql.Date(utilDate.getTime()));
+			account.setId(Integer.parseInt(jId.getText().trim()));
+			account.setEmployee_id(jEmployeeID.getText().trim());
+			account.setUsername(jUsername.getText().trim());
+			account.setPassword(new String(jpasswordField.getPassword()));
+			account.setName(jName.getText().trim());
+			account.setPhone(jPhone.getText().trim());
+			Date utilDate = jBirthday.getDate();
+			if (utilDate == null) {
+				JOptionPane.showMessageDialog(this, "Please select birthday");
+				return;
+			}
+			account.setBirthday(new java.sql.Date(utilDate.getTime()));
 
-	        account.setAddress(jAddress.getText().trim());
+			account.setAddress(jAddress.getText().trim());
 
-	        Role role = (Role) jcomboBoxRole.getSelectedItem();
-	        if (role == null) {
-	            JOptionPane.showMessageDialog(this, "Please select role");
-	            return;
-	        }
-	        account.setRole_id(role.getId());
+			Role role = (Role) jcomboBoxRole.getSelectedItem();
+			if (role == null) {
+				JOptionPane.showMessageDialog(this, "Please select role");
+				return;
+			}
+			account.setRole_id(role.getId());
 
-	        Department dept = (Department) jcomboBoxDepartment.getSelectedItem();
-	        if (dept == null) {
-	            JOptionPane.showMessageDialog(this, "Please select department");
-	            return;
-	        }
-	        account.setDepartment_id(dept.getId());
+			Department dept = (Department) jcomboBoxDepartment.getSelectedItem();
+			if (dept == null) {
+				JOptionPane.showMessageDialog(this, "Please select department");
+				return;
+			}
+			account.setDepartment_id(dept.getId());
 
-	        AccountModel accountModel = new AccountModel();
-	        if (accountModel.update(account)) {
-	            JOptionPane.showMessageDialog(this, "Add success!", "Success",
-	                    JOptionPane.INFORMATION_MESSAGE);
-	            if (accountPanel != null) {
-	                accountPanel.refreshTable();
-	            }
-	            
-	            // Đóng dialog
-	            parentDialog.dispose();
-	        } else {
-	            JOptionPane.showMessageDialog(this, "Add failed!", "Error",
-	                    JOptionPane.ERROR_MESSAGE);
-	        }
-	        parentDialog.dispose();
-	        AccountPanel accountPanel = new AccountPanel();
-	        setVisible(true);
+			AccountModel accountModel = new AccountModel();
+			if (accountModel.update(account)) {
+				JOptionPane.showMessageDialog(this, "Add success!", "Success", JOptionPane.INFORMATION_MESSAGE);
+				if (accountPanel != null) {
+					accountPanel.refreshTable();
+				}
 
-	    } catch (Exception ex) {
-	        ex.printStackTrace();
-	        JOptionPane.showMessageDialog(this, ex.getMessage(), "Exception",
-	                JOptionPane.ERROR_MESSAGE);
-	    }
+				// Đóng dialog
+				parentDialog.dispose();
+			} else {
+				JOptionPane.showMessageDialog(this, "Add failed!", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			parentDialog.dispose();
+			AccountPanel accountPanel = new AccountPanel();
+			setVisible(true);
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Exception", JOptionPane.ERROR_MESSAGE);
+		}
 	}
-	
 
 	protected void do_btnNewButton_1_actionPerformed(ActionEvent e) {
 		parentDialog.dispose();
