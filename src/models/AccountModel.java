@@ -175,6 +175,58 @@ public class AccountModel {
 	    }
 	    return result;
 	}
+	public List<Account> search(Integer roleId, Integer departmentId) {
+	    List<Account> result = new ArrayList<>();
+	    
+	    try {
+	        StringBuilder sql = new StringBuilder("SELECT * FROM account WHERE 1=1");
+	        
+	        if (roleId != null) {
+	            sql.append(" AND role_id = ?");
+	        }
+	        
+	        if (departmentId != null) {
+	            sql.append(" AND department_id = ?");
+	        }
+	        
+	        PreparedStatement preparedStatement = ConnectDB.connection()
+	            .prepareStatement(sql.toString());
+	        
+	        int paramIndex = 1;
+	        if (roleId != null) {
+	            preparedStatement.setInt(paramIndex++, roleId);
+	        }
+	        if (departmentId != null) {
+	            preparedStatement.setInt(paramIndex++, departmentId);
+	        }
+	        
+	        ResultSet rs = preparedStatement.executeQuery();
+	        
+	        while (rs.next()) {
+	            Account acc = new Account();
+	            acc.setId(rs.getInt("id"));
+	            acc.setEmployee_id(rs.getString("employee_id"));
+	            acc.setUsername(rs.getString("username"));
+	            acc.setPassword(rs.getString("password"));
+	            acc.setName(rs.getString("name"));
+	            acc.setPhone(rs.getString("phone"));
+	            acc.setAddress(rs.getString("address"));
+	            acc.setBirthday(rs.getDate("birthday"));
+	            acc.setRole_id(rs.getInt("role_id"));
+	            acc.setDepartment_id(rs.getInt("department_id"));
+	            
+	            result.add(acc);
+	        }
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        ConnectDB.disconnect();
+	    }
+	    
+	    return result;
+	}
+	
 
 
 
