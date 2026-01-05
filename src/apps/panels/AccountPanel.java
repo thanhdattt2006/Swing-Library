@@ -24,7 +24,6 @@ public class AccountPanel extends JPanel {
 	private Map<Integer, Role> roleMap = new HashMap<>();
 	private Map<Integer, Department> departmentMap = new HashMap<>();
 	private JButton jbuttonDelete;
-	private JButton jbuttonRefresh;
 	private JButton jbuttonAdd;
 	private JButton jbuttonEdit;
 
@@ -53,6 +52,11 @@ public class AccountPanel extends JPanel {
 		jpanelFilter.add(jcomboBoxDepartment);
 
 		JButton jbuttonSearch = new JButton("Search");
+		jbuttonSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_jbuttonSearch_actionPerformed(e);
+			}
+		});
 		jpanelFilter.add(jbuttonSearch);
 
 		add(jpanelFilter, BorderLayout.NORTH);
@@ -98,8 +102,6 @@ public class AccountPanel extends JPanel {
 			}
 		});
 		jpanelAction.add(jbuttonDelete);
-		jbuttonRefresh = new JButton("Refresh");
-		jpanelAction.add(jbuttonRefresh);
 
 		add(jpanelAction, BorderLayout.SOUTH);
 	}
@@ -292,4 +294,30 @@ public class AccountPanel extends JPanel {
 	    }
 	}
 	
+	protected void do_jbuttonSearch_actionPerformed(ActionEvent e) {
+		 tableModel.setRowCount(0);
+		    
+		    // Lấy giá trị từ combo box
+		    Role selectedRole = (Role) jcomboBoxRole.getSelectedItem();
+		    Department selectedDept = (Department) jcomboBoxDepartment.getSelectedItem();
+		    
+		    Integer roleId = (selectedRole != null) ? selectedRole.getId() : null;
+		    Integer deptId = (selectedDept != null) ? selectedDept.getId() : null;
+		    
+		    // Gọi hàm search
+		    AccountModel model = new AccountModel();
+		    for (Account acc : model.search(roleId, deptId)) {
+		        tableModel.addRow(new Object[] { 
+		            acc.getId(), 
+		            acc.getEmployee_id(), 
+		            acc.getUsername(), 
+		            acc.getName(),
+		            acc.getPhone(), 
+		            acc.getAddress(), 
+		            acc.getBirthday(), 
+		            acc.getRole_id(),
+		            acc.getDepartment_id() 
+		        });
+		    }
+	}
 }
