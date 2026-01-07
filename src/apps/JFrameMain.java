@@ -6,6 +6,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import apps.panels.AccountPanel;
+import apps.panels.AuthorPanel;
+import apps.panels.BookPanel;
+import apps.panels.CategoryPanel;
 import apps.panels.CheckOutPanel;
 import apps.panels.SettingsPanel;
 import app.enums.MenuType;
@@ -93,7 +96,7 @@ public class JFrameMain extends JFrame {
 
 		case 1: // ADMIN
 			jpanelMainPage.add(new AccountPanel(), MenuType.ACCOUNT.name());
-		    jpanelMainPage.add(new SettingsPanel(), MenuType.SETTINGS.name());
+			jpanelMainPage.add(new SettingsPanel(), MenuType.SETTINGS.name());
 			buildMenu(ADMIN_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
 			break;
@@ -101,9 +104,9 @@ public class JFrameMain extends JFrame {
 		case 2: // LIBRARIAN
 			// panel placeholder để test
 			jpanelMainPage.add(new JPanel(), MenuType.LOAN_HISTORY.name());
-			jpanelMainPage.add(new JPanel(), MenuType.BOOK.name());
-			jpanelMainPage.add(new JPanel(), MenuType.AUTHOR.name());
-			jpanelMainPage.add(new JPanel(), MenuType.CATEGORY.name());
+			jpanelMainPage.add(new BookPanel(), MenuType.BOOK.name());
+			jpanelMainPage.add(new AuthorPanel(), MenuType.AUTHOR.name());
+			jpanelMainPage.add(new CategoryPanel(), MenuType.CATEGORY.name());
 			jpanelMainPage.add(new CheckOutPanel(), MenuType.CHECKOUT.name());
 
 			buildMenu(LIBRARIAN_MENU);
