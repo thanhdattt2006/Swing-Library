@@ -6,13 +6,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+
+import entities.Account;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-
-import entities.Account;
 import models.LoginModel;
 
 public class JFrameLogin extends JFrame {

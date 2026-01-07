@@ -11,14 +11,18 @@ public class Book {
 	private int category_id;
 	private int publication_year;
 	private int stock;
-	private String photo;
+	private byte[] photo;
+	
+	private String author_name;
+	private String category_name;
+
 
 	public Book() {
 		super();
 	}
 
 	public Book(int id, String isbn, String title, String call_number, String description, double price, int author_id,
-			int category_id, int publication_year, int stock, String photo) {
+			int category_id, int publication_year, int stock, byte[] photo) {
 		super();
 		this.id = id;
 		this.isbn = isbn;
@@ -113,11 +117,11 @@ public class Book {
 		this.stock = stock;
 	}
 
-	public String getPhoto() {
+	public byte[] getPhoto() {
 		return photo;
 	}
 
-	public void setPhoto(String photo) {
+	public void setPhoto(byte[] photo) {
 		this.photo = photo;
 	}
 
@@ -128,4 +132,21 @@ public class Book {
 				+ category_id + ", publication_year=" + publication_year + ", stock=" + stock + ", photo=" + photo
 				+ "]";
 	}
+	
+	public String getAuthor_name() {
+	    return author_name;
+	}
+
+	public void setAuthor_name(String author_name) {
+	    this.author_name = author_name;
+	}
+
+	public String getCategory_name() {
+	    return category_name;
+	}
+
+	public void setCategory_name(String category_name) {
+	    this.category_name = category_name;
+	}
+
 }

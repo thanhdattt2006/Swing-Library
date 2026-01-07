@@ -1,2 +1,11 @@
-bin/
 *.class
+bin/
+out/
+target/
+.metadata/
+.settings/
+.project
+.classpath
+.DS_Store
+.env
+config.properties

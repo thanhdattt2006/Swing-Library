@@ -1,0 +1,241 @@
+package apps.panels;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
+import com.toedter.calendar.JDateChooser;
+
+import apps.JFrameTest;
+import apps.panels.AccountPanel.DepartmentComboRenderer;
+import apps.panels.AccountPanel.RoleComboRenderer;
+import entities.Category;
+import models.CategoriesModel;
+import models.DepartmentModel;
+import models.RoleModel;
+
+import javax.swing.JPasswordField;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.awt.event.ActionEvent;
+import java.awt.SystemColor;
+import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JTextArea;
+import javax.swing.border.LineBorder;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
+
+public class AddCategoryPanel extends JPanel {
+
+	private static final long serialVersionUID = 1L;
+	private Dialog parentDialog;
+	private CategoryPanel categoryPanel;
+	private JTextField jTextFieldName;
+	private File file;
+	private JTextArea jTextAreaDescription;
+	private JButton btnNewButton;
+
+	
+	/**
+	 * Create the panel.
+	 */
+	public AddCategoryPanel() {
+		setToolTipText("");
+        setLayout(new BorderLayout(0, 0));
+        
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(SystemColor.activeCaption);
+        add(headerPanel, BorderLayout.NORTH);
+        FlowLayout fl_headerPanel = new FlowLayout(FlowLayout.CENTER, 5, 5);
+        fl_headerPanel.setAlignOnBaseline(true);
+        headerPanel.setLayout(fl_headerPanel);
+        
+        JLabel lblTitle = new JLabel("Add Category");
+        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        headerPanel.add(lblTitle);
+        
+        JPanel panel = new JPanel();
+        add(panel, BorderLayout.CENTER);
+        panel.setLayout(null);
+        
+        jTextFieldName = new JTextField();
+        jTextFieldName.setBounds(108, 37, 363, 28);
+        panel.add(jTextFieldName);
+        jTextFieldName.setColumns(10);
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(108, 77, 363, 96);
+        panel.add(scrollPane);
+        
+        jTextAreaDescription = new JTextArea();
+        jTextAreaDescription.setLineWrap(true);
+        jTextAreaDescription.setWrapStyleWord(true);
+        scrollPane.setViewportView(jTextAreaDescription);
+        
+        JLabel lblNewLabel = new JLabel("Description");
+        lblNewLabel.setBounds(31, 77, 76, 22);
+        lblNewLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        panel.add(lblNewLabel);
+        
+        JLabel lblNewLabel_2 = new JLabel("Name");
+        lblNewLabel_2.setBounds(31, 37, 76, 22);
+        lblNewLabel_2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        panel.add(lblNewLabel_2);
+        
+        btnNewButton = new JButton("Add");
+        btnNewButton.setBounds(411, 202, 58, 28);
+        btnNewButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		do_btnNewButton_actionPerformed(e);
+        	}
+        });
+        btnNewButton.setBackground(new Color(53, 255, 53));
+        panel.add(btnNewButton);
+        
+        JButton btnNewButton_1 = new JButton("Close");
+        btnNewButton_1.setBounds(341, 202, 58, 28);
+        btnNewButton_1.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		do_btnNewButton_1_actionPerformed(e);
+        	}
+        });
+        panel.add(btnNewButton_1);
+    }
+	public AddCategoryPanel(Dialog dialog, CategoryPanel categoryPanel) {
+		  this();
+		  this.parentDialog = dialog;
+		  this.categoryPanel = categoryPanel;
+	}
+	
+	
+//	protected void do_btnNewButton_2_actionPerformed(ActionEvent e) {
+//		JFileChooser fileChooser = new JFileChooser("E:\\anh");
+//		
+//		fileChooser.setDialogTitle("Chon file anh");
+//		
+//		//Đóng laij, cấm chọn mặc định All file
+//		fileChooser.setAcceptAllFileFilterUsed(false);
+//		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG File(*.jpg)", "jpg"));
+//		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("GIF File(*.gif)", "gif"));
+//		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG File(*.png)", "png"));
+//		
+////		var result = fileChooser.showOpenDialog(this);
+//		var result = fileChooser.showOpenDialog(this);
+//
+//		if (result == JFileChooser.APPROVE_OPTION) {
+//
+//		    File file = fileChooser.getSelectedFile();
+//
+//		    // check size 2MB
+//		    if (file.length() > 2 * 1024 * 1024) {
+//		        JOptionPane.showMessageDialog(this,
+//		                "The selected file exceeds 2MB. Please upload a smaller file");
+//		        return;
+//		    }
+//
+//		    try {
+//		        // 👉 lưu file để dùng sau (nếu cần)
+//		        this.file = file;
+//
+//		        // 👉 đọc ảnh thành byte[] để lưu DB
+//		        this.imageData = Files.readAllBytes(file.toPath());
+//
+//		        // 👉 preview ảnh
+//		        Image image = new ImageIcon(file.getAbsolutePath())
+//		                .getImage()
+//		                .getScaledInstance(
+//		                        avatar.getWidth(),
+//		                        avatar.getHeight(),
+//		                        Image.SCALE_SMOOTH
+//		                );
+//
+//		        avatar.setIcon(new ImageIcon(image));
+//
+//		    } catch (Exception ex) {
+//		        JOptionPane.showMessageDialog(this,
+//		                "Cannot read image file",
+//		                "Error",
+//		                JOptionPane.ERROR_MESSAGE);
+//		    }
+//		}
+//
+//	}
+	
+	//button-save
+	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
+		try {
+			 if (!validateForm()) {
+			        return;
+			    }
+			var cateMd = new CategoriesModel();
+			var cate = new Category();
+			cate.setName(jTextFieldName.getText());
+			cate.setDescription(jTextAreaDescription.getText());
+			
+			if(cateMd.create(cate)) {
+				JOptionPane.showMessageDialog(null, "Success", "Add ", JOptionPane.INFORMATION_MESSAGE);
+				if (categoryPanel != null) {
+					categoryPanel.reloadTable();
+			    }
+				//ẩn đi addAuthorPanel
+				SwingUtilities.getWindowAncestor(this).setVisible(false);
+			}else {
+				JOptionPane.showMessageDialog(null, "Failed", " Add ", JOptionPane.ERROR_MESSAGE );
+			}
+		} catch(Exception e2) {
+			JOptionPane.showMessageDialog(null, "Failed", " Add ", JOptionPane.ERROR_MESSAGE );
+			e2.printStackTrace();
+		}
+	}
+
+	//method validate
+	private boolean validateForm() {
+	    String name = jTextFieldName.getText().trim();
+
+	    if (name.isEmpty()) {
+	        JOptionPane.showMessageDialog(
+	            this,
+	            "Name cannot be empty!",
+	            "Validation Error",
+	            JOptionPane.ERROR_MESSAGE
+	        );
+	        jTextFieldName.requestFocus();
+	        return false;
+	    }
+	    return true;
+	}
+	
+	//button-close
+	protected void do_btnNewButton_1_actionPerformed(ActionEvent e) {
+		SwingUtilities.getWindowAncestor(this).setVisible(false);
+	}
+}
