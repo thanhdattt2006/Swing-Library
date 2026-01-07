@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.Arrays;
+
 public class Book {
 	private int id;
 	private String isbn;
@@ -12,17 +14,17 @@ public class Book {
 	private int publication_year;
 	private int stock;
 	private byte[] photo;
-	
+	private int available_quantity;
 	private String author_name;
 	private String category_name;
-
 
 	public Book() {
 		super();
 	}
 
 	public Book(int id, String isbn, String title, String call_number, String description, double price, int author_id,
-			int category_id, int publication_year, int stock, byte[] photo) {
+			int category_id, int publication_year, int stock, byte[] photo, int available_quantity, String author_name,
+			String category_name) {
 		super();
 		this.id = id;
 		this.isbn = isbn;
@@ -35,6 +37,9 @@ public class Book {
 		this.publication_year = publication_year;
 		this.stock = stock;
 		this.photo = photo;
+		this.available_quantity = available_quantity;
+		this.author_name = author_name;
+		this.category_name = category_name;
 	}
 
 	public int getId() {
@@ -125,28 +130,37 @@ public class Book {
 		this.photo = photo;
 	}
 
+	public int getAvailable_quantity() {
+		return available_quantity;
+	}
+
+	public void setAvailable_quantity(int available_quantity) {
+		this.available_quantity = available_quantity;
+	}
+
+	public String getAuthor_name() {
+		return author_name;
+	}
+
+	public void setAuthor_name(String author_name) {
+		this.author_name = author_name;
+	}
+
+	public String getCategory_name() {
+		return category_name;
+	}
+
+	public void setCategory_name(String category_name) {
+		this.category_name = category_name;
+	}
+
 	@Override
 	public String toString() {
 		return "Book [id=" + id + ", isbn=" + isbn + ", title=" + title + ", call_number=" + call_number
 				+ ", description=" + description + ", price=" + price + ", author_id=" + author_id + ", category_id="
-				+ category_id + ", publication_year=" + publication_year + ", stock=" + stock + ", photo=" + photo
-				+ "]";
-	}
-	
-	public String getAuthor_name() {
-	    return author_name;
-	}
-
-	public void setAuthor_name(String author_name) {
-	    this.author_name = author_name;
-	}
-
-	public String getCategory_name() {
-	    return category_name;
-	}
-
-	public void setCategory_name(String category_name) {
-	    this.category_name = category_name;
+				+ category_id + ", publication_year=" + publication_year + ", stock=" + stock + ", photo="
+				+ Arrays.toString(photo) + ", available_quantity=" + available_quantity + ", author_name=" + author_name
+				+ ", category_name=" + category_name + "]";
 	}
 
 }

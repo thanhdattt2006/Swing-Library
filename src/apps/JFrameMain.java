@@ -24,13 +24,19 @@ public class JFrameMain extends JFrame {
 	private CardLayout cardLayout;
 	private Account currentAccount;
 
+	public void showCustomPanel(String name, JPanel panel) {
+		jpanelMainPage.add(panel, name);
+		cardLayout.show(jpanelMainPage, name);
+	}
+
 	// ===== MENU CONFIG =====
 	private final List<MenuType> ADMIN_MENU = List.of(MenuType.ACCOUNT, MenuType.SETTINGS, MenuType.LOGOUT);
 
 	private final List<MenuType> LIBRARIAN_MENU = List.of(MenuType.AUTHOR, MenuType.CATEGORY, MenuType.BOOK,
 			MenuType.CHECKOUT, MenuType.LOAN_HISTORY, MenuType.LOGOUT);
 
-	private final List<MenuType> EMPLOYEE_MENU = List.of(MenuType.BOOK, MenuType.MY_LOANS, MenuType.LOGOUT);
+	private final List<MenuType> EMPLOYEE_MENU = List.of(MenuType.BOOK, MenuType.MY_LOANS, MenuType.MY_INFOR,
+			MenuType.LOGOUT);
 
 	// ===== CONSTRUCTOR =====
 	public JFrameMain(Account account) {
@@ -104,23 +110,29 @@ public class JFrameMain extends JFrame {
 		case 2: // LIBRARIAN
 			// panel placeholder để test
 			jpanelMainPage.add(new JPanel(), MenuType.LOAN_HISTORY.name());
-			jpanelMainPage.add(new BookPanel(), MenuType.BOOK.name());
+			jpanelMainPage.add(new BookPanel(this), MenuType.BOOK.name());
+
 			jpanelMainPage.add(new AuthorPanel(), MenuType.AUTHOR.name());
 			jpanelMainPage.add(new CategoryPanel(), MenuType.CATEGORY.name());
 			jpanelMainPage.add(new CheckOutPanel(), MenuType.CHECKOUT.name());
 
 			buildMenu(LIBRARIAN_MENU);
-			cardLayout.show(jpanelMainPage, MenuType.LOAN_HISTORY.name());
+			cardLayout.show(jpanelMainPage, MenuType.BOOK.name());
 			break;
 
 		case 3: // EMPLOYEE
-			jpanelMainPage.add(new JPanel(), MenuType.BOOK.name());
-			jpanelMainPage.add(new JPanel(), MenuType.AUTHOR.name());
-			jpanelMainPage.add(new JPanel(), MenuType.CATEGORY.name());
+			BookPanel bookPanel = new BookPanel(this);
+			bookPanel.hideActionPanel();
+			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
+
+			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
 			jpanelMainPage.add(new JPanel(), MenuType.MY_LOANS.name());
+			jpanelMainPage.add(new JPanel(), MenuType.MY_INFOR.name());
 
 			buildMenu(EMPLOYEE_MENU);
+			cardLayout.show(jpanelMainPage, MenuType.BOOK.name()); // 👈 Mặc định Book
 			break;
+
 		}
 
 		jpanelMainPage.revalidate();
