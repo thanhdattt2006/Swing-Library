@@ -193,12 +193,26 @@ public class SettingsPanel extends JPanel {
 //			return super.getListCellRendererComponent(list, d.getName(), index, isSelected, cellHasFocus);
 //		}
 //	}
-	protected void do_button_actionPerformed(ActionEvent e) {//button add
-	}
+	
 	public void refreshTable() {
 	    loadTableData();
 	}
-	
+	protected void do_button_actionPerformed(ActionEvent e) {//button add
+		 // Tạo JDialog
+	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add Settings", true);
+	    
+	    // Tạo JPanel cho form
+	    AddSeting addPanel = new AddSeting(dialog, this);
+	    
+	    // Thêm panel vào dialog
+	    dialog.getContentPane().add(addPanel);
+	    
+	    // Cài đặt dialog
+	    dialog.setSize(465, 500);
+	    dialog.setResizable(false);
+	    dialog.setLocationRelativeTo(this); // Hiển thị giữa màn hình
+	    dialog.setVisible(true);
+	}
 	protected void do_button_1_actionPerformed(ActionEvent e) { //button Edit
 	   
 	}

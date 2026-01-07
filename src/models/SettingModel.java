@@ -50,33 +50,101 @@ public class SettingModel {
 			return false;
 		}
 	}
-	 public List<Settings> findAll() {
-	        List<Settings> list = new ArrayList<>();
 
-	        String sql = "SELECT * FROM settings";
+	public List<Settings> findAll() {
+		List<Settings> list = new ArrayList<>();
 
-	        try (
-	        		Connection connect = ConnectDB.connection();
-	            PreparedStatement ps = connect.prepareStatement(sql);
-	            ResultSet rs = ps.executeQuery();
-	        ) {
-	            while (rs.next()) {
-	                Settings s = new Settings();
+		String sql = "SELECT * FROM settings";
 
-	                s.setId(rs.getInt("id"));
-	                s.setMax_borrow_days(rs.getInt("max_borrow_days"));
-	                s.setDeposit_fee_per_loan(rs.getDouble("deposit_fee_per_loan"));
-	                s.setLate_fee_per_day(rs.getDouble("late_fee_per_day"));
-	                s.setLost_compensation_fee(rs.getDouble("lost_compensation_fee"));
-	                s.setDamaged_compensation_fee(rs.getDouble("damaged_compensation_fee"));
+		try (Connection connect = ConnectDB.connection();
+				PreparedStatement ps = connect.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery();) {
+			while (rs.next()) {
+				Settings s = new Settings();
 
-	                list.add(s);
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
+				s.setId(rs.getInt("id"));
+				s.setMax_borrow_days(rs.getInt("max_borrow_days"));
+				s.setDeposit_fee_per_loan(rs.getDouble("deposit_fee_per_loan"));
+				s.setLate_fee_per_day(rs.getDouble("late_fee_per_day"));
+				s.setLost_compensation_fee(rs.getDouble("lost_compensation_fee"));
+				s.setDamaged_compensation_fee(rs.getDouble("damaged_compensation_fee"));
 
-	        return list;
-	    }
+				list.add(s);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	public boolean create(Settings settings) {
+		boolean result = false;
+		try {
+			PreparedStatement preparedStatement = ConnectDB.connection().prepareStatement(
+					"INSERT INTO settings " + "(max_borrow_days, deposit_fee_per_loan, late_fee_per_day, "
+							+ "lost_compensation_fee, damaged_compensation_fee) " + "VALUES (?, ?, ?, ?, ?)");
+
+			preparedStatement.setInt(1, settings.getMax_borrow_days());
+			preparedStatement.setDouble(2, settings.getDeposit_fee_per_loan());
+			preparedStatement.setDouble(3, settings.getLate_fee_per_day());
+			preparedStatement.setDouble(4, settings.getLost_compensation_fee());
+			preparedStatement.setDouble(5, settings.getDamaged_compensation_fee());
+
+			result = preparedStatement.executeUpdate() > 0;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = false;
+		} finally {
+			ConnectDB.disconnect();
+		}
+		return result;
+	}
+
+	public boolean update(Settings settings) {
+		boolean result = false;
+		try {
+			PreparedStatement preparedStatement = ConnectDB.connection()
+					.prepareStatement("UPDATE settings SET " + "max_borrow_days = ?, " + "deposit_fee_per_loan = ?, "
+							+ "late_fee_per_day = ?, " + "lost_compensation_fee = ?, " + "damaged_compensation_fee = ? "
+							+ "WHERE id = ?");
+
+			preparedStatement.setInt(1, settings.getMax_borrow_days());
+			preparedStatement.setDouble(2, settings.getDeposit_fee_per_loan());
+			preparedStatement.setDouble(3, settings.getLate_fee_per_day());
+			preparedStatement.setDouble(4, settings.getLost_compensation_fee());
+			preparedStatement.setDouble(5, settings.getDamaged_compensation_fee());
+			preparedStatement.setInt(6, settings.getId()); // WHERE id = ?
+
+			result = preparedStatement.executeUpdate() > 0;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = false;
+		} finally {
+			ConnectDB.disconnect();
+		}
+		return result;
+	}
+
+	public boolean delete(int id) {
+		boolean result = false;
+		try {
+			PreparedStatement preparedStatement = ConnectDB.connection()
+					.prepareStatement("DELETE FROM settings WHERE id = ?");
+
+			preparedStatement.setInt(1, id);
+
+			result = preparedStatement.executeUpdate() > 0;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = false;
+		} finally {
+			ConnectDB.disconnect();
+		}
+		return result;
+	}
 
 }
