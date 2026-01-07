@@ -111,23 +111,23 @@ public class EditEmployPanel extends JPanel {
 		add(lblAddress);
 
 		jEmployeeID = new JTextField();
-		jEmployeeID.setBounds(168, 159, 225, 23);
+		jEmployeeID.setBounds(168, 159, 225, 26);
 		add(jEmployeeID);
 		jEmployeeID.setColumns(10);
 
 		jUsername = new JTextField();
 		jUsername.setColumns(10);
-		jUsername.setBounds(167, 193, 226, 23);
+		jUsername.setBounds(167, 193, 226, 26);
 		add(jUsername);
 
 		jName = new JTextField();
 		jName.setColumns(10);
-		jName.setBounds(167, 259, 226, 23);
+		jName.setBounds(167, 259, 226, 26);
 		add(jName);
 
 		jPhone = new JTextField();
 		jPhone.setColumns(10);
-		jPhone.setBounds(167, 292, 226, 23);
+		jPhone.setBounds(167, 292, 226, 26);
 		add(jPhone);
 
 		jAddress = new JTextField();
@@ -141,11 +141,11 @@ public class EditEmployPanel extends JPanel {
 		add(jBirthday);
 
 		jpasswordField = new JPasswordField();
-		jpasswordField.setBounds(168, 227, 225, 23);
+		jpasswordField.setBounds(168, 227, 225, 26);
 		add(jpasswordField);
 
 		jcomboBoxDepartment = new JComboBox();
-		jcomboBoxDepartment.setBounds(168, 397, 225, 23);
+		jcomboBoxDepartment.setBounds(168, 397, 225, 26);
 		add(jcomboBoxDepartment);
 
 		btnNewButton = new JButton("Submit");
@@ -170,7 +170,7 @@ public class EditEmployPanel extends JPanel {
 		add(JCancel);
 
 		jcomboBoxRole = new JComboBox();
-		jcomboBoxRole.setBounds(168, 364, 225, 23);
+		jcomboBoxRole.setBounds(168, 364, 225, 26);
 		add(jcomboBoxRole);
 
 		lblRole = new JLabel("Role:");
