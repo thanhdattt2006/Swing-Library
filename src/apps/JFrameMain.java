@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 
 import apps.panels.AccountPanel;
 import apps.panels.CheckOutPanel;
+import apps.panels.SettingsPanel;
 import app.enums.MenuType;
 import entities.Account;
 
@@ -93,7 +94,7 @@ public class JFrameMain extends JFrame {
 
 		case 1: // ADMIN
 			jpanelMainPage.add(new AccountPanel(), MenuType.ACCOUNT.name());
-			// sau này add SettingsPanel
+		    jpanelMainPage.add(new SettingsPanel(), MenuType.SETTINGS.name());
 			buildMenu(ADMIN_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.ACCOUNT.name());
 			break;
