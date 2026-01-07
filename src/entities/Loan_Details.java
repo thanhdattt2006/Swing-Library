@@ -5,22 +5,25 @@ import java.sql.Date;
 public class Loan_Details {
 	int id;
 	int loan_master_id;
+	int book_id;
 	double deposit_fee;
 	double late_fee;
+	double compensation_fee;
 	Date return_date;
-	boolean status;
+	private DetailStatus status;
+	
 
 	public Loan_Details() {
 		super();
 	}
 
 	public Loan_Details(int id, int loan_master_id, double deposit_fee, double late_fee, Date return_date,
-			boolean status) {
+			DetailStatus status) {
 		super();
 		this.id = id;
 		this.loan_master_id = loan_master_id;
 		this.deposit_fee = deposit_fee;
-		this.late_fee = late_fee;
+		this.late_fee = late_fee;	
 		this.return_date = return_date;
 		this.status = status;
 	}
@@ -65,12 +68,28 @@ public class Loan_Details {
 		this.return_date = return_date;
 	}
 
-	public boolean isStatus() {
-		return status;
+	public DetailStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DetailStatus status) {
+        this.status = status;
+    }
+    
+	public int getBook_id() {
+		return book_id;
 	}
 
-	public void setStatus(boolean status) {
-		this.status = status;
+	public void setBook_id(int book_id) {
+		this.book_id = book_id;
+	}
+
+	public double getCompensation_fee() {
+		return compensation_fee;
+	}
+
+	public void setCompensation_fee(double compensation_fee) {
+		this.compensation_fee = compensation_fee;
 	}
 
 	@Override

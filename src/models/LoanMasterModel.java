@@ -2,10 +2,73 @@ package models;
 
 import java.sql.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.LoanStatus;
 import entities.Loan_Master;
 import entities.Settings;
 
-class LoanMasterModel {
+public class LoanMasterModel {
+	private Loan_Master mapResultSet(ResultSet rs) throws SQLException {
+        Loan_Master master = new Loan_Master();
+        master.setId(rs.getInt("id"));
+        master.setAccount_id(rs.getInt("account_id"));
+        master.setBorrow_date(rs.getDate("borrow_date")); 
+        String dbStatusString = rs.getString("status");
+        String dbStatus = rs.getString("status"); 
+        master.setStatus(LoanStatus.fromString(dbStatus));
+        master.setTotal_deposit_fee(rs.getDouble("total_late_fee"));
+        return master;
+    }
+
+	public List<Loan_Master> findAll() {
+	    List<Loan_Master> list = new ArrayList<>();
+	    String sql = "SELECT * FROM loan_master ORDER BY borrow_date DESC"; 
+	    
+	    try (Connection conn = ConnectDB.connection()) {
+	        PreparedStatement ps = conn.prepareStatement(sql);
+	        ResultSet rs = ps.executeQuery();
+	        while (rs.next()) list.add(mapResultSet(rs));
+	    } catch (Exception e) { e.printStackTrace(); }
+	    return list;
+	}
+
+    public Loan_Master findById(int id) {
+        String sql = "SELECT * FROM loan_master WHERE id = ?";
+        try (Connection conn = ConnectDB.connection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return mapResultSet(rs);
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
+    public List<Loan_Master> findByEmployeeId(int accountId) {
+        List<Loan_Master> list = new ArrayList<>();
+        String sql = "SELECT * FROM loan_master WHERE account_id = ? ORDER BY borrow_date DESC";
+        try (Connection conn = ConnectDB.connection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapResultSet(rs));
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+
+    public List<Loan_Master> findByStatus(String status) {
+        List<Loan_Master> list = new ArrayList<>();
+        String sql = "SELECT * FROM loan_master WHERE status = ? ORDER BY borrow_date DESC";
+        try (Connection conn = ConnectDB.connection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapResultSet(rs));
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+
 	public int createLoan(Loan_Master loan) {
 		String sql = "INSERT INTO loan_master (account_id, borrow_date, due_date, "
 				+ "total_compensation_fee, total_deposit_fee, total_late_fee, total_quantity, status) "
@@ -37,8 +100,8 @@ class LoanMasterModel {
 		return -1;
 	}
 
-	public boolean updateStatus(int loanId, Loan_Master.Status status) {
-		String sql = "UPDATE loan_master SET status = ? WHERE id = ?";
+	public boolean updateStatus(int loanId, String status) {
+		String sql = "UPDATE loan_details SET status = ? WHERE id = ?";
 		try (Connection connect = ConnectDB.connection(); PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 
 			preparedStatement.setString(1, status.toString());
@@ -48,5 +111,49 @@ class LoanMasterModel {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public void updateMasterAfterReturn(int loanMasterId) {
+	    Connection conn = null;
+	    try {
+	        conn = ConnectDB.connection();
+
+	        String sqlSum = "SELECT SUM(late_fee), SUM(compensation_fee) FROM loan_details WHERE loan_master_id = ?";
+	        double totalLate = 0;
+	        double totalComp = 0;
+	        
+	        try (PreparedStatement ps = conn.prepareStatement(sqlSum)) {
+	            ps.setInt(1, loanMasterId);
+	            ResultSet rs = ps.executeQuery();
+	            if (rs.next()) {
+	                totalLate = rs.getDouble(1);
+	                totalComp = rs.getDouble(2);
+	            }
+	        }
+	        
+	        String sqlCheck = "SELECT COUNT(*) FROM loan_details WHERE loan_master_id = ? AND return_date IS NULL";
+	        boolean isFinished = false;
+	        try (PreparedStatement ps = conn.prepareStatement(sqlCheck)) {
+	            ps.setInt(1, loanMasterId);
+	            ResultSet rs = ps.executeQuery();
+	            if (rs.next()) {
+	                isFinished = (rs.getInt(1) == 0);
+	            }
+	        }
+
+	        String statusMaster = isFinished ? "Completed" : "Active";
+	        String sqlUpdate = "UPDATE loan_master SET total_late_fee = ?, total_compensation_fee = ?, status = ? WHERE id = ?";
+	        
+	        try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
+	            ps.setDouble(1, totalLate);
+	            ps.setDouble(2, totalComp);
+	            ps.setString(3, statusMaster);
+	            ps.setInt(4, loanMasterId);
+	            ps.executeUpdate();
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 }

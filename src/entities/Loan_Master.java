@@ -1,9 +1,8 @@
 package entities;
-
-import java.io.ObjectInputFilter.Status;
 import java.sql.Date;
 
 public class Loan_Master {
+	public static final String Status = null;
 	int id;
 	int account_id;
 	Date borrow_date;
@@ -12,12 +11,7 @@ public class Loan_Master {
 	double total_deposit_fee;
 	double total_late_fee;
 	int total_quantity;
-	private Status status;
-
-	public enum Status {
-		Borrowing, Finished, Lated
-	}
-
+	private LoanStatus status;
 	public Loan_Master() {
 		super();
 	}
@@ -98,14 +92,14 @@ public class Loan_Master {
 	public void setTotal_quantity(int total_quantity) {
 		this.total_quantity = total_quantity;
 	};
+	
+	public LoanStatus getStatus() {
+        return status;
+    }
 
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+    public void setStatus(LoanStatus status) {
+        this.status = status;
+    }
 
 	@Override
 	public String toString() {
