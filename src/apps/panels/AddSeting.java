@@ -51,10 +51,11 @@ public class AddSeting extends JPanel {
 	private JButton btnNewButton;
 	private JButton JCancel;
 	private Dialog parentDialog;
-//	private Map<Integer, Department> departmentMap = new HashMap<>();
-//	private Map<Integer, Role> roleMap = new HashMap<>();
-//	private SettingsPanel settingsPanel;
+	private Map<Integer, Department> departmentMap = new HashMap<>();
+	private Map<Integer, Role> roleMap = new HashMap<>();
+	private SettingsPanel settingsPanel;
 	private JTextField jLateFeePerDay;
+	
 
 	/**
 	 * Create the panel.
@@ -140,10 +141,10 @@ public class AddSeting extends JPanel {
 		add(jLateFeePerDay);
 	}
 
-	public AddSeting(Dialog dialog ) {
+	public AddSeting(Dialog dialog, SettingsPanel settingsPanel ) {
 		this();
 		this.parentDialog = dialog;
-//		this.settingsPanel = settingsPanel;
+		this.settingsPanel = settingsPanel;
 		init();
 	}
 
@@ -166,9 +167,9 @@ public class AddSeting extends JPanel {
 			if (settingModel.create(setting)) {
 				JOptionPane.showMessageDialog(this, "Setting added successfully!", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
-//				if (settingsPanel != null) {
-//					settingsPanel.refreshTable();
-//				}
+				if (settingsPanel != null) {
+					settingsPanel.refreshTable();
+				}
 				parentDialog.dispose();
 			} else {
 				JOptionPane.showMessageDialog(this, "Failed to add setting!", "Error", JOptionPane.ERROR_MESSAGE);
