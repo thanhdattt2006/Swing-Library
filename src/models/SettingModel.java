@@ -1,6 +1,8 @@
 package models;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import entities.Settings;
 
@@ -48,5 +50,33 @@ public class SettingModel {
 			return false;
 		}
 	}
+	 public List<Settings> findAll() {
+	        List<Settings> list = new ArrayList<>();
+
+	        String sql = "SELECT * FROM settings";
+
+	        try (
+	        		Connection connect = ConnectDB.connection();
+	            PreparedStatement ps = connect.prepareStatement(sql);
+	            ResultSet rs = ps.executeQuery();
+	        ) {
+	            while (rs.next()) {
+	                Settings s = new Settings();
+
+	                s.setId(rs.getInt("id"));
+	                s.setMax_borrow_days(rs.getInt("max_borrow_days"));
+	                s.setDeposit_fee_per_loan(rs.getDouble("deposit_fee_per_loan"));
+	                s.setLate_fee_per_day(rs.getDouble("late_fee_per_day"));
+	                s.setLost_compensation_fee(rs.getDouble("lost_compensation_fee"));
+	                s.setDamaged_compensation_fee(rs.getDouble("damaged_compensation_fee"));
+
+	                list.add(s);
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        return list;
+	    }
 
 }
