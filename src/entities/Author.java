@@ -4,13 +4,13 @@ public class Author {
 	private int id;
 	private String name;
 	private String bio;
-	private String photo;
+	private byte[] photo;
 
 	public Author() {
 		super();
 	}
 
-	public Author(int id, String name, String bio, String photo) {
+	public Author(int id, String name, String bio, byte[] photo) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -42,11 +42,11 @@ public class Author {
 		this.bio = bio;
 	}
 
-	public String getPhoto() {
+	public byte[] getPhoto() {
 		return photo;
 	}
 
-	public void setPhoto(String photo) {
+	public void setPhoto(byte[] photo) {
 		this.photo = photo;
 	}
 
