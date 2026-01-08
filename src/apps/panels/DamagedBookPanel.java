@@ -2,8 +2,6 @@ package apps.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -15,7 +13,7 @@ import apps.renderers.ImageRenderer;
 import models.ConnectDB;
 import java.awt.Color;
 
-public class RepairQueuePanel extends JPanel {
+public class DamagedBookPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -28,8 +26,10 @@ public class RepairQueuePanel extends JPanel {
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
+	private JComboBox<String> jcomboBoxRole;
+	private JComboBox<String> jcomboBoxRole_1;
 
-	public RepairQueuePanel() {
+	public DamagedBookPanel() {
 		setLayout(new BorderLayout());
 		initUI();
 		// loadTableData(); // gọi khi cần
@@ -85,24 +85,23 @@ public class RepairQueuePanel extends JPanel {
 		jbuttonSearch_1_1.setBounds(812, 17, 66, 28);
 		panelFilter.add(jbuttonSearch_1_1);
 		
-		JComboBox<String> jcomboBoxRole = new JComboBox<String>();
+		jcomboBoxRole = new JComboBox<String>();
 		jcomboBoxRole.setPreferredSize(new Dimension(150, 25));
 		jcomboBoxRole.setBounds(445, 48, 186, 26);
 		panelFilter.add(jcomboBoxRole);
 		
-		JComboBox<String> jcomboBoxRole_1 = new JComboBox<String>();
+		jcomboBoxRole_1 = new JComboBox<String>();
 		jcomboBoxRole_1.setPreferredSize(new Dimension(150, 25));
 		jcomboBoxRole_1.setBounds(692, 48, 186, 26);
 		panelFilter.add(jcomboBoxRole_1);
 
 		// ===== CENTER - TABLE =====
-		String[] columns = { "PHOTO", "ISBN", "TITLE", "CALL NUMBER", "AUTHOR", "CATEGORY", "STATUS", "ACTION",
-				"BOOK_ID" };
+		String[] columns = { "PHOTO", "ISBN", "TITLE", "CALL NUMBER", "AUTHOR", "CATEGORY", "STATUS", "BOOK_ID" };
 
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 7; // ACTION
+				return false; // ❌ không cho edit
 			}
 		};
 
@@ -113,20 +112,8 @@ public class RepairQueuePanel extends JPanel {
 
 		table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
-		// hide BOOK_ID (index 8)
-		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(8));
-
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int row = table.rowAtPoint(e.getPoint());
-				int col = table.columnAtPoint(e.getPoint());
-
-				if (col == 7) {
-					confirmFix(row);
-				}
-			}
-		});
+		// hide BOOK_ID (index 7)
+		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(7));
 
 		scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
@@ -149,7 +136,7 @@ public class RepairQueuePanel extends JPanel {
 					    FROM book b
 					    JOIN author a ON b.author_id = a.id
 					    JOIN category c ON b.category_id = c.id
-					    WHERE b.status = 'REPAIR'
+					    WHERE b.status = 'DAMAGED'
 					      AND b.title LIKE ?
 					      AND a.name LIKE ?
 					      AND c.name LIKE ?
@@ -164,7 +151,7 @@ public class RepairQueuePanel extends JPanel {
 
 			while (rs.next()) {
 				tableModel.addRow(new Object[] { rs.getBytes("photo"), rs.getString("isbn"), rs.getString("title"),
-						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "REPAIR", "Fix",
+						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "DAMAGED",
 						rs.getInt("id") });
 			}
 
@@ -173,43 +160,5 @@ public class RepairQueuePanel extends JPanel {
 		} finally {
 			ConnectDB.disconnect();
 		}
-	}
-
-	// ================= ACTION =================
-	private void confirmFix(int row) {
-		int modelRow = table.convertRowIndexToModel(row);
-		int bookId = (int) tableModel.getValueAt(modelRow, 8);
-
-		int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận sách đã sửa xong?", "Confirm Repair",
-				JOptionPane.YES_NO_OPTION);
-
-		if (confirm == JOptionPane.YES_OPTION) {
-			try {
-				PreparedStatement ps1 = ConnectDB.connection()
-						.prepareStatement("UPDATE book SET status = 'NORMAL' WHERE id = ?");
-				ps1.setInt(1, bookId);
-				ps1.executeUpdate();
-
-				PreparedStatement ps2 = ConnectDB.connection()
-						.prepareStatement("UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?");
-				ps2.setInt(1, bookId);
-				ps2.executeUpdate();
-
-				JOptionPane.showMessageDialog(this, "✔ Đã cập nhật sách");
-
-				loadTableData();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				ConnectDB.disconnect();
-			}
-		}
-	}
-
-	// ================= PUBLIC API =================
-	public void addRepairItem(byte[] photo, String isbn, String title, String callNumber, String author,
-			String category, int bookId) {
-		tableModel.addRow(new Object[] { photo, isbn, title, callNumber, author, category, "REPAIR", "Fix", bookId });
 	}
 }

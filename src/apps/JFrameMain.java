@@ -10,6 +10,7 @@ import apps.panels.AuthorPanel;
 import apps.panels.BookPanel;
 import apps.panels.CategoryPanel;
 import apps.panels.CheckOutPanel;
+import apps.panels.LoanHistoryPanel;
 import apps.panels.SettingsPanel;
 import app.enums.MenuType;
 import entities.Account;
@@ -109,7 +110,7 @@ public class JFrameMain extends JFrame {
 
 		case 2: // LIBRARIAN
 			// panel placeholder để test
-			jpanelMainPage.add(new JPanel(), MenuType.LOAN_HISTORY.name());
+			jpanelMainPage.add(new LoanHistoryPanel(), MenuType.LOAN_HISTORY.name());
 			jpanelMainPage.add(new BookPanel(this), MenuType.BOOK.name());
 
 			jpanelMainPage.add(new AuthorPanel(), MenuType.AUTHOR.name());

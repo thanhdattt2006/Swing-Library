@@ -167,11 +167,19 @@ public class BookPanel extends JPanel {
 		panelStatusAction.add(btnRepairQueue);
 
 		JButton btnDamagedList = new JButton("Damaged List");
-		btnDamagedList.addActionListener(e -> JOptionPane.showMessageDialog(this, "Damaged List"));
+		btnDamagedList.addActionListener(e -> {
+			DamagedBookPanel panel = new DamagedBookPanel();
+			mainFrame.showCustomPanel("DAMAGED", panel);
+		});
+
 		panelStatusAction.add(btnDamagedList);
 
 		JButton btnLostList = new JButton("Lost List");
-		btnLostList.addActionListener(e -> JOptionPane.showMessageDialog(this, "Lost List"));
+		btnLostList.addActionListener(e -> {
+			LostBookPanel panel = new LostBookPanel();
+			mainFrame.showCustomPanel("LOST", panel);
+		});
+
 		panelStatusAction.add(btnLostList);
 
 		// ===== ADD TO ACTION PANEL =====
