@@ -15,6 +15,15 @@ public class Account {
 	private String photo;
 	private String address;
 	private String phone;
+	private String department_name;
+
+	public String getDepartment_name() {
+		return department_name;
+	}
+
+	public void setDepartment_name(String department_name) {
+		this.department_name = department_name;
+	}
 
 	public int getId() {
 		return id;

@@ -11,6 +11,7 @@ import apps.panels.BookPanel;
 import apps.panels.CategoryPanel;
 import apps.panels.CheckOutPanel;
 import apps.panels.LoanHistoryPanel;
+import apps.panels.MyInforEmployeePanel;
 import apps.panels.SettingsPanel;
 import app.enums.MenuType;
 import entities.Account;
@@ -128,7 +129,7 @@ public class JFrameMain extends JFrame {
 
 			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
 			jpanelMainPage.add(new JPanel(), MenuType.MY_LOANS.name());
-			jpanelMainPage.add(new JPanel(), MenuType.MY_INFOR.name());
+			jpanelMainPage.add(new MyInforEmployeePanel(currentAccount.getId()), MenuType.MY_INFOR.name());
 
 			buildMenu(EMPLOYEE_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.BOOK.name()); // 👈 Mặc định Book
