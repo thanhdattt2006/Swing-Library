@@ -26,7 +26,7 @@ public class LoanDetailsModel {
 		return d;
 	}
 
-	public List<Loan_Details> findAll() {
+	public List<Loan_Details> findAll() {	
 		List<Loan_Details> list = new ArrayList<>();
 		String sql = "SELECT * FROM loan_details";
 		try (Connection conn = ConnectDB.connection();
@@ -83,17 +83,31 @@ public class LoanDetailsModel {
 	}
 
 	public List<Loan_Details> findByMasterId(int masterId) {
-		List<Loan_Details> list = new ArrayList<>();
-		String sql = "SELECT * FROM loan_details WHERE loan_master_id = ?";
-		try (Connection conn = ConnectDB.connection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setInt(1, masterId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next())
-				list.add(mapRow(rs));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
+	    List<Loan_Details> list = new ArrayList<>();
+	    String sql = "SELECT d.*, b.title " +
+	                 "FROM loan_details d " +
+	                 "JOIN book b ON d.book_id = b.id " +
+	                 "WHERE d.loan_master_id = ?";
+
+	    try (Connection conn = ConnectDB.connection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	         
+	        ps.setInt(1, masterId);
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            Loan_Details d = new Loan_Details();
+	            d.setId(rs.getInt("id"));
+	            d.setLoan_master_id(rs.getInt("loan_master_id"));
+	            d.setBook_id(rs.getInt("book_id"));
+	            d.setBookTitle(rs.getString("title")); 
+	            d.setReturn_date(rs.getDate("return_date"));	            
+	            list.add(d);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
 	}
 
 	public boolean createLoanDetail(Loan_Details detail) {

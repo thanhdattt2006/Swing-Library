@@ -11,7 +11,7 @@ public class Loan_Details {
 	double compensation_fee;
 	Date return_date;
 	private DetailStatus status;
-	
+	private String bookTitle;
 
 	public Loan_Details() {
 		super();
@@ -91,6 +91,8 @@ public class Loan_Details {
 	public void setCompensation_fee(double compensation_fee) {
 		this.compensation_fee = compensation_fee;
 	}
+	public String getBookTitle() { return bookTitle; }
+    public void setBookTitle(String bookTitle) { this.bookTitle = bookTitle; }
 
 	@Override
 	public String toString() {

@@ -63,7 +63,15 @@ public class LoanDetailsPanel extends JPanel {
 
 	private void initTable() {
 
-		String[] columns = { "ID", "Book ID", "Return Date", "Status", "Late Fee", "Compensation Fee", "Action" };
+		String[] columns = {
+			    "ID", 
+			    "Book Title",
+			    "Return Date", 
+			    "Status", 
+			    "Late Fee", 
+			    "Compensation Fee", 
+			    "Action"
+			};
 
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
@@ -127,7 +135,7 @@ public class LoanDetailsPanel extends JPanel {
 
 			String returnDateStr = (d.getReturn_date() == null) ? "Borrowing" : d.getReturn_date().toString();
 
-			tableModel.addRow(new Object[] { d.getId(), d.getBook_id(), returnDateStr, statusDisplay, d.getLate_fee(),
+			tableModel.addRow(new Object[] { d.getId(),d.getBookTitle(), returnDateStr, statusDisplay, d.getLate_fee(),
 					d.getCompensation_fee(), "Details" });
 		}
 	}

@@ -11,6 +11,8 @@ public class DetailsButtonRender extends JButton implements TableCellRenderer {
     public DetailsButtonRender() {
         setOpaque(true);
         setBackground(new Color(255, 255, 255)); 
+        setContentAreaFilled(false);
+        setBorderPainted(false);
     }
 
     @Override

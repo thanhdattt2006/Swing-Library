@@ -12,100 +12,152 @@ public class CheckOutPanel extends JPanel {
     private DefaultTableModel cartModel;
     private JLabel lblTotalAmount;
     private JButton btnPay, btnRemove;
+    private JTextField jtextFieldAccount;
+    private JTextField jtextFieldEmployeeID;
+    private JTextField jtextFieldUsername;
+    private JTextField jtextFieldDepartment;
+    private JTextField jtextFieldName;
 
     public CheckOutPanel() {
         setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createTitledBorder("Thông Tin Thanh Toán Cọc"));
+        setBorder(BorderFactory.createTitledBorder("Check Out Infomation"));
 
-        // --- PHẦN 1: BẢNG SÁCH ĐÃ CHỌN ---
-        // Cột: Mã, Tên, Tác giả, Thể loại, Tiền cọc
-        String[] columns = {"Mã Sách", "Tên Sách", "Tác Giả", "Thể Loại", "Tiền Cọc (VND)"};
+        String[] columns = {"Book Id", "Title", "Author", "Category", "Deposit Fee"};
         cartModel = new DefaultTableModel(columns, 0);
         tableCart = new JTable(cartModel);
         
         JScrollPane scrollPane = new JScrollPane(tableCart);
-        scrollPane.setPreferredSize(new Dimension(600, 300)); // Kích thước bảng
-        add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setPreferredSize(new Dimension(600, 300)); 
+        add(scrollPane, BorderLayout.NORTH);
 
-        // --- PHẦN 2: KHU VỰC TÍNH TIỀN & NÚT BẤM (Bên dưới) ---
         JPanel panelBottom = new JPanel(new BorderLayout());
         panelBottom.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Hiển thị tổng tiền
-        JPanel panelTotal = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JLabel lblText = new JLabel("Tổng tiền cọc phải trả: ");
-        lblText.setFont(new Font("Arial", Font.BOLD, 16));
-        
-        lblTotalAmount = new JLabel("0 VND");
-        lblTotalAmount.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTotalAmount.setForeground(Color.RED);
-        
-        panelTotal.add(lblText);
-        panelTotal.add(lblTotalAmount);
-
-        // Các nút chức năng
         JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnRemove = new JButton("Xóa sách chọn");
-        btnPay = new JButton("Xác nhận Thanh toán");
-        btnPay.setBackground(new Color(0, 153, 76)); // Màu xanh lá
-        btnPay.setForeground(Color.WHITE);
+        btnRemove = new JButton("Delete");
+        
+                JPanel panelTotal = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                panelButtons.add(panelTotal);
+                JLabel lblText = new JLabel("Total Deposit Fee: ");
+                lblText.setFont(new Font("Arial", Font.BOLD, 16));
+                
+                lblTotalAmount = new JLabel("$");
+                lblTotalAmount.setFont(new Font("Arial", Font.BOLD, 18));
+                lblTotalAmount.setForeground(SystemColor.activeCaption);
+                
+                panelTotal.add(lblText);
+                panelTotal.add(lblTotalAmount);
+        btnPay = new JButton("Confirm");
+        btnPay.setBackground(Color.WHITE); 
+        btnPay.setForeground(new Color(0, 0, 0));
+        panelButtons.add(btnPay);
+        
+                btnPay.addActionListener(e -> {
+                    if (cartModel.getRowCount() == 0) {
+                        JOptionPane.showMessageDialog(this, "Chưa có sách nào để thanh toán!");
+                        return;
+                    }
+                    JOptionPane.showMessageDialog(this, "Success!");
+                    
+                    JPanel panel = new JPanel();
+                    add(panel, BorderLayout.CENTER);
+                    panel.setLayout(null);
+                    
+                    JLabel lblNewLabel = new JLabel("Employee ID / Username");
+                    lblNewLabel.setBounds(6, 12, 134, 16);
+                    panel.add(lblNewLabel);
+                    
+                    jtextFieldAccount = new JTextField();
+                    jtextFieldAccount.setBounds(145, 6, 112, 28);
+                    panel.add(jtextFieldAccount);
+                    jtextFieldAccount.setColumns(10);
+                    
+                    JButton jButtonSearch = new JButton("Search");
+                    jButtonSearch.setBounds(262, 6, 66, 28);
+                    jButtonSearch.addActionListener(new ActionListener() {
+                    	public void actionPerformed(ActionEvent e) {
+                    		do_jButtonSearch_actionPerformed(e);
+                    	}
+                    });
+                    panel.add(jButtonSearch);
+                    
+                    JLabel lblNewLabel_1 = new JLabel("Employee Id");
+                    lblNewLabel_1.setBounds(6, 51, 67, 16);
+                    panel.add(lblNewLabel_1);
+                    
+                    jtextFieldEmployeeID = new JTextField();
+                    jtextFieldEmployeeID.setBounds(78, 45, 112, 28);
+                    jtextFieldEmployeeID.setEditable(false);
+                    panel.add(jtextFieldEmployeeID);
+                    jtextFieldEmployeeID.setColumns(10);
+                    
+                    JLabel lblNewLabel_2 = new JLabel("Username");
+                    lblNewLabel_2.setBounds(202, 52, 61, 16);
+                    panel.add(lblNewLabel_2);
+                    
+                    jtextFieldUsername = new JTextField();
+                    jtextFieldUsername.setBounds(275, 46, 141, 28);
+                    jtextFieldUsername.setEditable(false);
+                    panel.add(jtextFieldUsername);
+                    jtextFieldUsername.setColumns(10);
+                    
+                    JLabel lblNewLabel_3 = new JLabel("Department ");
+                    lblNewLabel_3.setBounds(205, 85, 67, 16);
+                    panel.add(lblNewLabel_3);
+                    
+                    jtextFieldDepartment = new JTextField();
+                    jtextFieldDepartment.setBounds(277, 79, 139, 28);
+                    panel.add(jtextFieldDepartment);
+                    jtextFieldDepartment.setColumns(10);
+                    
+                    JLabel lblNewLabel_2_1 = new JLabel("Name");
+                    lblNewLabel_2_1.setBounds(6, 85, 55, 16);
+                    panel.add(lblNewLabel_2_1);
+                    
+                    jtextFieldName = new JTextField();
+                    jtextFieldName.setBounds(79, 79, 112, 28);
+                    jtextFieldName.setEditable(false);
+                    jtextFieldName.setColumns(10);
+                    panel.add(jtextFieldName);
+                    cartModel.setRowCount(0);
+                    updateTotal();
+                });
         
         panelButtons.add(btnRemove);
-        panelButtons.add(btnPay);
-
-        panelBottom.add(panelTotal, BorderLayout.NORTH);
-        panelBottom.add(panelButtons, BorderLayout.SOUTH);
+        panelBottom.add(panelButtons, BorderLayout.CENTER);
 
         add(panelBottom, BorderLayout.SOUTH);
 
-        // --- SỰ KIỆN XỬ LÝ ---
-        // 1. Nút Xóa sách khỏi danh sách cọc
         btnRemove.addActionListener(e -> {
             int selectedRow = tableCart.getSelectedRow();
             if (selectedRow != -1) {
                 cartModel.removeRow(selectedRow);
-                updateTotal(); // Tính lại tiền sau khi xóa
+                updateTotal();
             } else {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn sách cần xóa!");
+                JOptionPane.showMessageDialog(this, "Choose one book to delete!");
             }
         });
 
-        // 2. Nút Thanh toán
-        btnPay.addActionListener(e -> {
-            if (cartModel.getRowCount() == 0) {
-                JOptionPane.showMessageDialog(this, "Chưa có sách nào để thanh toán!");
-                return;
-            }
-            // Code lưu vào database sẽ viết ở đây
-            JOptionPane.showMessageDialog(this, "Thanh toán thành công! In hóa đơn...");
-            cartModel.setRowCount(0); // Xóa hết sau khi thanh toán
-            updateTotal();
-        });
-        
-        // --- DỮ LIỆU GIẢ (Demo khi chạy thử) ---
         addSampleData();
     }
 
-    // Hàm cập nhật tổng tiền
+    
     private void updateTotal() {
         double total = 0;
         for (int i = 0; i < cartModel.getRowCount(); i++) {
-            // Lấy giá trị cột "Tiền Cọc" (Cột index 4)
             Object value = cartModel.getValueAt(i, 4);
             if (value instanceof Number) {
                 total += ((Number) value).doubleValue();
             }
         }
-        DecimalFormat df = new DecimalFormat("#,### VND");
+        DecimalFormat df = new DecimalFormat("#,### $");
         lblTotalAmount.setText(df.format(total));
     }
 
-    // Hàm thêm sách vào bảng (Sẽ được gọi từ CheckOutDetails sau này)
     public void addBookToCart(String id, String name, String author, String category, double price) {
-        // Kiểm tra xem sách đã có trong giỏ chưa (tùy chọn)
         for (int i=0; i < cartModel.getRowCount(); i++) {
             if (cartModel.getValueAt(i, 0).equals(id)) {
-                JOptionPane.showMessageDialog(this, "Sách này đã được chọn rồi!");
+                JOptionPane.showMessageDialog(this, "This book has already been selected!");
                 return;
             }
         }
@@ -117,4 +169,6 @@ public class CheckOutPanel extends JPanel {
         addBookToCart("B001", "Dế Mèn Phiêu Lưu Ký", "Tô Hoài", "Truyện", 50000);
         addBookToCart("B005", "Đắc Nhân Tâm", "Dale Carnegie", "Kỹ năng", 75000);
     }
+	protected void do_jButtonSearch_actionPerformed(ActionEvent e) {
+	}
 }

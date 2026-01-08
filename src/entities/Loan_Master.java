@@ -11,6 +11,8 @@ public class Loan_Master {
 	double total_deposit_fee;
 	double total_late_fee;
 	int total_quantity;
+	private String username;
+    private String employeeIdDisplay;
 	private LoanStatus status;
 	public Loan_Master() {
 		super();
@@ -92,6 +94,12 @@ public class Loan_Master {
 	public void setTotal_quantity(int total_quantity) {
 		this.total_quantity = total_quantity;
 	};
+	
+	public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getEmployeeIdDisplay() { return employeeIdDisplay; }
+    public void setEmployeeIdDisplay(String employeeIdDisplay) { this.employeeIdDisplay = employeeIdDisplay; }
 	
 	public LoanStatus getStatus() {
         return status;

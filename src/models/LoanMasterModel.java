@@ -14,7 +14,9 @@ public class LoanMasterModel {
         Loan_Master master = new Loan_Master();
         master.setId(rs.getInt("id"));
         master.setAccount_id(rs.getInt("account_id"));
-        master.setBorrow_date(rs.getDate("borrow_date")); 
+        master.setBorrow_date(rs.getDate("borrow_date"));
+        master.setUsername(rs.getString("username"));
+        master.setEmployeeIdDisplay(rs.getString("employee_id")); 
         String dbStatusString = rs.getString("status");
         String dbStatus = rs.getString("status"); 
         master.setStatus(LoanStatus.fromString(dbStatus));
@@ -24,13 +26,21 @@ public class LoanMasterModel {
 
 	public List<Loan_Master> findAll() {
 	    List<Loan_Master> list = new ArrayList<>();
-	    String sql = "SELECT * FROM loan_master ORDER BY borrow_date DESC"; 
-	    
-	    try (Connection conn = ConnectDB.connection()) {
-	        PreparedStatement ps = conn.prepareStatement(sql);
-	        ResultSet rs = ps.executeQuery();
-	        while (rs.next()) list.add(mapResultSet(rs));
-	    } catch (Exception e) { e.printStackTrace(); }
+	    String sql = "SELECT m.*, a.username, a.employee_id " +
+	                 "FROM loan_master m " +
+	                 "JOIN account a ON m.account_id = a.id " + 
+	                 "ORDER BY m.borrow_date DESC";
+
+	    try (Connection conn = ConnectDB.connection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        while (rs.next()) {
+	            list.add(mapResultSet(rs));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	    return list;
 	}
 
