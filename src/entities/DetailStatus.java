@@ -21,6 +21,6 @@ public enum DetailStatus {
                 return s;
             }
         }
-        return GOOD; // Mặc định
+        return GOOD; 
     }
 }

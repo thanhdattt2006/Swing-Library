@@ -101,6 +101,8 @@ public class LoanDetailsModel {
 	            d.setLoan_master_id(rs.getInt("loan_master_id"));
 	            d.setBook_id(rs.getInt("book_id"));
 	            d.setBookTitle(rs.getString("title")); 
+	            String statusStr = rs.getString("status"); 
+	            d.setStatus(DetailStatus.fromString(statusStr));
 	            d.setReturn_date(rs.getDate("return_date"));	            
 	            list.add(d);
 	        }
