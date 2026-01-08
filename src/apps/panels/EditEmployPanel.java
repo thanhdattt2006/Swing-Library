@@ -154,7 +154,7 @@ public class EditEmployPanel extends JPanel {
 				do_btnNewButton_actionPerformed(e);
 			}
 		});
-		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnNewButton.setBounds(126, 489, 100, 23);
 		add(btnNewButton);
 
@@ -164,7 +164,7 @@ public class EditEmployPanel extends JPanel {
 				do_btnNewButton_1_actionPerformed(e);
 			}
 		});
-		JCancel.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		JCancel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		JCancel.setForeground(Color.BLACK);
 		JCancel.setBounds(248, 489, 81, 23);
 		add(JCancel);
@@ -241,20 +241,7 @@ public class EditEmployPanel extends JPanel {
 		jAddress.setText(account.getAddress());
 	}
 
-//		ProductModel productModel = new ProductModel();
-//		int id = Integer.parseInt(data.get("id").toString());
-//		Product product = productModel.findById(id);
-//		jtextFieldName.setText(product.getName());
-//		jtextFieldPrice.setText(String.valueOf(product.getPrice()));
-//		jtextFieldQuantity.setText(String.valueOf(product.getQuantity()));
-//		jtextAreaDescription.setText(product.getDescription());
-//		jcheckBoxStatus.setSelected(product.isStatus());
-//		Image image = new ImageIcon(product.getPhoto()).getImage().getScaledInstance(jlabelPhoto.getWidth(),
-//				jlabelPhoto.getHeight(), Image.SCALE_DEFAULT);
-//		jlabelPhoto.setIcon(new ImageIcon(image));
-//		jdateChooserCreated.setDate(product.getCreated());
-//		jcomboBoxCategory.getModel().setSelectedItem(categoryModel.findById(product.getCategoryId()));
-//	}
+		
 	private class RoleComboRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -330,7 +317,7 @@ public class EditEmployPanel extends JPanel {
 
 			AccountModel accountModel = new AccountModel();
 			if (accountModel.update(account)) {
-				JOptionPane.showMessageDialog(this, "Add success!", "Success", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Edit success!", "Success", JOptionPane.INFORMATION_MESSAGE);
 				if (accountPanel != null) {
 					accountPanel.refreshTable();
 				}
@@ -338,7 +325,7 @@ public class EditEmployPanel extends JPanel {
 				// Đóng dialog
 				parentDialog.dispose();
 			} else {
-				JOptionPane.showMessageDialog(this, "Add failed!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Edit failed!", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 			parentDialog.dispose();
 			AccountPanel accountPanel = new AccountPanel();

@@ -146,5 +146,31 @@ public class SettingModel {
 		}
 		return result;
 	}
+	public Settings findById(int id) {
+	    Settings setting = null;
+	    try {
+	        PreparedStatement preparedStatement = ConnectDB.connection()
+	                .prepareStatement("SELECT * FROM settings WHERE id = ?");
+	        preparedStatement.setInt(1, id);
+
+	        ResultSet resultSet = preparedStatement.executeQuery();
+	        while (resultSet.next()) {
+	            setting = new Settings();
+	            setting.setId(resultSet.getInt("id"));
+	            setting.setMax_borrow_days(resultSet.getInt("max_borrow_days"));
+	            setting.setDeposit_fee_per_loan(resultSet.getDouble("deposit_fee_per_loan"));
+	            setting.setLate_fee_per_day(resultSet.getDouble("late_fee_per_day"));
+	            setting.setLost_compensation_fee(resultSet.getDouble("lost_compensation_fee"));
+	            setting.setDamaged_compensation_fee(resultSet.getDouble("damaged_compensation_fee"));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        setting = null;
+	    } finally {
+	        ConnectDB.disconnect();
+	    }
+	    return setting;
+	}
+
 
 }

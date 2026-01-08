@@ -31,39 +31,14 @@ public class SettingsPanel extends JPanel {
 		setLayout(new BorderLayout());
 		initUI();
 		loadTableData();
-//		loadComboData();
-//		
-//		initRenderer();
+
 	}
 
 	// ================= UI =================
 	private void initUI() {
 
-//		// ===== NORTH - FILTER =====
-//		JPanel jpanelFilter = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
 //
-//		jpanelFilter.add(new JLabel("Role:"));
-//		jcomboBoxRole = new JComboBox<>();
-//		jcomboBoxRole.setPreferredSize(new Dimension(150, 25));
-//		jpanelFilter.add(jcomboBoxRole);
-//
-//		jpanelFilter.add(new JLabel("Department:"));
-//		jcomboBoxDepartment = new JComboBox<>();
-//		jcomboBoxDepartment.setPreferredSize(new Dimension(180, 25));
-//		jpanelFilter.add(jcomboBoxDepartment);
-//
-//		JButton jbuttonSearch = new JButton("Search");
-//		jbuttonSearch.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				do_jbuttonSearch_actionPerformed(e);
-//			}
-//		});
-//		jpanelFilter.add(jbuttonSearch);
-//
-//		add(jpanelFilter, BorderLayout.NORTH);
-
-		// ===== CENTER - TABLE =====
-		String[] columns = { "ID", "Max borrow_days", "deposit fee per loan", "late fee per day", "lost compensation fee", "damaged compensation fee" };
+		String[] columns = { "ID", "Max borrow_days", "Deposit fee per loan", "Late fee per day", "Lost compensation fee", "Damaged compensation fee" };
 
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
@@ -213,26 +188,77 @@ public class SettingsPanel extends JPanel {
 	    dialog.setLocationRelativeTo(this); // Hiển thị giữa màn hình
 	    dialog.setVisible(true);
 	}
-	protected void do_button_1_actionPerformed(ActionEvent e) { //button Edit
-	   
+
+	protected void do_button_1_actionPerformed(ActionEvent e) { // button Edit
+		try {
+			  int selectedRow = jtableAccountList.getSelectedRow();
+		        if (selectedRow == -1) {
+		            throw new Exception("Please select an employee to edit!");
+		        }
+		        int id = Integer.parseInt(jtableAccountList.getValueAt(selectedRow, 0).toString());
+		        Map<String, Object> data = new HashMap<String, Object>();
+		        data.put("id", id);
+			JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Edit Setting", true);
+
+			EditSetting editSetting = new EditSetting(dialog, this, data);
+
+			dialog.getContentPane().add(editSetting);
+			dialog.setSize(465, 540);
+			dialog.setResizable(false);
+			dialog.setLocationRelativeTo(this); // Hiển thị giữa màn hình
+			dialog.setVisible(true);
+		} catch (Exception ex) {
+			   JOptionPane.showMessageDialog(this, 
+			            ex.getMessage(), 
+			            "Error", 
+			            JOptionPane.ERROR_MESSAGE);
+		}
+		
+
 	}
 	protected void do_jbuttonDelete_actionPerformed(ActionEvent e) {
-		
-	}
-	
-	protected void do_jbuttonSearch_actionPerformed(ActionEvent e) {
+		try {
+	        int selectedRow = jtableAccountList.getSelectedRow();
+	        if (selectedRow == -1) {
+	            throw new Exception("Please select a setting to delete!");
+	        }
+	        
+	        // Lấy ID từ row được chọn
+	        int id = Integer.parseInt(jtableAccountList.getValueAt(selectedRow, 0).toString());
+	        
+	        
+	        // Xác nhận trước khi xóa
+	        int confirm = JOptionPane.showConfirmDialog(this, 
+	            "Are you sure?", 
+	            "Confirm Delete", 
+	            JOptionPane.YES_NO_OPTION,
+	            JOptionPane.WARNING_MESSAGE);
+	        
+	        if (confirm == JOptionPane.YES_OPTION) {
+	           SettingModel settingModel = new SettingModel();
+	            if (settingModel.delete(id)) {
+	                JOptionPane.showMessageDialog(this, 
+	                		"Deleted successfully!",
+	                		"Success",
+
+	                    JOptionPane.INFORMATION_MESSAGE);
+	                refreshTable(); // Làm mới bảng
+	            } else {
+	                JOptionPane.showMessageDialog(this, 
+	                		"Deletion failed!",
+	                		"Error",
+
+	                    JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	        
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            ex.getMessage(), 
+	            "Error", 
+	            JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 }
-//package apps.panels;
-//
-//import javax.swing.JPanel;
-//import javax.swing.JLabel;
-//
-//public class SettingsPanel extends JPanel {
-//
-//    private static final long serialVersionUID = 1L;
-//
-//    public SettingsPanel() {
-//        add(new JLabel("Settings Panel"));
-//    }
-//}
+	
+	

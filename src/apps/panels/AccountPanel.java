@@ -232,10 +232,10 @@ public class AccountPanel extends JPanel {
 	        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Sửa Nhân Viên ", true);
 	        
 	        // Tạo JPanel cho form
-	        EditEmployPanel addPanel = new EditEmployPanel(dialog, this, data);
+	        EditEmployPanel editPanel = new EditEmployPanel(dialog, this, data);
 	        
 	        // Thêm panel vào dialog
-	        dialog.getContentPane().add(addPanel);
+	        dialog.getContentPane().add(editPanel);
 	        
 	        // Cài đặt dialog
 	        dialog.setSize(464, 600);
