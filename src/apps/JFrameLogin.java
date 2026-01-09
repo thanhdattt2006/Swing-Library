@@ -7,6 +7,8 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import entities.Account;
 
 import javax.swing.JLabel;
@@ -82,6 +84,7 @@ public class JFrameLogin extends JFrame {
 	private void doLogin() {
 		String username = jtextFieldUsername.getText().trim();
 		String password = new String(jpasswordFieldPassword.getPassword());
+		
 
 		if (username.isEmpty() || password.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Please enter username and password");
@@ -95,6 +98,7 @@ public class JFrameLogin extends JFrame {
 			JOptionPane.showMessageDialog(this, "Invalid username or password");
 			return;
 		}
+							
 
 		// Login success
 		JFrameMain mainFrame = new JFrameMain(account);

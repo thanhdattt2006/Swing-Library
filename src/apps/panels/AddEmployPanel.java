@@ -14,6 +14,9 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 
@@ -318,7 +321,8 @@ public class AddEmployPanel extends JPanel {
 
         account.setEmployee_id(jEmployeeID.getText().trim());
         account.setUsername(jUsername.getText().trim());
-        account.setPassword(new String(jpasswordField.getPassword()));
+        account.setPassword(BCrypt.hashpw(password, BCrypt.gensalt() )) ;
+        //new String(jpasswordField.getPassword()));
         account.setName(jName.getText().trim());
         account.setPhone(jPhone.getText().trim());
         

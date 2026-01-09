@@ -14,6 +14,9 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 
@@ -38,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.ActionEvent;
 import java.awt.SystemColor;
+import javax.swing.JCheckBox;
 
 public class EditEmployPanel extends JPanel {
 
@@ -47,7 +51,6 @@ public class EditEmployPanel extends JPanel {
 	private JTextField jName;
 	private JTextField jPhone;
 	private JTextField jAddress;
-	private JPasswordField jpasswordField;
 	private JDateChooser jBirthday;
 	private JComboBox jcomboBoxDepartment;
 	private JButton btnNewButton;
@@ -60,6 +63,7 @@ public class EditEmployPanel extends JPanel {
 	private AccountPanel accountPanel;
 	private Map<String, Object> data;
 	private JTextField jId;
+	private JCheckBox jResetPassword;
 
 	/**
 	 * Create the panel.
@@ -86,28 +90,24 @@ public class EditEmployPanel extends JPanel {
 		lblNewLabel_1.setBounds(56, 193, 136, 23);
 		add(lblNewLabel_1);
 
-		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(56, 226, 81, 23);
-		add(lblPassword);
-
 		JLabel lblName = new JLabel("Name:");
-		lblName.setBounds(56, 259, 81, 23);
+		lblName.setBounds(56, 230, 81, 23);
 		add(lblName);
 
 		JLabel lblPhone = new JLabel("Phone:");
-		lblPhone.setBounds(56, 292, 81, 23);
+		lblPhone.setBounds(56, 263, 81, 23);
 		add(lblPhone);
 
 		JLabel lblBrithday = new JLabel("Birthday");
-		lblBrithday.setBounds(56, 325, 81, 23);
+		lblBrithday.setBounds(56, 296, 81, 23);
 		add(lblBrithday);
 
 		JLabel lblDepartment = new JLabel("Department:");
-		lblDepartment.setBounds(56, 397, 81, 23);
+		lblDepartment.setBounds(56, 368, 81, 23);
 		add(lblDepartment);
 
 		JLabel lblAddress = new JLabel("Address");
-		lblAddress.setBounds(56, 430, 81, 23);
+		lblAddress.setBounds(56, 401, 81, 23);
 		add(lblAddress);
 
 		jEmployeeID = new JTextField();
@@ -122,30 +122,26 @@ public class EditEmployPanel extends JPanel {
 
 		jName = new JTextField();
 		jName.setColumns(10);
-		jName.setBounds(167, 259, 226, 26);
+		jName.setBounds(167, 230, 226, 26);
 		add(jName);
 
 		jPhone = new JTextField();
 		jPhone.setColumns(10);
-		jPhone.setBounds(167, 292, 226, 26);
+		jPhone.setBounds(167, 263, 226, 26);
 		add(jPhone);
 
 		jAddress = new JTextField();
 		jAddress.setColumns(10);
-		jAddress.setBounds(167, 430, 226, 23);
+		jAddress.setBounds(167, 401, 226, 23);
 		add(jAddress);
 
 		jBirthday = new JDateChooser();
 		jBirthday.setDateFormatString("dd/MM/yyyy");
-		jBirthday.setBounds(168, 325, 225, 29);
+		jBirthday.setBounds(168, 296, 225, 29);
 		add(jBirthday);
 
-		jpasswordField = new JPasswordField();
-		jpasswordField.setBounds(168, 227, 225, 26);
-		add(jpasswordField);
-
 		jcomboBoxDepartment = new JComboBox();
-		jcomboBoxDepartment.setBounds(168, 397, 225, 26);
+		jcomboBoxDepartment.setBounds(168, 368, 225, 26);
 		add(jcomboBoxDepartment);
 
 		btnNewButton = new JButton("Submit");
@@ -170,11 +166,11 @@ public class EditEmployPanel extends JPanel {
 		add(JCancel);
 
 		jcomboBoxRole = new JComboBox();
-		jcomboBoxRole.setBounds(168, 364, 225, 26);
+		jcomboBoxRole.setBounds(168, 335, 225, 26);
 		add(jcomboBoxRole);
 
 		lblRole = new JLabel("Role:");
-		lblRole.setBounds(56, 364, 81, 23);
+		lblRole.setBounds(56, 335, 81, 23);
 		add(lblRole);
 
 		JLabel lblNewLabel_2 = new JLabel("ID");
@@ -187,6 +183,10 @@ public class EditEmployPanel extends JPanel {
 		add(jId);
 		jId.setColumns(10);
 		setBounds(0, 0, 464, 566);
+		
+		jResetPassword = new JCheckBox("Reset Password");
+		jResetPassword.setBounds(168, 441, 121, 27);
+		add(jResetPassword);
 
 	}
 
@@ -227,8 +227,7 @@ public class EditEmployPanel extends JPanel {
 		Account account = accountModel.findbyId(id);
 		jId.setText(String.valueOf(id));
 		jEmployeeID.setText(account.getEmployee_id());
-		jUsername.setText(account.getUsername());
-		jpasswordField.setText(account.getPassword());
+		jUsername.setText(account.getUsername());		
 		jName.setText(account.getName());
 		jPhone.setText(account.getPhone());
 		jBirthday.setDate(account.getBirthday());
@@ -289,7 +288,11 @@ public class EditEmployPanel extends JPanel {
 			account.setId(Integer.parseInt(jId.getText().trim()));
 			account.setEmployee_id(jEmployeeID.getText().trim());
 			account.setUsername(jUsername.getText().trim());
-			account.setPassword(new String(jpasswordField.getPassword()));
+			if (jResetPassword.isSelected()) {
+			    // Có tích → reset password = 123
+				String hashedPassword = BCrypt.hashpw("123", BCrypt.gensalt());
+				account.setPassword(hashedPassword);
+			}
 			account.setName(jName.getText().trim());
 			account.setPhone(jPhone.getText().trim());
 			Date utilDate = jBirthday.getDate();
