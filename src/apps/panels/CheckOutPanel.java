@@ -35,8 +35,8 @@ public class CheckOutPanel extends JPanel {
         String[] columns = {"Book Id", "Title", "Author", "Category", "Deposit Fee"};
         cartModel = new DefaultTableModel(columns, 0);
         tableCart = new JTable(cartModel);
-        tableCart.getTableHeader().setReorderingAllowed(false);//KHÔNG cho đổi vị trí cột
-        tableCart.getTableHeader().setResizingAllowed(false);//KHÔNG cho kéo cột
+        tableCart.getTableHeader().setReorderingAllowed(false);
+        tableCart.getTableHeader().setResizingAllowed(false);
         JScrollPane scrollPane = new JScrollPane(tableCart);
         scrollPane.setPreferredSize(new Dimension(600, 300)); 
         add(scrollPane, BorderLayout.CENTER);
@@ -65,22 +65,20 @@ public class CheckOutPanel extends JPanel {
         
         btnPay.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // 1. Validate dữ liệu đầu vào
                 if (cartModel.getRowCount() == 0) {
-                    JOptionPane.showMessageDialog(null, "Giỏ hàng đang trống!");
+                    JOptionPane.showMessageDialog(null, "The shopping cart is empty!");
                     return;
                 }
                 
                 String employeeIdStr = jtextFieldEmployeeID.getText().trim();
                 if (employeeIdStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Vui lòng tìm và chọn nhân viên (người mượn) trước!");
+                    JOptionPane.showMessageDialog(null, "Please find and select the employee (borrower) first!");
                     return;
                 }
 
-                int employeeId = Integer.parseInt(employeeIdStr); // ID người mượn
+                int employeeId = Integer.parseInt(employeeIdStr); 
                 double totalFee = 0;
                 
-                // Tính lại tổng tiền lần cuối cho chắc chắn
                 try {
                     String totalStr = lblTotalAmount.getText().replace("$", "").trim();
                     totalFee = Double.parseDouble(totalStr.replace(",", "."));
@@ -111,14 +109,14 @@ public class CheckOutPanel extends JPanel {
                     
                     int affectedRows = psMaster.executeUpdate();
                     if (affectedRows == 0) {
-                        throw new SQLException("Tạo phiếu mượn thất bại, không có dòng nào được thêm.");
+                        throw new SQLException("Create Loan Failed, No lines were added..");
                     }
                     int masterId = 0;
                     rsKeys = psMaster.getGeneratedKeys();
                     if (rsKeys.next()) {
                         masterId = rsKeys.getInt(1);
                     } else {
-                        throw new SQLException("Tạo phiếu mượn thất bại, không lấy được ID.");
+                        throw new SQLException("Create Loan Failed, can not catch ID.");
                     }
 
                     String sqlDetail = "INSERT INTO loan_details (loan_master_id, book_id, status) VALUES (?, ?, ?)";
@@ -128,31 +126,25 @@ public class CheckOutPanel extends JPanel {
                     psUpdateBook = conn.prepareStatement(sqlUpdateBook);
 
                     for (int i = 0; i < cartModel.getRowCount(); i++) {
-                        // Lấy Book ID từ cột 0
                         int bookId = Integer.parseInt(cartModel.getValueAt(i, 0).toString());
                         
-                        // --- Tạo Detail ---
                         psDetail.setInt(1, masterId);
                         psDetail.setInt(2, bookId);
-                        psDetail.setString(3, "Good"); // Trạng thái sách lúc mượn
-                        psDetail.addBatch(); // Gom lại chạy 1 lần cho nhanh
+                        psDetail.setString(3, "Good"); 
+                        psDetail.addBatch();
 
-                        // --- Trừ tồn kho sách ---
                         psUpdateBook.setInt(1, bookId);
                         psUpdateBook.addBatch();
                     }
 
-                    // Thực thi Batch
                     psDetail.executeBatch();
                     psUpdateBook.executeBatch();
 
-                    // 5. Commit Transaction (Lưu tất cả thay đổi)
                     conn.commit();
                     
                     JOptionPane.showMessageDialog(null, "Check Out thành công! Mã phiếu: " + masterId);
                     
-                    // 6. Reset giao diện
-                    cartModel.setRowCount(0); // Xóa bảng
+                    cartModel.setRowCount(0); 
                     lblTotalAmount.setText("0.0 $");
                     jtextFieldEmployeeID.setText("");
                     jtextFieldUsername.setText("");
@@ -161,7 +153,6 @@ public class CheckOutPanel extends JPanel {
                     jtextFieldFindEmployee.setText("");
 
                 } catch (Exception ex) {
-                    // Nếu có lỗi, Rollback (Hoàn tác) lại toàn bộ
                     try {
                         if (conn != null) conn.rollback();
                     } catch (SQLException e1) {
@@ -170,7 +161,6 @@ public class CheckOutPanel extends JPanel {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Lỗi Check Out: " + ex.getMessage());
                 } finally {
-                    // Đóng kết nối
                     try {
                         if (rsKeys != null) rsKeys.close();
                         if (psMaster != null) psMaster.close();
@@ -303,7 +293,7 @@ public class CheckOutPanel extends JPanel {
         Account acc = accountModel.findByUsernameOrEmployeeId(keyword);
 
         if (acc != null) {
-            jtextFieldEmployeeID.setText(String.valueOf(acc.getId()));
+            jtextFieldEmployeeID.setText(String.valueOf(acc.getEmployee_id()));
             jtextFieldUsername.setText(acc.getUsername());
             jtextFieldName.setText(acc.getName());
             jtextFieldDepartment.setText(acc.getDepartment_name());

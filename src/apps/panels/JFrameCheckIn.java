@@ -378,7 +378,6 @@ public class JFrameCheckIn extends JFrame {
         }
 
         String masterStatus = isFinished ? "Completed" : "Borrowing"; 
-        // ===================================================
         
         String sqlUpd = "UPDATE loan_master SET total_late_fee = ?, total_compensation_fee = ?, status = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlUpd)) {

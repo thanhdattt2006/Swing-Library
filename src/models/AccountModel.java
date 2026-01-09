@@ -271,14 +271,11 @@ public class AccountModel {
 	        
 	        String sql = "SELECT a.*, d.name AS dept_name " + "FROM account a "
 	                   + "LEFT JOIN department d ON a.department_id = d.id " 
-	                   + "WHERE a.username LIKE ? OR a.employee_id LIKE ?";
+	                   + "WHERE a.username = ? OR a.employee_id = ?";
 
 	        ps = conn.prepareStatement(sql);
-	        
-	        String searchPattern = "%" + keyword + "%";
-	        
-	        ps.setString(1, searchPattern);
-	        ps.setString(2, searchPattern);
+	        ps.setString(1, keyword.trim());
+	        ps.setString(2, keyword.trim());
 
 	        rs = ps.executeQuery();
 
@@ -286,7 +283,7 @@ public class AccountModel {
 	            acc = new Account();
 	            acc.setId(rs.getInt("id"));
 	            acc.setUsername(rs.getString("username"));
-	            acc.setName(rs.getString("name"));
+	            acc.setName(rs.getString("name")); 	            
 	            acc.setEmployee_id(rs.getString("employee_id"));
 	            acc.setDepartment_name(rs.getString("dept_name"));
 	        }
