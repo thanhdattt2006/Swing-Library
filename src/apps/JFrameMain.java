@@ -20,7 +20,7 @@ import entities.Account;
 public class JFrameMain extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
+	public static CheckOutPanel checkOutPanel;
 	private JPanel contentPane;
 	private JPanel panelNavigate;
 	private JPanel jpanelMainPage;
@@ -114,10 +114,10 @@ public class JFrameMain extends JFrame {
 			// panel placeholder để test
 			jpanelMainPage.add(new LoanHistoryPanel(), MenuType.LOAN_HISTORY.name());
 			jpanelMainPage.add(new BookPanel(this), MenuType.BOOK.name());
-
 			jpanelMainPage.add(new AuthorPanel(), MenuType.AUTHOR.name());
 			jpanelMainPage.add(new CategoryPanel(), MenuType.CATEGORY.name());
-			jpanelMainPage.add(new CheckOutPanel(), MenuType.CHECKOUT.name());
+			checkOutPanel = new CheckOutPanel();
+			jpanelMainPage.add(checkOutPanel, MenuType.CHECKOUT.name());
 
 			buildMenu(LIBRARIAN_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.BOOK.name());
@@ -127,11 +127,8 @@ public class JFrameMain extends JFrame {
 			BookPanel bookPanel = new BookPanel(this);
 			bookPanel.hideActionPanel();
 			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
-
-			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
 			jpanelMainPage.add(new MyLoansPanel(currentAccount.getId()), MenuType.MY_LOANS.name());
 			jpanelMainPage.add(new MyInforEmployeePanel(currentAccount.getId()), MenuType.MY_INFOR.name());
-
 			buildMenu(EMPLOYEE_MENU);
 			cardLayout.show(jpanelMainPage, MenuType.BOOK.name()); // 👈 Mặc định Book
 			break;

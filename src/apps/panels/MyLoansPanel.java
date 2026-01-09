@@ -33,7 +33,6 @@ public class MyLoansPanel extends JPanel {
 		topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.Y_AXIS));
 		topWrapper.setBackground(mainBg);
 
-		// ===== HEADER (GIỐNG MyInforEmployeePanel) =====
 		JPanel header = new JPanel(new GridBagLayout());
 		header.setBackground(new Color(173, 198, 219));
 		header.setPreferredSize(new Dimension(0, 70));
@@ -51,7 +50,7 @@ public class MyLoansPanel extends JPanel {
 		JPanel centerWrapper = new JPanel(new BorderLayout());
 		centerWrapper.setBackground(mainBg);
 
-		// 👉 tạo khoảng cách giữa header và table
+		// tạo khoảng cách giữa header và table
 		centerWrapper.setBorder(BorderFactory.createEmptyBorder(15, 20, 20, 20));
 
 		initTable();
@@ -69,13 +68,15 @@ public class MyLoansPanel extends JPanel {
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // 👈 nhân viên chỉ xem
+				return false; // nhân viên chỉ xem
 			}
 		};
 
 		table = new JTable(tableModel);
 		table.setRowHeight(32);
 		table.setFillsViewportHeight(true);
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
 	}
 
 	private void loadData() {
