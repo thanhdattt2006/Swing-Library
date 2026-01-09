@@ -39,25 +39,22 @@ public class JFrameCheckIn extends JFrame {
     private JPanel contentPane;
     private JTextField jtextFieldId;
     private JTextField jtextFieldLoanMasterID;
-    private JTextField jtextFieldBookTitle; 
+    private JTextField jtextFieldBookTitle;
     private JTextField jtextFieldLateFee;
     private JTextField jtextFieldCompensationFee;
     private JDateChooser jdateChooserReturnDate;
     private JComboBox<String> jcomboBoxStatus;
 
-    private double lateFeePerDay;
-    private double lostPercent;
-    private double damagedPercent;
-    
-    private int currentDetailId; 
-    private int masterId;        
-    private int bookId;          
+    private double lateFeePerDay = 0;
+    private double lostPercent = 0;
+    private double damagedPercent = 0;
+
+    private int currentDetailId;
+    private int masterId;
+    private int bookId;
     private double bookPrice;
     private LocalDate dueDate;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -67,8 +64,7 @@ public class JFrameCheckIn extends JFrame {
 
         EventQueue.invokeLater(() -> {
             try {
-                // Test với ID = 1
-                JFrameCheckIn frame = new JFrameCheckIn(1); 
+                JFrameCheckIn frame = new JFrameCheckIn(1);
                 frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -83,72 +79,69 @@ public class JFrameCheckIn extends JFrame {
         this.currentDetailId = detailId;
 
         setTitle("Check In Book");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 497, 449);
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
 
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
-        
-        JLabel lblNewLabel = new JLabel("Detail ID");
-        lblNewLabel.setBounds(72, 108, 60, 16);
-        contentPane.add(lblNewLabel);
-        
+
+        // --- UI COMPONENTS ---
+        JLabel lblDetailId = new JLabel("Detail ID");
+        lblDetailId.setBounds(72, 108, 60, 16);
+        contentPane.add(lblDetailId);
+
         jtextFieldId = new JTextField();
         jtextFieldId.setEditable(false);
         jtextFieldId.setBounds(209, 102, 201, 28);
         contentPane.add(jtextFieldId);
-        jtextFieldId.setColumns(10);
-        
-        JLabel lblNewLabel_1 = new JLabel("Loan Master ID");
-        lblNewLabel_1.setBounds(72, 135, 100, 16);
-        contentPane.add(lblNewLabel_1);
-        
+
+        JLabel lblMasterId = new JLabel("Loan Master ID");
+        lblMasterId.setBounds(72, 135, 100, 16);
+        contentPane.add(lblMasterId);
+
         jtextFieldLoanMasterID = new JTextField();
         jtextFieldLoanMasterID.setEditable(false);
         jtextFieldLoanMasterID.setBounds(209, 135, 201, 28);
         contentPane.add(jtextFieldLoanMasterID);
-        jtextFieldLoanMasterID.setColumns(10);
-        
-        JLabel lblNewLabel_2 = new JLabel("Book Title");
-        lblNewLabel_2.setBounds(72, 174, 80, 16);
-        contentPane.add(lblNewLabel_2);
-        
+
+        JLabel lblBookTitle = new JLabel("Book Title");
+        lblBookTitle.setBounds(72, 174, 80, 16);
+        contentPane.add(lblBookTitle);
+
         jtextFieldBookTitle = new JTextField();
-        jtextFieldBookTitle.setEditable(false); 
+        jtextFieldBookTitle.setEditable(false);
         jtextFieldBookTitle.setBounds(209, 168, 201, 28);
         contentPane.add(jtextFieldBookTitle);
-        jtextFieldBookTitle.setColumns(10);
-        
-        JLabel lblNewLabel_3 = new JLabel("Late Fee");
-        lblNewLabel_3.setBounds(72, 207, 80, 16);
-        contentPane.add(lblNewLabel_3);
-        
+
+        JLabel lblLateFee = new JLabel("Late Fee");
+        lblLateFee.setBounds(72, 207, 80, 16);
+        contentPane.add(lblLateFee);
+
         jtextFieldLateFee = new JTextField();
-        jtextFieldLateFee.setEditable(false);
+        jtextFieldLateFee.setEditable(true); 
         jtextFieldLateFee.setBounds(209, 201, 201, 28);
         contentPane.add(jtextFieldLateFee);
-        jtextFieldLateFee.setColumns(10);
-        
-        JLabel lblNewLabel_4 = new JLabel("Compensation Fee");
-        lblNewLabel_4.setBounds(72, 240, 120, 16);
-        contentPane.add(lblNewLabel_4);
-        
+
+        JLabel lblCompFee = new JLabel("Compensation Fee");
+        lblCompFee.setBounds(72, 240, 120, 16);
+        contentPane.add(lblCompFee);
+
         jtextFieldCompensationFee = new JTextField();
-        jtextFieldCompensationFee.setEditable(false);
+        jtextFieldCompensationFee.setEditable(true);
         jtextFieldCompensationFee.setBounds(209, 234, 201, 28);
         contentPane.add(jtextFieldCompensationFee);
-        jtextFieldCompensationFee.setColumns(10);
-        
-        JLabel lblNewLabel_5 = new JLabel("Return Date");
-        lblNewLabel_5.setBounds(72, 267, 80, 16);
-        contentPane.add(lblNewLabel_5);
-        
+
+        JLabel lblReturnDate = new JLabel("Return Date");
+        lblReturnDate.setBounds(72, 267, 80, 16);
+        contentPane.add(lblReturnDate);
+
         jdateChooserReturnDate = new JDateChooser();
-        jdateChooserReturnDate.setDateFormatString("yyyy-MM-dd");
+        jdateChooserReturnDate.setDateFormatString("dd-MM-yyyy");
         jdateChooserReturnDate.setBounds(209, 267, 201, 28);
+        jdateChooserReturnDate.setDate(new Date()); 
         contentPane.add(jdateChooserReturnDate);
 
         jdateChooserReturnDate.addPropertyChangeListener(new PropertyChangeListener() {
@@ -159,33 +152,33 @@ public class JFrameCheckIn extends JFrame {
                 }
             }
         });
-        
-        JLabel lblNewLabel_6 = new JLabel("Status Checkin");
-        lblNewLabel_6.setBounds(72, 305, 100, 16);
-        contentPane.add(lblNewLabel_6);
-        
-        jcomboBoxStatus = new JComboBox<>(); 
+
+        JLabel lblStatus = new JLabel("Status Checkin");
+        lblStatus.setBounds(72, 305, 100, 16);
+        contentPane.add(lblStatus);
+
+        jcomboBoxStatus = new JComboBox<>();
         jcomboBoxStatus.setBounds(209, 300, 201, 26);
         jcomboBoxStatus.addItem("Good");
         jcomboBoxStatus.addItem("Damaged");
         jcomboBoxStatus.addItem("Lost");
         jcomboBoxStatus.addItem("Repaired");
         contentPane.add(jcomboBoxStatus);
-        
+
         jcomboBoxStatus.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 calculateAndShowFees();
             }
         });
-        
+
         JButton jButtonConfirm = new JButton("Confirm");
         jButtonConfirm.setBounds(160, 338, 80, 28);
         contentPane.add(jButtonConfirm);
-        
+
         JButton jbuttonCancel = new JButton("Cancel");
         jbuttonCancel.setBounds(271, 338, 80, 28);
         contentPane.add(jbuttonCancel);
-        
+
         jbuttonCancel.addActionListener(e -> dispose());
 
         jButtonConfirm.addActionListener(new ActionListener() {
@@ -193,14 +186,14 @@ public class JFrameCheckIn extends JFrame {
                 processCheckIn();
             }
         });
-        
+
         JPanel panel = new JPanel();
         panel.setAlignmentY(Component.TOP_ALIGNMENT);
         panel.setBackground(SystemColor.activeCaption);
         panel.setBounds(0, 0, 495, 68);
         contentPane.add(panel);
         panel.setLayout(null);
-        
+
         JLabel lblHeader = new JLabel("Check In Book");
         lblHeader.setBounds(0, 17, 495, 28);
         lblHeader.setForeground(SystemColor.text);
@@ -208,12 +201,12 @@ public class JFrameCheckIn extends JFrame {
         lblHeader.setHorizontalAlignment(SwingConstants.CENTER);
         lblHeader.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(lblHeader);
-        if (detailId > 0) { 
-            loadSettings(); 
-            loadData();     
+
+        if (this.currentDetailId > 0) {
+            loadSettings();
+            loadData();
         }
     }
-    
 
     public JFrameCheckIn() {
         this(0);
@@ -223,7 +216,7 @@ public class JFrameCheckIn extends JFrame {
         try (Connection conn = ConnectDB.connection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM settings LIMIT 1")) {
-            
+
             if (rs.next()) {
                 this.lateFeePerDay = rs.getDouble("late_fee_per_day");
                 this.lostPercent = rs.getDouble("lost_compensation_fee");
@@ -240,23 +233,22 @@ public class JFrameCheckIn extends JFrame {
                      "JOIN loan_master m ON d.loan_master_id = m.id " +
                      "JOIN book b ON d.book_id = b.id " +
                      "WHERE d.id = ?";
-        
+
         try (Connection conn = ConnectDB.connection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+
             ps.setInt(1, this.currentDetailId);
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 jtextFieldId.setText(String.valueOf(rs.getInt("id")));
                 jtextFieldLoanMasterID.setText(String.valueOf(rs.getInt("loan_master_id")));
-                
-                jtextFieldBookTitle.setText(rs.getString("title")); 
-                
+                jtextFieldBookTitle.setText(rs.getString("title"));
+
                 this.masterId = rs.getInt("loan_master_id");
                 this.bookId = rs.getInt("book_id");
                 this.bookPrice = rs.getDouble("price");
-                
+
                 java.sql.Date sqlDate = rs.getDate("due_date");
                 if (sqlDate != null) {
                     this.dueDate = sqlDate.toLocalDate();
@@ -264,12 +256,11 @@ public class JFrameCheckIn extends JFrame {
                     this.dueDate = LocalDate.now();
                 }
 
-                jdateChooserReturnDate.setDate(new Date()); 
-                calculateAndShowFees(); 
+                calculateAndShowFees();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error!");
+            JOptionPane.showMessageDialog(this, "Error loading data!");
         }
     }
 
@@ -300,28 +291,35 @@ public class JFrameCheckIn extends JFrame {
 
     private void processCheckIn() {
         if (jdateChooserReturnDate.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Choose Return Date!");
+            JOptionPane.showMessageDialog(this, "Please choose Return Date!");
             return;
         }
 
-        double lateFee = Double.parseDouble(jtextFieldLateFee.getText());
-        double compFee = Double.parseDouble(jtextFieldCompensationFee.getText());
+        double lateFee = 0;
+        double compFee = 0;
+
+        try {
+            String lateTxt = jtextFieldLateFee.getText().trim().replace(",", ".");
+            if (!lateTxt.isEmpty()) lateFee = Double.parseDouble(lateTxt);
+
+            String compTxt = jtextFieldCompensationFee.getText().trim().replace(",", ".");
+            if (!compTxt.isEmpty()) compFee = Double.parseDouble(compTxt);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid Fee format! Please enter numbers only.");
+            return;
+        }
+
         LocalDate returnDate = jdateChooserReturnDate.getDate().toInstant()
                                 .atZone(ZoneId.systemDefault()).toLocalDate();
         String statusUI = (String) jcomboBoxStatus.getSelectedItem();
-        
-        String statusDetailDB = "Good"; 
-        
-        if ("Lost".equals(statusUI)) {
-            statusDetailDB = "Lost";
-        } else if ("Damaged".equals(statusUI)) {
-            statusDetailDB = "Damaged";
-        }
+
+        String statusDetailDB = statusUI; 
 
         Connection conn = null;
         try {
             conn = ConnectDB.connection();
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false); 
+
             String sqlUpdateDetail = "UPDATE loan_details SET return_date = ?, status = ?, late_fee = ?, compensation_fee = ? WHERE id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sqlUpdateDetail)) {
                 ps.setDate(1, java.sql.Date.valueOf(returnDate));
@@ -332,31 +330,29 @@ public class JFrameCheckIn extends JFrame {
                 ps.executeUpdate();
             }
 
-            if ("Good".equals(statusUI)) {
+            if ("Good".equalsIgnoreCase(statusUI) || "Repaired".equalsIgnoreCase(statusUI)) {
                 String sqlUpdateBook = "UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?";
                 try (PreparedStatement ps = conn.prepareStatement(sqlUpdateBook)) {
-                    ps.setInt(1, this.bookId); 
+                    ps.setInt(1, this.bookId);
                     ps.executeUpdate();
                 }
-            } else {
-            	
             }
 
             updateMaster(conn, masterId);
 
             conn.commit(); 
-            
-            JOptionPane.showMessageDialog(this, "Success!");
-            this.dispose(); 
+            JOptionPane.showMessageDialog(this, "Check-in Successful!");
+            this.dispose();
 
         } catch (SQLException e) {
             try { if (conn != null) conn.rollback(); } catch (SQLException ex) {}
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, " Save Error: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Save Error: " + e.getMessage());
         } finally {
             try { if (conn != null) conn.close(); } catch (SQLException e) {}
         }
     }
+
     private void updateMaster(Connection conn, int mId) throws SQLException {
         String sqlSum = "SELECT SUM(late_fee), SUM(compensation_fee) FROM loan_details WHERE loan_master_id = ?";
         double totalLate = 0, totalComp = 0;
@@ -370,20 +366,20 @@ public class JFrameCheckIn extends JFrame {
         }
 
         String sqlCheck = "SELECT COUNT(*) FROM loan_details WHERE loan_master_id = ? AND return_date IS NULL";
-        boolean isFinished = false;
+        boolean isAllReturned = false;
         try (PreparedStatement ps = conn.prepareStatement(sqlCheck)) {
             ps.setInt(1, mId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) isFinished = (rs.getInt(1) == 0);
+            if (rs.next()) isAllReturned = (rs.getInt(1) == 0);
         }
 
-        String masterStatus = isFinished ? "Completed" : "Borrowing"; 
-        
+        String masterStatus = isAllReturned ? "Completed" : "Borrowing";
+
         String sqlUpd = "UPDATE loan_master SET total_late_fee = ?, total_compensation_fee = ?, status = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlUpd)) {
             ps.setDouble(1, totalLate);
             ps.setDouble(2, totalComp);
-            ps.setString(3, masterStatus); 
+            ps.setString(3, masterStatus);
             ps.setInt(4, mId);
             ps.executeUpdate();
         }

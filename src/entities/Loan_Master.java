@@ -63,14 +63,6 @@ public class Loan_Master {
 		this.due_date = due_date;
 	}
 
-	public double getTotal_compensation_fee() {
-		return total_compensation_fee;
-	}
-
-	public void setTotal_compensation_fee(double total_compensation_fee) {
-		this.total_compensation_fee = total_compensation_fee;
-	}
-
 	public double getTotal_deposit_fee() {
 		return total_deposit_fee;
 	}
@@ -79,13 +71,11 @@ public class Loan_Master {
 		this.total_deposit_fee = total_deposit_fee;
 	}
 
-	public double getTotal_late_fee() {
-		return total_late_fee;
-	}
+	public double getTotal_late_fee() { return total_late_fee; }
+    public void setTotal_late_fee(double total_late_fee) { this.total_late_fee = total_late_fee; }
 
-	public void setTotal_late_fee(double total_late_fee) {
-		this.total_late_fee = total_late_fee;
-	}
+    public double getTotal_compensation_fee() { return total_compensation_fee; }
+    public void setTotal_compensation_fee(double total_compensation_fee) { this.total_compensation_fee = total_compensation_fee; }
 
 	public int getTotal_quantity() {
 		return total_quantity;

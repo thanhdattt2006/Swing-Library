@@ -20,7 +20,8 @@ public class LoanMasterModel {
         String dbStatusString = rs.getString("status");
         String dbStatus = rs.getString("status"); 
         master.setStatus(LoanStatus.fromString(dbStatus));
-        master.setTotal_deposit_fee(rs.getDouble("total_late_fee"));
+        master.setTotal_late_fee(rs.getDouble("total_late_fee")); 
+        master.setTotal_compensation_fee(rs.getDouble("total_compensation_fee"));
         return master;
     }
 
