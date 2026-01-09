@@ -260,4 +260,45 @@ public class AccountModel {
 		return result;
 	}
 
+	public Account findByUsernameOrEmployeeId(String keyword) {
+		String sql = """
+				    SELECT
+				        a.id,
+				        a.employee_id,
+				        a.username,
+				        a.name,
+				        a.department_id,
+				        d.name AS department_name
+				    FROM account a
+				    LEFT JOIN department d ON a.department_id = d.id
+				    WHERE a.username = ?
+				       OR a.employee_id = ?
+				    LIMIT 1
+				""";
+
+		try (Connection conn = ConnectDB.connection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, keyword);
+			ps.setString(2, keyword);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				Account acc = new Account();
+				acc.setId(rs.getInt("id"));
+				acc.setEmployee_id(rs.getString("employee_id"));
+				acc.setUsername(rs.getString("username"));
+				acc.setName(rs.getString("name"));
+				acc.setDepartment_id(rs.getInt("department_id"));
+				acc.setAddress(rs.getString("department_name"));
+
+				return acc;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 }
