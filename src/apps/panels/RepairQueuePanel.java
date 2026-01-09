@@ -84,12 +84,12 @@ public class RepairQueuePanel extends JPanel {
 		JButton jbuttonSearch_1_1 = new JButton("Search");
 		jbuttonSearch_1_1.setBounds(812, 17, 66, 28);
 		panelFilter.add(jbuttonSearch_1_1);
-		
+
 		JComboBox<String> jcomboBoxRole = new JComboBox<String>();
 		jcomboBoxRole.setPreferredSize(new Dimension(150, 25));
 		jcomboBoxRole.setBounds(445, 48, 186, 26);
 		panelFilter.add(jcomboBoxRole);
-		
+
 		JComboBox<String> jcomboBoxRole_1 = new JComboBox<String>();
 		jcomboBoxRole_1.setPreferredSize(new Dimension(150, 25));
 		jcomboBoxRole_1.setBounds(692, 48, 186, 26);
@@ -180,13 +180,13 @@ public class RepairQueuePanel extends JPanel {
 		int modelRow = table.convertRowIndexToModel(row);
 		int bookId = (int) tableModel.getValueAt(modelRow, 8);
 
-		int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận sách đã sửa xong?", "Confirm Repair",
+		int confirm = JOptionPane.showConfirmDialog(this, "Confirm that the book has been corrected?", "Confirm Repair",
 				JOptionPane.YES_NO_OPTION);
 
 		if (confirm == JOptionPane.YES_OPTION) {
 			try {
 				PreparedStatement ps1 = ConnectDB.connection()
-						.prepareStatement("UPDATE book SET status = 'NORMAL' WHERE id = ?");
+						.prepareStatement("UPDATE book SET status = 'GOOD' WHERE id = ?");
 				ps1.setInt(1, bookId);
 				ps1.executeUpdate();
 
@@ -195,7 +195,7 @@ public class RepairQueuePanel extends JPanel {
 				ps2.setInt(1, bookId);
 				ps2.executeUpdate();
 
-				JOptionPane.showMessageDialog(this, "✔ Đã cập nhật sách");
+				JOptionPane.showMessageDialog(this, "Book updated");
 
 				loadTableData();
 
