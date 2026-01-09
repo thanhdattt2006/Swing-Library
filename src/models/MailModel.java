@@ -1,127 +1,68 @@
 package models;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Message.RecipientType;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import java.io.*;
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 public class MailModel {
-	
-	public boolean send (String from, String to, String subject, String content, List<String> fileNames) {
-		try {
-			Message message = new MimeMessage(getSession());
-			message.setFrom(new InternetAddress(from));
-			message.setRecipient(RecipientType.TO, new InternetAddress(to));
-			message.setSubject(subject);
-			Multipart multipart = new MimeMultipart();
-			BodyPart bodyPart = new MimeBodyPart();
-			bodyPart.setContent(content, "text/html");
-			multipart.addBodyPart(bodyPart);
-			
-			if (!fileNames.isEmpty()) {
-				for (var fileName : fileNames) {
-					MimeBodyPart mimeBodyPart = new MimeBodyPart();
-					DataSource dataSrc = new FileDataSource(fileName);
-					mimeBodyPart.setDataHandler(new DataHandler(dataSrc));
-					multipart.addBodyPart(mimeBodyPart);
-				}
-			}
-			
-			message.setContent(multipart);
-			
-			Transport.send(message);
-			return true;
-		}	catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	public boolean send (String from, String to, String subject, String content, String fileName) {
-		try {
-			Message message = new MimeMessage(getSession());
-			message.setFrom(new InternetAddress(from));
-			message.setRecipient(RecipientType.TO, new InternetAddress(to));
-			message.setSubject(subject);
-			Multipart multipart = new MimeMultipart();
-			BodyPart bodyPart = new MimeBodyPart();
-			bodyPart.setContent(content, "text/html");
-			multipart.addBodyPart(bodyPart);
-			MimeBodyPart mimeBodyPart = new MimeBodyPart();
-			DataSource dataSrc = new FileDataSource(fileName);
-			mimeBodyPart.setDataHandler(new DataHandler(dataSrc));
-			multipart.addBodyPart(mimeBodyPart);
-			message.setContent(multipart);
-			Transport.send(message);
-			return true;
-		}	catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
 
-	public boolean send(String from, String to, String subject, String content) {
-		try {
-			Message message = new MimeMessage(getSession());
-			message.setFrom(new InternetAddress(from));
-			message.setRecipient(RecipientType.TO, new InternetAddress(to));
-			message.setSubject(content);
-			message.setContent(content, "text/html");
-			Transport.send(message);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+    // Fix lỗi setSubject và tối ưu gửi HTML
+    public boolean send(String from, String to, String subject, String content) {
+        try {
+            Message message = new MimeMessage(getSession());
+            message.setFrom(new InternetAddress(from));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject(subject); // Đã fix từ content sang subject
+            message.setContent(content, "text/html; charset=utf-8");
+            Transport.send(message);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	}
-	
-	private Properties loadConfig() {
-	    Properties prop = new Properties();
-	    // Doc file tu thu muc root
-	    try (InputStream input = new FileInputStream("config.properties")) {
-	        prop.load(input);
-	    } catch (IOException ex) {
-	        ex.printStackTrace();
-	    }
-	    return prop;
-	}
+    // Hàm đọc template HTML từ file
+    public String readTemplate(String filePath) {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content.toString();
+    }
 
-	private Session getSession() {
-		Properties config = loadConfig();
-	    String user = config.getProperty("MAIL_USER");
-	    String pass = config.getProperty("MAIL_PASS");
-		Properties properties = new Properties();
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
-		properties.put("mail.smtp.starttls.enable", "true");
-		properties.put("mail.smtp.host", "smtp.gmail.com");
-		properties.put("mail.smtp.port", "587");
-		Session session = Session.getDefaultInstance(properties, new Authenticator() {
+    private Session getSession() {
+        Properties config = loadConfig();
+        String user = config.getProperty("MAIL_USER");
+        String pass = config.getProperty("MAIL_PASS");
+        
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(user, pass);
-			}
+        return Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(user, pass);
+            }
+        });
+    }
 
-		});
-		return session;
-	}
+    private Properties loadConfig() {
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream("config.properties")) {
+            prop.load(input);
+        } catch (IOException ex) {
+            System.err.println("Quên file config.properties kìa mày!");
+        }
+        return prop;
+    }
 }
