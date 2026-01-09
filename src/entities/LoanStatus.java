@@ -1,9 +1,8 @@
 package entities;
 
 public enum LoanStatus {
-    ACTIVE("Active"),       
-    COMPLETED("Completed"), 
-    LATED("Lated");
+    BORROWING("Borrowing"),       
+    COMPLETED("Completed");
 
     private final String dbValue;
 
@@ -21,6 +20,6 @@ public enum LoanStatus {
                 return s;
             }
         }
-        return ACTIVE; 
+        return BORROWING; 
     }
 }

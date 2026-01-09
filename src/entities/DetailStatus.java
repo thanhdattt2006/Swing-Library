@@ -3,8 +3,8 @@ package entities;
 public enum DetailStatus {
     GOOD("Good"),    
     DAMAGED("Damaged"), 
+    REPAIRED("Repaired"), 
     LOST("Lost");       
-
     private final String dbValue;
 
     DetailStatus(String dbValue) {

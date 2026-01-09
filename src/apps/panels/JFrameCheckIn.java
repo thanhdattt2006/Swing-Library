@@ -166,9 +166,10 @@ public class JFrameCheckIn extends JFrame {
         
         jcomboBoxStatus = new JComboBox<>(); 
         jcomboBoxStatus.setBounds(209, 300, 201, 26);
-        jcomboBoxStatus.addItem("Normal");
+        jcomboBoxStatus.addItem("Good");
         jcomboBoxStatus.addItem("Damaged");
         jcomboBoxStatus.addItem("Lost");
+        jcomboBoxStatus.addItem("Repaired");
         contentPane.add(jcomboBoxStatus);
         
         jcomboBoxStatus.addActionListener(new ActionListener() {
@@ -268,7 +269,7 @@ public class JFrameCheckIn extends JFrame {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi tải dữ liệu!");
+            JOptionPane.showMessageDialog(this, "Error!");
         }
     }
 
@@ -299,7 +300,7 @@ public class JFrameCheckIn extends JFrame {
 
     private void processCheckIn() {
         if (jdateChooserReturnDate.getDate() == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày trả!");
+            JOptionPane.showMessageDialog(this, "Choose Return Date!");
             return;
         }
 
@@ -309,7 +310,7 @@ public class JFrameCheckIn extends JFrame {
                                 .atZone(ZoneId.systemDefault()).toLocalDate();
         String statusUI = (String) jcomboBoxStatus.getSelectedItem();
         
-        String statusDetailDB = "Normal"; 
+        String statusDetailDB = "Good"; 
         
         if ("Lost".equals(statusUI)) {
             statusDetailDB = "Lost";
@@ -331,33 +332,31 @@ public class JFrameCheckIn extends JFrame {
                 ps.executeUpdate();
             }
 
-            if ("Normal".equals(statusUI)) {
-                String sqlUpdateBook = "UPDATE book SET available = available + 1 WHERE id = ?";
+            if ("Good".equals(statusUI)) {
+                String sqlUpdateBook = "UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?";
                 try (PreparedStatement ps = conn.prepareStatement(sqlUpdateBook)) {
                     ps.setInt(1, this.bookId); 
                     ps.executeUpdate();
                 }
             } else {
-                // Tùy chọn: Nếu muốn cập nhật trạng thái sách là Lost/Damaged thì làm ở đây
-                // Hiện tại giữ nguyên theo yêu cầu không cộng available
+            	
             }
 
             updateMaster(conn, masterId);
 
             conn.commit(); 
             
-            JOptionPane.showMessageDialog(this, "Check In thành công!");
+            JOptionPane.showMessageDialog(this, "Success!");
             this.dispose(); 
 
         } catch (SQLException e) {
             try { if (conn != null) conn.rollback(); } catch (SQLException ex) {}
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi lưu: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, " Save Error: " + e.getMessage());
         } finally {
             try { if (conn != null) conn.close(); } catch (SQLException e) {}
         }
     }
-
     private void updateMaster(Connection conn, int mId) throws SQLException {
         String sqlSum = "SELECT SUM(late_fee), SUM(compensation_fee) FROM loan_details WHERE loan_master_id = ?";
         double totalLate = 0, totalComp = 0;
@@ -378,13 +377,14 @@ public class JFrameCheckIn extends JFrame {
             if (rs.next()) isFinished = (rs.getInt(1) == 0);
         }
 
-        String masterStatus = isFinished ? "Completed" : "Active";
+        String masterStatus = isFinished ? "Completed" : "Borrowing"; 
+        // ===================================================
         
         String sqlUpd = "UPDATE loan_master SET total_late_fee = ?, total_compensation_fee = ?, status = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlUpd)) {
             ps.setDouble(1, totalLate);
             ps.setDouble(2, totalComp);
-            ps.setString(3, masterStatus);
+            ps.setString(3, masterStatus); 
             ps.setInt(4, mId);
             ps.executeUpdate();
         }

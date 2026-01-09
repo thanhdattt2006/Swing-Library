@@ -82,14 +82,15 @@ public class LoanDetailsPanel extends JPanel {
 
 		table = new JTable(tableModel);
 		table.setRowHeight(35);
-
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
 		TableActionEvent event = new TableActionEvent() {
 			@Override
 			public void onAction(int row) {
 				int detailId = (int) table.getValueAt(row, 0);
 				String currentStatus = (String) table.getValueAt(row, 3);
 				if (currentStatus.equalsIgnoreCase("Returned") || currentStatus.equalsIgnoreCase("Lost")) {
-					JOptionPane.showMessageDialog(LoanDetailsPanel.this, "Sách này đã được trả hoặc xử lý rồi!");
+					JOptionPane.showMessageDialog(LoanDetailsPanel.this, "This book has already been returned or processed!");
 					return;
 				}
 				Window parentWindow = SwingUtilities.getWindowAncestor(LoanDetailsPanel.this);

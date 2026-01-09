@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 
 import entities.Loan_Master;
@@ -23,6 +25,12 @@ public class LoanHistoryPanel extends JPanel {
 
 	public LoanHistoryPanel() {
 		initComponents();
+		this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadData(); 
+            }
+        });
 		loadData();
 	}
 
@@ -53,7 +61,6 @@ public class LoanHistoryPanel extends JPanel {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		// Ô nhập tìm kiếm ID nhân viên
 		JLabel label = new JLabel("Employee ID:");
 		panel.add(label);
 
@@ -62,13 +69,11 @@ public class LoanHistoryPanel extends JPanel {
 		txtSearch = new JTextField(10);
 		panel_1.add(txtSearch);
 
-		// ComboBox lọc trạng thái
 		JLabel label_1 = new JLabel("Status:");
 		panel_1.add(label_1);
-		cboFilterStatus = new JComboBox<>(new String[] { "All", "Active", "Completed" });
+		cboFilterStatus = new JComboBox<>(new String[] { "All", "Borrowing", "Completed" });
 		panel_1.add(cboFilterStatus);
 
-		// Nút tìm kiếm
 		JButton btnSearch = new JButton("Search");
 		panel_1.add(btnSearch);
 		btnSearch.setBackground(new Color(255, 255, 255));
@@ -88,6 +93,8 @@ public class LoanHistoryPanel extends JPanel {
 		};
 
 		table = new JTable(tableModel);
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
 		table.setRowHeight(35);
 		table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
 		TableActionEvent event = new TableActionEvent() {
@@ -116,7 +123,7 @@ public class LoanHistoryPanel extends JPanel {
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
-			javax.swing.JOptionPane.showMessageDialog(this, "Lỗi mở chi tiết: " + e.getMessage());
+			javax.swing.JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
 		}
 	}
 
@@ -124,35 +131,25 @@ public class LoanHistoryPanel extends JPanel {
 		LoanMasterModel model = new LoanMasterModel();
 		List<Loan_Master> list = model.findAll();
 		fillTable(list);
+		this.revalidate(); 
+        this.repaint();
 	}
 
 	private void performSearch() {
-		LoanMasterModel model = new LoanMasterModel();
-		List<Loan_Master> list;
+	    LoanMasterModel model = new LoanMasterModel();
+	    
+	    String keyword = txtSearch.getText().trim();
+	    
+	    String statusFilter = "All";
+	    if (cboFilterStatus.getSelectedItem() != null) {
+	        statusFilter = cboFilterStatus.getSelectedItem().toString();
+	    }
 
-		String keyword = txtSearch.getText().trim();
-		String statusFilter = cboFilterStatus.getSelectedItem().toString();
+	    List<Loan_Master> list = model.search(keyword, statusFilter);
 
-		if (!keyword.isEmpty()) {
-			try {
-				int accountId = Integer.parseInt(keyword);
-				list = model.findByEmployeeId(accountId);
-			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this, "Error!");
-				return;
-			}
-		} else if (!statusFilter.equals("All")) {
-
-			list = model.findByStatus(statusFilter);
-		} else {
-
-			list = model.findAll();
-		}
-
-		fillTable(list);
+	    fillTable(list);
 	}
 
-	// --- ĐỔ DỮ LIỆU VÀO BẢNG ---
 	private void fillTable(List<Loan_Master> list) {
 		tableModel.setRowCount(0);
 

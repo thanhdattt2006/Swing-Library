@@ -154,7 +154,6 @@ public class LoanDetailsModel {
 	}
 
 	public Loan_Details getDetailById(int id) {
-		// 1. Sửa lại câu lệnh SQL cho đúng bảng
 		String sql = "SELECT * FROM loan_details WHERE id = ?";
 
 		try (Connection connect = ConnectDB.connection()) {
@@ -183,56 +182,69 @@ public class LoanDetailsModel {
 		return null;
 	}
 
-	public void checkInBook(int detailId, int bookId, String statusUI, LocalDate returnDate, double lateFee,
-			double compFee) {
-		Connection conn = null;
-		try {
-			conn = ConnectDB.connection();
-			conn.setAutoCommit(false);
+	public void checkInBook(int detailId, int bookId, String statusUI, LocalDate returnDate, double lateFee, double compFee) {
+	    Connection conn = null;
+	    PreparedStatement psDetail = null;
+	    PreparedStatement psBook = null;
 
-			String statusDB = "Good";
-			String bookStatus = "Available";
+	    try {
+	        conn = ConnectDB.connection();
+	        conn.setAutoCommit(false); 
+	        String statusEnum = "Good"; 
 
-			if (statusUI.equalsIgnoreCase("Lost")) {
-				statusDB = "Lost";
-				bookStatus = "Lost";
-			} else if (statusUI.equalsIgnoreCase("Damaged") || statusUI.equalsIgnoreCase("Bad")) {
-				statusDB = "Damaged";
-				bookStatus = "Damaged";
-			}
-			String sqlUpdateDetail = "UPDATE loan_details SET "
-					+ "return_date = ?, status = ?, late_fee = ?, compensation_fee = ? " + "WHERE id = ?";
+	        if (statusUI.equalsIgnoreCase("Lost")) {
+	            statusEnum = "Lost";
+	        } else if (statusUI.equalsIgnoreCase("Damaged")) {
+	            statusEnum = "Damaged";
+	        } else if (statusUI.equalsIgnoreCase("Repaired")) {
+	            statusEnum = "Repaired";
+	        }
+	        String sqlUpdateDetail = "UPDATE loan_details SET return_date = ?, status = ?, late_fee = ?, compensation_fee = ? WHERE id = ?";
+	        psDetail = conn.prepareStatement(sqlUpdateDetail);
+	        
+	        psDetail.setDate(1, java.sql.Date.valueOf(returnDate));
+	        psDetail.setString(2, statusEnum);
+	        psDetail.setDouble(3, lateFee);
+	        psDetail.setDouble(4, compFee);
+	        psDetail.setInt(5, detailId);
+	        
+	        int rowsDetail = psDetail.executeUpdate();
+	        if (rowsDetail == 0) {
+	            throw new SQLException("Error: No loan_details row with ID found = " + detailId);
+	        }
+	        if ("Good".equals(statusEnum) || "Repaired".equals(statusEnum)) {
+	            
+	            String sqlUpdateBook = "UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?";
+	            
+	            psBook = conn.prepareStatement(sqlUpdateBook);
+	            psBook.setInt(1, bookId);
+	            
+	            int rowsBook = psBook.executeUpdate();
+	            if (rowsBook == 0) {
+	                System.out.println("Warning: No book ID found = " + bookId + " to add the quantity.");
+	            }
+	        } else {
+	            System.out.println("Lost/Damaged Books -> Not added back to inventory.");
+	        }
+	        conn.commit(); 
+	        System.out.println("Check-in successful! (Detail ID: " + detailId + ", Status: " + statusEnum + ")");
 
-			try (PreparedStatement ps = conn.prepareStatement(sqlUpdateDetail)) {
-				ps.setDate(1, java.sql.Date.valueOf(returnDate));
-				ps.setString(2, statusDB);
-				ps.setDouble(3, lateFee);
-				ps.setDouble(4, compFee);
-				ps.setInt(5, detailId);
-				ps.executeUpdate();
-			}
-
-			String sqlUpdateBook = "UPDATE book SET status = ? WHERE id = ?";
-			try (PreparedStatement ps = conn.prepareStatement(sqlUpdateBook)) {
-				ps.setString(1, bookStatus);
-				ps.setInt(2, bookId);
-				ps.executeUpdate();
-			}
-
-			conn.commit();
-		} catch (SQLException e) {
-			try {
-				if (conn != null)
-					conn.rollback();
-			} catch (SQLException ex) {
-			}
-			e.printStackTrace();
-		} finally {
-			try {
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-			}
-		}
+	    } catch (SQLException e) {
+	        try {
+	            if (conn != null) conn.rollback();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	        e.printStackTrace();
+	        throw new RuntimeException("Check-in Error: " + e.getMessage()); 
+	    } finally {
+	        try {
+	            if (psDetail != null) psDetail.close();
+	            if (psBook != null) psBook.close();
+	            if (conn != null) conn.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
 	}
 }

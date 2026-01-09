@@ -55,30 +55,49 @@ public class LoanMasterModel {
         return null;
     }
 
-    public List<Loan_Master> findByEmployeeId(int accountId) {
+    public List<Loan_Master> search(String keyword, String status) {
         List<Loan_Master> list = new ArrayList<>();
-        String sql = "SELECT * FROM loan_master WHERE account_id = ? ORDER BY borrow_date DESC";
+        
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT l.*, a.username, a.employee_id ");
+        sql.append("FROM loan_master l ");
+        sql.append("JOIN account a ON l.account_id = a.id ");
+        sql.append("WHERE 1=1 "); 
+
+        if (keyword != null && !keyword.isEmpty()) {
+            sql.append("AND (a.employee_id LIKE ? OR a.username LIKE ?) ");
+        }
+
+        if (status != null && !status.equals("All")) {
+            sql.append("AND l.status = ? ");
+        }
+
+        sql.append("ORDER BY l.borrow_date DESC");
+
         try (Connection conn = ConnectDB.connection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, accountId);
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int index = 1;
+
+            if (keyword != null && !keyword.isEmpty()) {
+                String searchPattern = "%" + keyword + "%";
+                ps.setString(index++, searchPattern);
+                ps.setString(index++, searchPattern);
+            }
+
+            if (status != null && !status.equals("All")) {
+                ps.setString(index++, status);
+            }
+
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapResultSet(rs));
-        } catch (Exception e) { e.printStackTrace(); }
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return list;
     }
-
-    public List<Loan_Master> findByStatus(String status) {
-        List<Loan_Master> list = new ArrayList<>();
-        String sql = "SELECT * FROM loan_master WHERE status = ? ORDER BY borrow_date DESC";
-        try (Connection conn = ConnectDB.connection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapResultSet(rs));
-        } catch (Exception e) { e.printStackTrace(); }
-        return list;
-    }
-
 	public int createLoan(Loan_Master loan) {
 		String sql = "INSERT INTO loan_master (account_id, borrow_date, due_date, "
 				+ "total_compensation_fee, total_deposit_fee, total_late_fee, total_quantity, status) "

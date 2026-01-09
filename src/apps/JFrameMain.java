@@ -18,9 +18,8 @@ import app.enums.MenuType;
 import entities.Account;
 
 public class JFrameMain extends JFrame {
-
-	private static final long serialVersionUID = 1L;
 	public static CheckOutPanel checkOutPanel;
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panelNavigate;
 	private JPanel jpanelMainPage;
@@ -30,6 +29,9 @@ public class JFrameMain extends JFrame {
 	public void showCustomPanel(String name, JPanel panel) {
 		jpanelMainPage.add(panel, name);
 		cardLayout.show(jpanelMainPage, name);
+	}
+	public void showCheckOutPanel() {
+	    cardLayout.show(jpanelMainPage, MenuType.CHECKOUT.name());
 	}
 
 	// ===== MENU CONFIG =====
@@ -130,7 +132,7 @@ public class JFrameMain extends JFrame {
 			jpanelMainPage.add(new MyLoansPanel(currentAccount.getId()), MenuType.MY_LOANS.name());
 			jpanelMainPage.add(new MyInforEmployeePanel(currentAccount.getId()), MenuType.MY_INFOR.name());
 			buildMenu(EMPLOYEE_MENU);
-			cardLayout.show(jpanelMainPage, MenuType.BOOK.name()); // 👈 Mặc định Book
+			cardLayout.show(jpanelMainPage, MenuType.BOOK.name()); 
 			break;
 
 		}

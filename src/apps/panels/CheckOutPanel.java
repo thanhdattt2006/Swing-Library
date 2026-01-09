@@ -3,6 +3,8 @@ package apps.panels;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import entities.Account;
+import models.AccountModel;
 import models.ConnectDB;
 
 import java.awt.*;
@@ -33,7 +35,8 @@ public class CheckOutPanel extends JPanel {
         String[] columns = {"Book Id", "Title", "Author", "Category", "Deposit Fee"};
         cartModel = new DefaultTableModel(columns, 0);
         tableCart = new JTable(cartModel);
-        
+        tableCart.getTableHeader().setReorderingAllowed(false);//KHÔNG cho đổi vị trí cột
+        tableCart.getTableHeader().setResizingAllowed(false);//KHÔNG cho kéo cột
         JScrollPane scrollPane = new JScrollPane(tableCart);
         scrollPane.setPreferredSize(new Dimension(600, 300)); 
         add(scrollPane, BorderLayout.CENTER);
@@ -93,25 +96,23 @@ public class CheckOutPanel extends JPanel {
                     conn = ConnectDB.connection();
                     conn.setAutoCommit(false); 
 
-                    String sqlMaster = "INSERT INTO loan_master (employee_id, loan_date, due_date, total_deposit_fee, status) VALUES (?, ?, ?, ?, ?)";
+                    String sqlMaster = "INSERT INTO loan_master (account_id, borrow_date, due_date, total_deposit_fee, status) VALUES (?, ?, ?, ?, ?)";
                     
                     psMaster = conn.prepareStatement(sqlMaster, Statement.RETURN_GENERATED_KEYS);
                     
                     LocalDate loanDate = LocalDate.now();
-                    LocalDate dueDate = loanDate.plusDays(14); // Mặc định mượn 14 ngày
+                    LocalDate dueDate = loanDate.plusDays(14); 
                     
                     psMaster.setInt(1, employeeId);
                     psMaster.setDate(2, java.sql.Date.valueOf(loanDate));
                     psMaster.setDate(3, java.sql.Date.valueOf(dueDate));
                     psMaster.setDouble(4, totalFee);
-                    psMaster.setString(5, "Active"); // Trạng thái phiếu mượn
+                    psMaster.setString(5, "Borrowing"); 
                     
                     int affectedRows = psMaster.executeUpdate();
                     if (affectedRows == 0) {
                         throw new SQLException("Tạo phiếu mượn thất bại, không có dòng nào được thêm.");
                     }
-
-                    // 3. Lấy ID của Loan Master vừa tạo (VD: ID = 105)
                     int masterId = 0;
                     rsKeys = psMaster.getGeneratedKeys();
                     if (rsKeys.next()) {
@@ -120,13 +121,11 @@ public class CheckOutPanel extends JPanel {
                         throw new SQLException("Tạo phiếu mượn thất bại, không lấy được ID.");
                     }
 
-                    // 4. Duyệt bảng Cart để Insert vào LOAN_DETAILS và Update BOOK
                     String sqlDetail = "INSERT INTO loan_details (loan_master_id, book_id, status) VALUES (?, ?, ?)";
-                    String sqlBookUpdate = "UPDATE book SET available = available - 1 WHERE id = ?"; 
-                    // Hoặc: UPDATE book SET status = 'Borrowed' WHERE id = ? (Tùy logic của bạn)
+                    String sqlUpdateBook = "UPDATE book SET available_quantity = available_quantity - 1 WHERE id = ?";
 
                     psDetail = conn.prepareStatement(sqlDetail);
-                    psUpdateBook = conn.prepareStatement(sqlBookUpdate);
+                    psUpdateBook = conn.prepareStatement(sqlUpdateBook);
 
                     for (int i = 0; i < cartModel.getRowCount(); i++) {
                         // Lấy Book ID từ cột 0
@@ -240,6 +239,11 @@ public class CheckOutPanel extends JPanel {
         jtextFieldFindEmployee.setColumns(10);
         
         JButton jbuttonSearch = new JButton("Search");
+        jbuttonSearch.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		do_jbuttonSearch_actionPerformed(e);
+        	}
+        });
         panel_3.add(jbuttonSearch);
 
         btnRemove.addActionListener(e -> {
@@ -262,32 +266,53 @@ public class CheckOutPanel extends JPanel {
     }
     
     public void addBookToCart(int id, String title, String author, String category, double depositFee) {
-        // Kiểm tra xem sách đã tồn tại trong giỏ chưa (tránh trùng lặp)
         for (int i = 0; i < cartModel.getRowCount(); i++) {
             int existingId = Integer.parseInt(cartModel.getValueAt(i, 0).toString());
             if (existingId == id) {
-                JOptionPane.showMessageDialog(this, "Sách này đã có trong giỏ hàng!");
+                JOptionPane.showMessageDialog(this, "This book is already in the cart!");
                 return;
             }
         }
 
-        // Thêm dòng mới vào bảng
         cartModel.addRow(new Object[]{id, title, author, category, depositFee});
-        
-        // Cập nhật lại tổng tiền
+        tableCart.repaint(); 
+        this.revalidate(); 
+        this.repaint();
         updateTotalAmount();
     }
 
-    // 2. Hàm tính tổng tiền (Private helper)
     private void updateTotalAmount() {
         double total = 0;
         for (int i = 0; i < cartModel.getRowCount(); i++) {
-            // Cột giá tiền là cột index 4 (như bạn khai báo columns)
             Object value = cartModel.getValueAt(i, 4); 
             if (value != null) {
                 total += Double.parseDouble(value.toString());
             }
         }
         lblTotalAmount.setText(String.format("%.2f $", total));
+    }
+    protected void do_jbuttonSearch_actionPerformed(ActionEvent e) {
+        String keyword = jtextFieldFindEmployee.getText().trim();
+
+        if (keyword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter Username or Employee ID!");
+            return;
+        }
+
+        AccountModel accountModel = new AccountModel();
+        Account acc = accountModel.findByUsernameOrEmployeeId(keyword);
+
+        if (acc != null) {
+            jtextFieldEmployeeID.setText(String.valueOf(acc.getId()));
+            jtextFieldUsername.setText(acc.getUsername());
+            jtextFieldName.setText(acc.getName());
+            jtextFieldDepartment.setText(acc.getDepartment_name());
+        } else {
+            JOptionPane.showMessageDialog(this, "Not found employee with: " + keyword);
+            jtextFieldEmployeeID.setText("");
+            jtextFieldUsername.setText("");
+            jtextFieldName.setText("");
+            jtextFieldDepartment.setText("");
+        }
     }
 }

@@ -124,17 +124,17 @@ public class BookPanel extends JPanel {
 		jtableBooks.setRowHeight(123);
 		jtableBooks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// ❌ KHÔNG cho kéo cột
+		// â�Œ KHÃ”NG cho kÃ©o cá»™t
 		jtableBooks.getTableHeader().setReorderingAllowed(false);
 		jtableBooks.getTableHeader().setResizingAllowed(false);
 
 		TableColumnModel columnModel = jtableBooks.getColumnModel();
 		columnModel.getColumn(0).setPreferredWidth(106);
 
-		// Ẩn cột ID
+		// áº¨n cá»™t ID
 		columnModel.removeColumn(columnModel.getColumn(11));
 
-		// Renderer ảnh
+		// Renderer áº£nh
 		jtableBooks.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
 		scrollPane = new JScrollPane(jtableBooks);
@@ -197,7 +197,7 @@ public class BookPanel extends JPanel {
 		for (Book book : booksModel.findAll()) {
 			tableModel.addRow(new Object[] { book.getPhoto(), book.getIsbn(), book.getTitle(), book.getCall_number(),
 					book.getDescription(), book.getPrice(), book.getAuthor_name(), book.getCategory_name(),
-					book.getPublication_year(), book.getStock(), book.getAvailable_quantity(), // ✅ NEW
+					book.getPublication_year(), book.getStock(), book.getAvailable_quantity(), 
 					book.getId() });
 		}
 	}
@@ -205,19 +205,39 @@ public class BookPanel extends JPanel {
 	// ================= ACTIONS =================
 	private void doCheckOut(ActionEvent e) {
 		int selectedRow = jtableBooks.getSelectedRow();
-		if (selectedRow == -1) {
-			JOptionPane.showMessageDialog(this, "Please select a book");
-			return;
-		}
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a book");
+            return;
+        }
+        int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
+        try {
+            int bookId = Integer.parseInt(tableModel.getValueAt(modelRow, 11).toString()); 
+            String title = tableModel.getValueAt(modelRow, 2).toString();   
+            String author = tableModel.getValueAt(modelRow, 6).toString();  
+            String category = tableModel.getValueAt(modelRow, 7).toString(); 
+            
+            double price = 0;
+            Object priceObj = tableModel.getValueAt(modelRow, 5);
+            if (priceObj != null) {
+                price = Double.parseDouble(priceObj.toString());
+            }
 
-		int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
-		int bookId = (int) tableModel.getValueAt(modelRow, 11);
+            if (JFrameMain.checkOutPanel != null) {
+                JFrameMain.checkOutPanel.addBookToCart(bookId, title, author, category, price);
+                this.mainFrame.showCheckOutPanel(); 
+            } else {
+                System.out.println("Error: JFrameMain.checkOutPanel not found!");
+                JOptionPane.showMessageDialog(this, "System Error: Not found.");
+            }
 
-		JOptionPane.showMessageDialog(this, "Checkout book ID = " + bookId);
-	}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
 
 	// ================= ROLE SUPPORT =================
-	// Dùng cho EMPLOYEE
+	// DÃ¹ng cho EMPLOYEE
 	public void hideActionPanel() {
 		if (jpanelAction != null) {
 			jpanelAction.setVisible(false);

@@ -261,44 +261,46 @@ public class AccountModel {
 	}
 
 	public Account findByUsernameOrEmployeeId(String keyword) {
-		String sql = """
-				    SELECT
-				        a.id,
-				        a.employee_id,
-				        a.username,
-				        a.name,
-				        a.department_id,
-				        d.name AS department_name
-				    FROM account a
-				    LEFT JOIN department d ON a.department_id = d.id
-				    WHERE a.username = ?
-				       OR a.employee_id = ?
-				    LIMIT 1
-				""";
+	    Account acc = null;
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
 
-		try (Connection conn = ConnectDB.connection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setString(1, keyword);
-			ps.setString(2, keyword);
+	    try {
+	        conn = ConnectDB.connection();
+	        
+	        String sql = "SELECT a.*, d.name AS dept_name " + "FROM account a "
+	                   + "LEFT JOIN department d ON a.department_id = d.id " 
+	                   + "WHERE a.username LIKE ? OR a.employee_id LIKE ?";
 
-			ResultSet rs = ps.executeQuery();
+	        ps = conn.prepareStatement(sql);
+	        
+	        String searchPattern = "%" + keyword + "%";
+	        
+	        ps.setString(1, searchPattern);
+	        ps.setString(2, searchPattern);
 
-			if (rs.next()) {
-				Account acc = new Account();
-				acc.setId(rs.getInt("id"));
-				acc.setEmployee_id(rs.getString("employee_id"));
-				acc.setUsername(rs.getString("username"));
-				acc.setName(rs.getString("name"));
-				acc.setDepartment_id(rs.getInt("department_id"));
-				acc.setAddress(rs.getString("department_name"));
+	        rs = ps.executeQuery();
 
-				return acc;
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
+	        if (rs.next()) {
+	            acc = new Account();
+	            acc.setId(rs.getInt("id"));
+	            acc.setUsername(rs.getString("username"));
+	            acc.setName(rs.getString("name"));
+	            acc.setEmployee_id(rs.getString("employee_id"));
+	            acc.setDepartment_name(rs.getString("dept_name"));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (conn != null) conn.close();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return acc;
 	}
-
 }
