@@ -3,6 +3,8 @@ package apps.panels;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import entities.Loan_Details;
@@ -50,7 +52,7 @@ public class MyLoansPanel extends JPanel {
 		JPanel centerWrapper = new JPanel(new BorderLayout());
 		centerWrapper.setBackground(mainBg);
 
-		// tạo khoảng cách giữa header và table
+		// khoảng cách header ↔ table
 		centerWrapper.setBorder(BorderFactory.createEmptyBorder(15, 20, 20, 20));
 
 		initTable();
@@ -68,7 +70,7 @@ public class MyLoansPanel extends JPanel {
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // nhân viên chỉ xem
+				return false; // employee chỉ xem
 			}
 		};
 
@@ -88,12 +90,20 @@ public class MyLoansPanel extends JPanel {
 
 		for (Loan_Details d : list) {
 
-			String status = d.getStatus() != null ? d.getStatus().getDbValue() : "Unknown";
+			String status = (d.getStatus() != null) ? d.getStatus().getDbValue() : "Unknown";
 
-			String returnDate = (d.getReturn_date() == null) ? "Borrowing" : d.getReturn_date().toString();
+			String returnDate = formatReturnDate(d.getReturn_date());
 
 			tableModel.addRow(new Object[] { d.getId(), d.getBookTitle(), returnDate, status, d.getLate_fee(),
 					d.getCompensation_fee() });
 		}
+	}
+
+	// ===== FORMAT DATE =====
+	private String formatReturnDate(Date date) {
+		if (date == null) {
+			return "Borrowing";
+		}
+		return new SimpleDateFormat("dd/MM/yyyy").format(date);
 	}
 }

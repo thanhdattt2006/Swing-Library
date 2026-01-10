@@ -2,6 +2,8 @@ package apps.panels;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import entities.Account;
 import models.AccountModel;
@@ -19,6 +21,8 @@ public class MyInforEmployeePanel extends JPanel {
 	private JTextField txtAddress;
 	private JTextField txtDepartment;
 
+	private final SimpleDateFormat birthdayFormat = new SimpleDateFormat("dd/MM/yyyy");
+
 	public MyInforEmployeePanel(int accountId) {
 		setLayout(new BorderLayout());
 		setBackground(UIManager.getColor("Panel.background"));
@@ -35,8 +39,6 @@ public class MyInforEmployeePanel extends JPanel {
 		JPanel topWrapper = new JPanel();
 		topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.Y_AXIS));
 		topWrapper.setBackground(mainBg);
-
-		// ❌ KHÔNG CÒN margin top
 
 		// ===== HEADER =====
 		JPanel header = new JPanel(new GridBagLayout());
@@ -118,8 +120,13 @@ public class MyInforEmployeePanel extends JPanel {
 		txtAddress.setText(acc.getAddress());
 		txtDepartment.setText(acc.getDepartment_name());
 
-		if (acc.getBirthday() != null) {
-			txtBirthday.setText(acc.getBirthday().toString());
+		txtBirthday.setText(formatBirthday(acc.getBirthday()));
+	}
+
+	private String formatBirthday(Date date) {
+		if (date == null) {
+			return "";
 		}
+		return birthdayFormat.format(date);
 	}
 }
