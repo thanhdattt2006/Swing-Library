@@ -233,7 +233,7 @@ public class LoanDetailsModel {
 				throw new SQLException("Error: Loan slip details not found = " + detailId);
 			}
 
-			if ("Good".equals(statusEnum) || "Repaired".equals(statusEnum)) {
+			if ("Good".equals(statusEnum)) {
 				String sqlUpdateBook = "UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?";
 				psBook = conn.prepareStatement(sqlUpdateBook);
 				psBook.setInt(1, bookId);
