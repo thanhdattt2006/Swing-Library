@@ -62,7 +62,7 @@ public class SettingsPanel extends JPanel {
 //				do_button_actionPerformed(e);
 //			}
 //		});
-		jpanelAction.add(jbuttonAdd);
+//		jpanelAction.add(jbuttonAdd);
 		jbuttonEdit = new JButton("Edit");
 		jbuttonEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
