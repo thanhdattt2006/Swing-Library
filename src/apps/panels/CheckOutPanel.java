@@ -30,8 +30,13 @@ public class CheckOutPanel extends JPanel {
     private JTextField jtextFieldFindEmployee;
 
     private int currentAccountId = -1; 
+    
+    private double depositFeePerBook = 5.0; 
+    private int maxBorrowDays = 7;
 
     public CheckOutPanel() {
+        loadSettings();
+
         setLayout(new BorderLayout(10, 10));
 
         JPanel panelHeader = new JPanel();
@@ -74,11 +79,11 @@ public class CheckOutPanel extends JPanel {
         btnPay.setBackground(Color.WHITE); 
         btnPay.setForeground(new Color(0, 0, 0));
         panelButtons.add(btnPay); 
-                btnPay.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        performCheckOut();
-                    }
-                });
+        btnPay.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                performCheckOut();
+            }
+        });
         
         panelButtons.add(btnRemove); 
 
@@ -147,8 +152,26 @@ public class CheckOutPanel extends JPanel {
         });
     }
 
+    private void loadSettings() {
+        String sql = "SELECT deposit_fee_per_loan, max_borrow_days FROM settings LIMIT 1";
+        
+        try (Connection conn = ConnectDB.connection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            
+            if (rs.next()) {
+                double fee = rs.getDouble("deposit_fee_per_loan");
+                int days = rs.getInt("max_borrow_days");
+                
+                if(fee > 0) this.depositFeePerBook = fee;
+                if(days > 0) this.maxBorrowDays = days; 
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load settings, using defaults (Fee: 5.0, Days: 7)");
+        }
+    }
 
-    public void addBookToCart(int id, String title, String author, String category, double depositFee) {
+    public void addBookToCart(int id, String title, String author, String category, double originalPrice) {
         for (int i = 0; i < cartModel.getRowCount(); i++) {
             int existingId = Integer.parseInt(cartModel.getValueAt(i, 0).toString());
             if (existingId == id) {
@@ -156,7 +179,7 @@ public class CheckOutPanel extends JPanel {
                 return;
             }
         }
-        cartModel.addRow(new Object[]{id, title, author, category, depositFee});
+        cartModel.addRow(new Object[]{id, title, author, category, this.depositFeePerBook});
         updateTotalAmount();
     }
 
@@ -231,7 +254,8 @@ public class CheckOutPanel extends JPanel {
             psMaster = conn.prepareStatement(sqlMaster, Statement.RETURN_GENERATED_KEYS);
             
             LocalDate loanDate = LocalDate.now();
-            LocalDate dueDate = loanDate.plusDays(14); 
+            
+            LocalDate dueDate = loanDate.plusDays(this.maxBorrowDays); 
             
             psMaster.setInt(1, currentAccountId); 
             psMaster.setDate(2, java.sql.Date.valueOf(loanDate));
@@ -275,7 +299,7 @@ public class CheckOutPanel extends JPanel {
 
             conn.commit(); 
             
-            JOptionPane.showMessageDialog(null, "Check Out Successfully! Loan ID: " + masterId);
+            JOptionPane.showMessageDialog(null, "Check Out Successfully! Loan ID: " + masterId + "\nDue Date: " + dueDate);
             
             cartModel.setRowCount(0); 
             updateTotalAmount();

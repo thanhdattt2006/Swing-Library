@@ -121,9 +121,14 @@ public class LoanHistoryPanel extends JPanel {
             dialog.pack();
             dialog.setSize(1000, 700);
             dialog.setLocationRelativeTo(null);
-            dialog.setVisible(true); 
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    loadData(); 
+                }
+            });
 
-            loadData(); 
+            dialog.setVisible(true);
             
         } catch (Exception e) {
             e.printStackTrace();

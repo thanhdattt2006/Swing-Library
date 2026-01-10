@@ -56,12 +56,12 @@ public class SettingsPanel extends JPanel {
 		// ===== SOUTH - ACTION =====
 		JPanel jpanelAction = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 
-		jbuttonAdd = new JButton("Add");
-		jbuttonAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				do_button_actionPerformed(e);
-			}
-		});
+//		jbuttonAdd = new JButton("Add");
+//		jbuttonAdd.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				do_button_actionPerformed(e);
+//			}
+//		});
 		jpanelAction.add(jbuttonAdd);
 		jbuttonEdit = new JButton("Edit");
 		jbuttonEdit.addActionListener(new ActionListener() {
@@ -172,22 +172,22 @@ public class SettingsPanel extends JPanel {
 	public void refreshTable() {
 	    loadTableData();
 	}
-	protected void do_button_actionPerformed(ActionEvent e) {//button add
-		 // Tạo JDialog
-	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add Settings", true);
-	    
-	    // Tạo JPanel cho form
-	    AddSeting addPanel = new AddSeting(dialog, this);
-	    
-	    // Thêm panel vào dialog
-	    dialog.getContentPane().add(addPanel);
-	    
-	    // Cài đặt dialog
-	    dialog.setSize(465, 500);
-	    dialog.setResizable(false);
-	    dialog.setLocationRelativeTo(this); // Hiển thị giữa màn hình
-	    dialog.setVisible(true);
-	}
+//	protected void do_button_actionPerformed(ActionEvent e) {//button add
+//		 // Táº¡o JDialog
+//	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add Settings", true);
+//	    
+//	    // Táº¡o JPanel cho form
+//	    AddSeting addPanel = new AddSeting(dialog, this);
+//	    
+//	    // ThÃªm panel vÃ o dialog
+//	    dialog.getContentPane().add(addPanel);
+//	    
+//	    // CÃ i Ä‘áº·t dialog
+//	    dialog.setSize(465, 500);
+//	    dialog.setResizable(false);
+//	    dialog.setLocationRelativeTo(this); // Hiá»ƒn thá»‹ giá»¯a mÃ n hÃ¬nh
+//	    dialog.setVisible(true);
+//	}
 
 	protected void do_button_1_actionPerformed(ActionEvent e) { // button Edit
 		try {
@@ -205,7 +205,7 @@ public class SettingsPanel extends JPanel {
 			dialog.getContentPane().add(editSetting);
 			dialog.setSize(465, 540);
 			dialog.setResizable(false);
-			dialog.setLocationRelativeTo(this); // Hiển thị giữa màn hình
+			dialog.setLocationRelativeTo(this); // Hiá»ƒn thá»‹ giá»¯a mÃ n hÃ¬nh
 			dialog.setVisible(true);
 		} catch (Exception ex) {
 			   JOptionPane.showMessageDialog(this, 
@@ -223,11 +223,11 @@ public class SettingsPanel extends JPanel {
 	            throw new Exception("Please select a setting to delete!");
 	        }
 	        
-	        // Lấy ID từ row được chọn
+	        // Láº¥y ID tá»« row Ä‘Æ°á»£c chá»�n
 	        int id = Integer.parseInt(jtableAccountList.getValueAt(selectedRow, 0).toString());
 	        
 	        
-	        // Xác nhận trước khi xóa
+	        // XÃ¡c nháº­n trÆ°á»›c khi xÃ³a
 	        int confirm = JOptionPane.showConfirmDialog(this, 
 	            "Are you sure?", 
 	            "Confirm Delete", 
@@ -242,7 +242,7 @@ public class SettingsPanel extends JPanel {
 	                		"Success",
 
 	                    JOptionPane.INFORMATION_MESSAGE);
-	                refreshTable(); // Làm mới bảng
+	                refreshTable(); // LÃ m má»›i báº£ng
 	            } else {
 	                JOptionPane.showMessageDialog(this, 
 	                		"Deletion failed!",

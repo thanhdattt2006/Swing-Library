@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.SystemColor;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -20,6 +21,7 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -33,7 +35,7 @@ import com.toedter.calendar.JDateChooser;
 
 import models.ConnectDB;
 
-public class JFrameCheckIn extends JFrame {
+public class JFrameCheckIn extends JDialog {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
@@ -63,8 +65,8 @@ public class JFrameCheckIn extends JFrame {
         }
 
         EventQueue.invokeLater(() -> {
-            try {
-                JFrameCheckIn frame = new JFrameCheckIn(1);
+        	try {
+                JFrameCheckIn frame = new JFrameCheckIn(null, 1);
                 frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -75,7 +77,8 @@ public class JFrameCheckIn extends JFrame {
     /**
      * Create the frame.
      */
-    public JFrameCheckIn(int detailId) {
+    public JFrameCheckIn(Window parent,int detailId) {
+    	super(parent, "Check In Book", ModalityType.APPLICATION_MODAL);
         this.currentDetailId = detailId;
 
         setTitle("Check In Book");
@@ -209,7 +212,7 @@ public class JFrameCheckIn extends JFrame {
     }
 
     public JFrameCheckIn() {
-        this(0);
+        this(null,0);
     }
 
     private void loadSettings() {
@@ -281,8 +284,10 @@ public class JFrameCheckIn extends JFrame {
 
         if ("Lost".equals(status)) {
             compFee = bookPrice * (this.lostPercent / 100.0);
-        } else if ("Damaged".equals(status)) {
+        } else if ("Repaired".equals(status)) {
             compFee = bookPrice * (this.damagedPercent / 100.0);
+        } else if ("Damaged".equals(status)) {
+            compFee = bookPrice * (this.damagedPercent / 30.0);
         }
 
         jtextFieldLateFee.setText(String.format("%.0f", lateFee));
@@ -330,7 +335,7 @@ public class JFrameCheckIn extends JFrame {
                 ps.executeUpdate();
             }
 
-            if ("Good".equalsIgnoreCase(statusUI) || "Repaired".equalsIgnoreCase(statusUI)) {
+            if ("Good".equalsIgnoreCase(statusUI)) {
                 String sqlUpdateBook = "UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?";
                 try (PreparedStatement ps = conn.prepareStatement(sqlUpdateBook)) {
                     ps.setInt(1, this.bookId);
