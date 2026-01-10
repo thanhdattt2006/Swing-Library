@@ -50,6 +50,7 @@ public class JFrameCheckIn extends JDialog {
     private double lateFeePerDay = 0;
     private double lostPercent = 0;
     private double damagedPercent = 0;
+    private double repairedPercent = 0;
 
     private int currentDetailId;
     private int masterId;
@@ -223,7 +224,8 @@ public class JFrameCheckIn extends JDialog {
             if (rs.next()) {
                 this.lateFeePerDay = rs.getDouble("late_fee_per_day");
                 this.lostPercent = rs.getDouble("lost_compensation_fee");
-                this.damagedPercent = rs.getDouble("damaged_compensation_fee");
+                this.damagedPercent = rs.getDouble("lost_compensation_fee");
+                this.repairedPercent = rs.getDouble("damaged_compensation_fee");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -284,10 +286,10 @@ public class JFrameCheckIn extends JDialog {
 
         if ("Lost".equals(status)) {
             compFee = bookPrice * (this.lostPercent / 100.0);
-        } else if ("Repaired".equals(status)) {
-            compFee = bookPrice * (this.damagedPercent / 100.0);
         } else if ("Damaged".equals(status)) {
-            compFee = bookPrice * (this.damagedPercent / 30.0);
+            compFee = bookPrice * (this.damagedPercent / 100.0);
+        } else if ("Repaired".equals(status)) {
+        	compFee = bookPrice * (this.repairedPercent / 100.0);
         }
 
         jtextFieldLateFee.setText(String.format("%.0f", lateFee));
