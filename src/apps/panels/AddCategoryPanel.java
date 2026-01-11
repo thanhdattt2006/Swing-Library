@@ -118,7 +118,7 @@ public class AddCategoryPanel extends JPanel {
         		do_btnNewButton_actionPerformed(e);
         	}
         });
-        btnNewButton.setBackground(new Color(53, 255, 53));
+        btnNewButton.setBackground(new Color(0, 153, 76));
         panel.add(btnNewButton);
         
         JButton btnNewButton_1 = new JButton("Close");

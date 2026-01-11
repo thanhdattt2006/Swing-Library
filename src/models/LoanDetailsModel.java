@@ -248,4 +248,154 @@ public class LoanDetailsModel {
             }
         }
     }
+	
+	//findAllRepair
+		public List<Loan_Details> findAllRepair() {
+	    List<Loan_Details> list = new ArrayList<>();
+
+	    try {
+	        String sql = """
+	            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
+	        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
+	                a.name AS author_name,
+	                c.name AS category_name
+	            FROM loan_details ld
+	            JOIN book b       ON ld.book_id = b.id
+	            JOIN author a     ON b.author_id = a.id
+	            JOIN category c   ON b.category_id = c.id
+	            WHERE ld.status = 'Repaired';
+	        """;
+
+	        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            var ld = new Loan_Details();
+
+	            ld.setId(rs.getInt("id"));
+	            ld.setLoan_master_id(rs.getInt("loan_master_id"));
+	            ld.setBook_id(rs.getInt("book_id"));
+	            ld.setLate_fee(rs.getDouble("late_fee"));
+	            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
+	            ld.setReturn_date(rs.getDate("return_date"));
+	            String dbStatus = rs.getString("status");
+	    		ld.setStatus(DetailStatus.fromString(dbStatus));
+	            ld.setPhoto(rs.getBytes("photo"));
+	            ld.setIsbn(rs.getString("isbn"));
+	            ld.setTitle(rs.getString("title"));
+	            ld.setCall_number(rs.getString("call_number"));
+	            ld.setAuthor_name(rs.getString("author_name"));
+	            ld.setCategory_name(rs.getString("category_name"));
+
+	            list.add(ld);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        ConnectDB.disconnect();
+	    }
+
+	    return list;
+	}
+		
+		//findAllDamaged
+		public List<Loan_Details> findAllDamaged() {
+	    List<Loan_Details> list = new ArrayList<>();
+
+		    try {
+		        String sql = """
+		            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
+		        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
+		                a.name AS author_name,
+		                c.name AS category_name
+		            FROM loan_details ld
+		            JOIN book b       ON ld.book_id = b.id
+		            JOIN author a     ON b.author_id = a.id
+		            JOIN category c   ON b.category_id = c.id
+		            WHERE ld.status = 'Damaged';
+		        """;
+	
+		        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+		        ResultSet rs = ps.executeQuery();
+	
+		        while (rs.next()) {
+		            var ld = new Loan_Details();
+	
+		            ld.setId(rs.getInt("id"));
+		            ld.setLoan_master_id(rs.getInt("loan_master_id"));
+		            ld.setBook_id(rs.getInt("book_id"));
+	
+		            ld.setLate_fee(rs.getDouble("late_fee"));
+		            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
+		            ld.setReturn_date(rs.getDate("return_date"));
+		            String dbStatus = rs.getString("status");
+		    		ld.setStatus(DetailStatus.fromString(dbStatus));
+		            ld.setPhoto(rs.getBytes("photo"));
+		            ld.setIsbn(rs.getString("isbn"));
+		            ld.setTitle(rs.getString("title"));
+		            ld.setCall_number(rs.getString("call_number"));
+		            ld.setAuthor_name(rs.getString("author_name"));
+		            ld.setCategory_name(rs.getString("category_name"));
+		            list.add(ld);
+		        }
+		
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    } finally {
+		        ConnectDB.disconnect();
+		    }
+		
+		    return list;
+		}
+		
+		//findAllRepair
+		public List<Loan_Details> findAllLost() {
+		    List<Loan_Details> list = new ArrayList<>();
+		
+		    try {
+		        String sql = """
+		            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
+		        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
+		                a.name AS author_name,
+		                c.name AS category_name
+		            FROM loan_details ld
+		            JOIN book b       ON ld.book_id = b.id
+		            JOIN author a     ON b.author_id = a.id
+		            JOIN category c   ON b.category_id = c.id
+		            WHERE ld.status = 'Lost';
+		        """;
+		
+		        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+		        ResultSet rs = ps.executeQuery();
+		
+		        while (rs.next()) {
+		            var ld = new Loan_Details();
+		
+		            ld.setId(rs.getInt("id"));
+		            ld.setLoan_master_id(rs.getInt("loan_master_id"));
+		            ld.setBook_id(rs.getInt("book_id"));
+		
+		            ld.setLate_fee(rs.getDouble("late_fee"));
+		            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
+		            ld.setReturn_date(rs.getDate("return_date"));
+		            String dbStatus = rs.getString("status");
+		    		ld.setStatus(DetailStatus.fromString(dbStatus));
+		            ld.setPhoto(rs.getBytes("photo"));
+		            ld.setIsbn(rs.getString("isbn"));
+		            ld.setTitle(rs.getString("title"));
+		            ld.setCall_number(rs.getString("call_number"));
+		            ld.setAuthor_name(rs.getString("author_name"));
+		            ld.setCategory_name(rs.getString("category_name"));
+		            list.add(ld);
+		        }
+		
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    } finally {
+		        ConnectDB.disconnect();
+		    }
+	
+	    return list;
+	}
 }

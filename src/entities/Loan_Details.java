@@ -12,6 +12,13 @@ public class Loan_Details {
 	Date return_date;
 	private DetailStatus status;
 	private String bookTitle;
+	
+	 private byte[] photo;
+	    private String isbn;
+	    private String title;
+	    private String call_number;
+	    private String author_name;
+	    private String category_name;
 
 	public Loan_Details() {
 		super();
@@ -99,4 +106,54 @@ public class Loan_Details {
 		return "Loan_Details [id=" + id + ", loan_master_id=" + loan_master_id + ", deposit_fee=" + deposit_fee
 				+ ", late_fee=" + late_fee + ", return_date=" + return_date + ", status=" + status + "]";
 	}
+
+	public byte[] getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
+	}
+
+	public String getIsbn() {
+		return isbn;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getCall_number() {
+		return call_number;
+	}
+
+	public void setCall_number(String call_number) {
+		this.call_number = call_number;
+	}
+
+	public String getAuthor_name() {
+		return author_name;
+	}
+
+	public void setAuthor_name(String author_name) {
+		this.author_name = author_name;
+	}
+
+	public String getCategory_name() {
+		return category_name;
+	}
+
+	public void setCategory_name(String category_name) {
+		this.category_name = category_name;
+	}
+	
+	
 }

@@ -9,9 +9,17 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
+import apps.renderers.ButtonEditor;
+import apps.renderers.ButtonRenderer;
 import apps.renderers.ImageRenderer;
+import entities.Loan_Details;
 import models.ConnectDB;
+import models.LoanDetailsModel;
+
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class DamagedBookPanel extends JPanel {
 
@@ -28,11 +36,14 @@ public class DamagedBookPanel extends JPanel {
 	private JTextField textField_2;
 	private JComboBox<String> jcomboBoxRole;
 	private JComboBox<String> jcomboBoxRole_1;
+	private JPanel panel;
+	private JButton btnBack;
+
 
 	public DamagedBookPanel() {
 		setLayout(new BorderLayout());
 		initUI();
-		// loadTableData(); // gọi khi cần
+		 loadTableData(); 
 	}
 
 	// ================= UI =================
@@ -101,64 +112,53 @@ public class DamagedBookPanel extends JPanel {
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // ❌ không cho edit
+				return false;
 			}
 		};
-
 		table = new JTable(tableModel);
 		table.setRowHeight(120);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getTableHeader().setReorderingAllowed(false);
-
 		table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
-
-		// hide BOOK_ID (index 7)
 		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(7));
 
 		scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
+		
+		panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setHgap(10);
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		add(panel, BorderLayout.SOUTH);
+		
+		btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_btnBack_actionPerformed(e);
+			}
+		});
+		panel.add(btnBack);
 	}
 
 	// ================= DB =================
 	private void loadTableData() {
 		tableModel.setRowCount(0);
-
 		try {
-			String sql = """
-					    SELECT
-					        b.id,
-					        b.isbn,
-					        b.title,
-					        b.call_number,
-					        a.name AS author,
-					        c.name AS category,
-					        b.photo
-					    FROM book b
-					    JOIN author a ON b.author_id = a.id
-					    JOIN category c ON b.category_id = c.id
-					    WHERE b.status = 'DAMAGED'
-					      AND b.title LIKE ?
-					      AND a.name LIKE ?
-					      AND c.name LIKE ?
-					""";
-
-			PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
-			ps.setString(1, "%" + textField.getText() + "%");
-			ps.setString(2, "%" + textField_1.getText() + "%");
-			ps.setString(3, "%" + textField_2.getText() + "%");
-
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				tableModel.addRow(new Object[] { rs.getBytes("photo"), rs.getString("isbn"), rs.getString("title"),
-						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "DAMAGED",
-						rs.getInt("id") });
+			var loDtM = new LoanDetailsModel();
+			for(Loan_Details bo : loDtM.findAllDamaged()) {
+				tableModel.addRow(new Object[] { bo.getPhoto(), bo.getIsbn(), bo.getTitle(),
+						bo.getCall_number(), bo.getAuthor_name(), bo.getCategory_name(), bo.getStatus(),
+						bo.getId() });
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			ConnectDB.disconnect();
 		}
+	}
+	
+	//back--btn
+	protected void do_btnBack_actionPerformed(ActionEvent e) {
+		
 	}
 }

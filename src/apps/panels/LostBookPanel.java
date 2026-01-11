@@ -11,7 +11,11 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import apps.renderers.ImageRenderer;
+import entities.Loan_Details;
 import models.ConnectDB;
+import models.LoanDetailsModel;
+
+import java.awt.FlowLayout;
 
 public class LostBookPanel extends JPanel {
 
@@ -28,11 +32,13 @@ public class LostBookPanel extends JPanel {
 	private JTextField textFieldCategory;
 	private JComboBox<String> jcomboBoxRole;
 	private JComboBox<String> jcomboBoxRole_1;
+	private JPanel panel;
+	private JButton btnBack;
 
 	public LostBookPanel() {
 		setLayout(new BorderLayout());
 		initUI();
-		// loadTableData(); // gọi khi cần
+		 loadTableData();
 	}
 
 	// ================= UI =================
@@ -114,12 +120,19 @@ public class LostBookPanel extends JPanel {
 		table.getTableHeader().setReorderingAllowed(false);
 
 		table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
-
-		// hide BOOK_ID
 		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(7));
 
 		scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
+		
+		panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		flowLayout.setHgap(10);
+		add(panel, BorderLayout.SOUTH);
+		
+		btnBack = new JButton("Back");
+		panel.add(btnBack);
 	}
 
 	// ================= DB =================
@@ -127,35 +140,18 @@ public class LostBookPanel extends JPanel {
 		tableModel.setRowCount(0);
 
 		try {
-			String sql = """
-					    SELECT
-					        b.id,
-					        b.isbn,
-					        b.title,
-					        b.call_number,
-					        a.name AS author,
-					        c.name AS category,
-					        b.photo
-					    FROM book b
-					    JOIN author a ON b.author_id = a.id
-					    JOIN category c ON b.category_id = c.id
-					    WHERE b.status = 'LOST'
-					      AND b.title LIKE ?
-					      AND a.name LIKE ?
-					      AND c.name LIKE ?
-					""";
+			try {
+				var loDtM = new LoanDetailsModel();
+				for(Loan_Details bo : loDtM.findAllLost()) {
+					tableModel.addRow(new Object[] { bo.getPhoto(), bo.getIsbn(), bo.getTitle(),
+							bo.getCall_number(), bo.getAuthor_name(), bo.getCategory_name(), bo.getStatus(),
+							bo.getId() });
+				}
 
-			PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
-			ps.setString(1, "%" + textFieldTitle.getText() + "%");
-			ps.setString(2, "%" + textFieldAuthor.getText() + "%");
-			ps.setString(3, "%" + textFieldCategory.getText() + "%");
-
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				tableModel.addRow(new Object[] { rs.getBytes("photo"), rs.getString("isbn"), rs.getString("title"),
-						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "LOST",
-						rs.getInt("id") });
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				ConnectDB.disconnect();
 			}
 
 		} catch (Exception e) {

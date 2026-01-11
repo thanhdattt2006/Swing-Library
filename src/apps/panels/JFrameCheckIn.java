@@ -238,22 +238,18 @@ public class JFrameCheckIn extends JDialog {
                      "JOIN loan_master m ON d.loan_master_id = m.id " +
                      "JOIN book b ON d.book_id = b.id " +
                      "WHERE d.id = ?";
-
         try (Connection conn = ConnectDB.connection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, this.currentDetailId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 jtextFieldId.setText(String.valueOf(rs.getInt("id")));
                 jtextFieldLoanMasterID.setText(String.valueOf(rs.getInt("loan_master_id")));
                 jtextFieldBookTitle.setText(rs.getString("title"));
-
                 this.masterId = rs.getInt("loan_master_id");
                 this.bookId = rs.getInt("book_id");
                 this.bookPrice = rs.getDouble("price");
-
                 java.sql.Date sqlDate = rs.getDate("due_date");
                 if (sqlDate != null) {
                     this.dueDate = sqlDate.toLocalDate();
@@ -359,6 +355,7 @@ public class JFrameCheckIn extends JDialog {
             try { if (conn != null) conn.close(); } catch (SQLException e) {}
         }
     }
+    
 
     private void updateMaster(Connection conn, int mId) throws SQLException {
         String sqlSum = "SELECT SUM(late_fee), SUM(compensation_fee) FROM loan_details WHERE loan_master_id = ?";

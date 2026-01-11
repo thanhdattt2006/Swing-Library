@@ -67,7 +67,7 @@ import java.awt.Insets;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 
-public class AddBookPanel extends JPanel {
+public class EditBookPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private Dialog parentDialog;
@@ -78,26 +78,30 @@ public class AddBookPanel extends JPanel {
 	private File file;
 	private JLabel photo;
 	private JTextArea jTextAreaDesc;
-	private JButton btnNewButton;
 	private byte[] imageData;
+	private JTextField jTextFieldIsbn;
+	private JTextField jTextFieldCallNumber;
 	private JTextField jTextFieldTitle;
 	private JTextField jTextFieldStock;
 	private JTextField jTextFieldPrice;
-	private JComboBox jComboBoxCategory;
-	private JComboBox jComboBoxAuthor;
 	private JLabel validateTitle;
 	private JLabel validateStock;
 	private JLabel validatePrice;
 	private JLabel validatePubYear;
-	private JLabel validateAuthor;
 	private JPanel validateCategory;
 	private JLabel validateCate;
+	private JTextField jTextFieldAvailable;
 
+	private Map<String, Object> data;
+	private JTextField jTextFieldAuhor;
+	private JTextField jTextFieldCategory;
+	private JButton jBtnUpdate;
+	private int stock;
 	
 	/**
 	 * Create the panel.
 	 */
-	public AddBookPanel() {
+	public EditBookPanel() {
 		setToolTipText("");
         setLayout(new BorderLayout(0, 0));
         
@@ -108,7 +112,7 @@ public class AddBookPanel extends JPanel {
         fl_headerPanel.setAlignOnBaseline(true);
         headerPanel.setLayout(fl_headerPanel);
         
-        JLabel lblTitle = new JLabel("Add Book");
+        JLabel lblTitle = new JLabel("Edit Book");
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
         headerPanel.add(lblTitle);
@@ -118,7 +122,7 @@ public class AddBookPanel extends JPanel {
         validateCategory.setLayout(null);
         
         avatar1 = new JLabel("");
-        avatar1.setBounds(64, 352, 164, 148);
+        avatar1.setBounds(63, 362, 164, 148);
         validateCategory.add(avatar1);
         avatar1.setBorder(new TitledBorder(null, "Photo", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
         
@@ -128,7 +132,7 @@ public class AddBookPanel extends JPanel {
         jTextFieldPublicationYear.setColumns(10);
         
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(64, 269, 320, 71);
+        scrollPane.setBounds(63, 279, 320, 71);
         validateCategory.add(scrollPane);
         
         jTextAreaDesc = new JTextArea();
@@ -138,7 +142,7 @@ public class AddBookPanel extends JPanel {
         
         JLabel lblNewLabel = new JLabel("Description");
         lblNewLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        lblNewLabel.setBounds(66, 246, 121, 22);
+        lblNewLabel.setBounds(65, 256, 121, 22);
         validateCategory.add(lblNewLabel);
         
         JLabel lblNewLabel_2 = new JLabel("Publication year");
@@ -146,24 +150,13 @@ public class AddBookPanel extends JPanel {
         lblNewLabel_2.setBounds(65, 74, 113, 22);
         validateCategory.add(lblNewLabel_2);
         
-        btnNewButton = new JButton("Add");
-        btnNewButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		do_btnNewButton_actionPerformed(e);
-        	}
-        });
-
-        btnNewButton.setBackground(new Color(0, 153, 76));
-        btnNewButton.setBounds(325, 641, 58, 28);
-        validateCategory.add(btnNewButton);
-        
         JButton btnNewButton_1 = new JButton("Close");
         btnNewButton_1.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		do_btnNewButton_1_actionPerformed(e);
         	}
         });
-        btnNewButton_1.setBounds(255, 641, 58, 28);
+        btnNewButton_1.setBounds(243, 634, 58, 28);
         validateCategory.add(btnNewButton_1);
         
         JButton btnNewButton_2 = new JButton("File");
@@ -172,34 +165,39 @@ public class AddBookPanel extends JPanel {
         		do_btnNewButton_2_actionPerformed(e);
         	}
         });
-        btnNewButton_2.setBounds(233, 352, 51, 28);
+        btnNewButton_2.setBounds(232, 362, 51, 28);
         validateCategory.add(btnNewButton_2);
         
         photo = new JLabel("");
         photo.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         photo.setBackground(new Color(0, 0, 0));
-        photo.setBounds(79, 369, 136, 119);
+        photo.setBounds(78, 379, 136, 119);
         validateCategory.add(photo);
         
-        jComboBoxAuthor = new JComboBox();
-        jComboBoxAuthor.setBounds(65, 157, 319, 26);
-        validateCategory.add(jComboBoxAuthor);
+        JLabel lblNewLabel_2_1 = new JLabel("Isbn");
+        lblNewLabel_2_1.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        lblNewLabel_2_1.setBounds(65, 132, 51, 22);
+        validateCategory.add(lblNewLabel_2_1);
         
-        JLabel lblNewLabel_2_1_2_1 = new JLabel("Category");
-        lblNewLabel_2_1_2_1.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        lblNewLabel_2_1_2_1.setBounds(66, 191, 73, 22);
-        validateCategory.add(lblNewLabel_2_1_2_1);
+        jTextFieldIsbn = new JTextField();
+        jTextFieldIsbn.setEditable(false);
+        jTextFieldIsbn.setColumns(10);
+        jTextFieldIsbn.setBounds(64, 156, 163, 28);
+        validateCategory.add(jTextFieldIsbn);
         
-        jComboBoxCategory = new JComboBox();
-        jComboBoxCategory.setBounds(65, 214, 319, 26);
-        validateCategory.add(jComboBoxCategory);
+        JLabel lblNewLabel_2_1_1 = new JLabel("Call number");
+        lblNewLabel_2_1_1.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        lblNewLabel_2_1_1.setBounds(227, 133, 84, 22);
+        validateCategory.add(lblNewLabel_2_1_1);
         
-        JLabel lblNewLabel_2_1_2_1_1 = new JLabel("Author");
-        lblNewLabel_2_1_2_1_1.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        lblNewLabel_2_1_2_1_1.setBounds(66, 135, 50, 22);
-        validateCategory.add(lblNewLabel_2_1_2_1_1);
+        jTextFieldCallNumber = new JTextField();
+        jTextFieldCallNumber.setEditable(false);
+        jTextFieldCallNumber.setColumns(10);
+        jTextFieldCallNumber.setBounds(227, 156, 156, 28);
+        validateCategory.add(jTextFieldCallNumber);
         
         jTextFieldTitle = new JTextField();
+        jTextFieldTitle.setEditable(false);
         jTextFieldTitle.setColumns(10);
         jTextFieldTitle.setBounds(64, 40, 319, 28);
         validateCategory.add(jTextFieldTitle);
@@ -211,22 +209,33 @@ public class AddBookPanel extends JPanel {
         
         jTextFieldStock = new JTextField();
         jTextFieldStock.setColumns(10);
-        jTextFieldStock.setBounds(64, 528, 319, 28);
+        jTextFieldStock.setBounds(63, 538, 163, 28);
         validateCategory.add(jTextFieldStock);
         
         JLabel lblNewLabel_2_1_2 = new JLabel("Stock");
         lblNewLabel_2_1_2.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        lblNewLabel_2_1_2.setBounds(65, 504, 51, 22);
+        lblNewLabel_2_1_2.setBounds(64, 514, 51, 22);
         validateCategory.add(lblNewLabel_2_1_2);
+        
+        JLabel lblNewLabel_2_1_1_1 = new JLabel("Available");
+        lblNewLabel_2_1_1_1.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        lblNewLabel_2_1_1_1.setBounds(227, 514, 84, 22);
+        validateCategory.add(lblNewLabel_2_1_1_1);
+        
+        jTextFieldAvailable = new JTextField();
+        jTextFieldAvailable.setEditable(false);
+        jTextFieldAvailable.setColumns(10);
+        jTextFieldAvailable.setBounds(226, 538, 157, 28);
+        validateCategory.add(jTextFieldAvailable);
         
         JLabel lblNewLabel_2_3 = new JLabel("Price");
         lblNewLabel_2_3.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        lblNewLabel_2_3.setBounds(65, 560, 52, 22);
+        lblNewLabel_2_3.setBounds(64, 570, 52, 22);
         validateCategory.add(lblNewLabel_2_3);
         
         jTextFieldPrice = new JTextField();
         jTextFieldPrice.setColumns(10);
-        jTextFieldPrice.setBounds(64, 584, 320, 28);
+        jTextFieldPrice.setBounds(63, 594, 320, 28);
         validateCategory.add(jTextFieldPrice);
         
         validateTitle = new JLabel("");
@@ -238,13 +247,13 @@ public class AddBookPanel extends JPanel {
         validateStock = new JLabel("");
         validateStock.setForeground(Color.RED);
         validateStock.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        validateStock.setBounds(108, 512, 276, 16);
+        validateStock.setBounds(107, 520, 113, 16);
         validateCategory.add(validateStock);
         
         validatePrice = new JLabel("");
         validatePrice.setForeground(Color.RED);
         validatePrice.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        validatePrice.setBounds(108, 568, 276, 16);
+        validatePrice.setBounds(107, 580, 276, 16);
         validateCategory.add(validatePrice);
         
         validatePubYear = new JLabel("");
@@ -253,58 +262,92 @@ public class AddBookPanel extends JPanel {
         validatePubYear.setBounds(173, 84, 208, 16);
         validateCategory.add(validatePubYear);
         
-        validateAuthor = new JLabel("");
-        validateAuthor.setForeground(Color.RED);
-        validateAuthor.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        validateAuthor.setBounds(116, 141, 268, 22);
-        validateCategory.add(validateAuthor);
-        
         validateCate = new JLabel("");
         validateCate.setForeground(new Color(255, 0, 0));
         validateCate.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        validateCate.setBounds(132, 201, 252, 16);
+        validateCate.setBounds(131, 256, 252, 16);
         validateCategory.add(validateCate);
         
-        JLabel lblpleaseReviewThe = new JLabel("*Please review the book title, category, and author carefully before confirming.");
-        lblpleaseReviewThe.setForeground(new Color(92, 92, 92));
-        lblpleaseReviewThe.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        lblpleaseReviewThe.setBounds(64, 627, 346, 16);
-        validateCategory.add(lblpleaseReviewThe);
+        JLabel lblNewLabel_2_1_3 = new JLabel("Author");
+        lblNewLabel_2_1_3.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        lblNewLabel_2_1_3.setBounds(64, 194, 51, 22);
+        validateCategory.add(lblNewLabel_2_1_3);
+        
+        jTextFieldAuhor = new JTextField();
+        jTextFieldAuhor.setEditable(false);
+        jTextFieldAuhor.setColumns(10);
+        jTextFieldAuhor.setBounds(63, 218, 163, 28);
+        validateCategory.add(jTextFieldAuhor);
+        
+        JLabel lblNewLabel_2_1_1_2 = new JLabel("Category");
+        lblNewLabel_2_1_1_2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        lblNewLabel_2_1_1_2.setBounds(227, 195, 68, 22);
+        validateCategory.add(lblNewLabel_2_1_1_2);
+        
+        jTextFieldCategory = new JTextField();
+        jTextFieldCategory.setEditable(false);
+        jTextFieldCategory.setColumns(10);
+        jTextFieldCategory.setBounds(226, 218, 156, 28);
+        validateCategory.add(jTextFieldCategory);
+        
+        jBtnUpdate = new JButton("Update");
+        jBtnUpdate.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		do_jBtnUpdate_actionPerformed(e);
+        	}
+        });
+        jBtnUpdate.setBackground(new Color(0, 153, 76));
+        jBtnUpdate.setBounds(315, 634, 68, 28);
+        validateCategory.add(jBtnUpdate);
     }
-	public AddBookPanel(Dialog dialog, BookPanel bookPanel) {
+	
+	public EditBookPanel(Map<String, Object>data, Dialog dialog, BookPanel bookPanel) {
 		  this();
 		  this.parentDialog = dialog;
+		  this.data = data;
 		  this.bookPanel = bookPanel;
 		  init();
 	}
 	
 	private void init() {
-		var autMd = new AuthorsModel();
-		DefaultComboBoxModel<Author> comboBoxModel = new DefaultComboBoxModel<>();
-		comboBoxModel.addElement(null);
-		for (Author aut : autMd.findAll()) {
-			comboBoxModel.addElement(aut);
+		try {
+			int id = ((Number) data.get("id")).intValue();
+
+			var bookMd = new BooksModel();
+			var book = bookMd.findById(id);
+			jTextFieldTitle.setText(book.getTitle());
+			jTextFieldPublicationYear.setText(String.valueOf(book.getPublication_year()));
+			jTextFieldIsbn.setText(book.getIsbn());
+			jTextFieldCallNumber.setText(book.getCall_number());
+			jTextFieldCategory.setText(book.getCategory_name());
+			jTextFieldAuhor.setText(book.getAuthor_name());
+
+			stock = book.getStock();
+			
+			jTextAreaDesc.setText(book.getDescription());
+			jTextFieldAvailable.setText(String.valueOf(book.getAvailable_quantity()));
+			jTextFieldStock.setText(String.valueOf(book.getStock()));
+			jTextFieldPrice.setText(String.valueOf(book.getPrice()));
+
+			//kiểm tra ảnh có null không
+			if(book.getPhoto() != null) {
+				Image image = new ImageIcon(book.getPhoto()).getImage().getScaledInstance(photo.getWidth(),
+				photo.getHeight(), Image.SCALE_DEFAULT);
+				photo.setIcon(new ImageIcon(image));
+			}
+		} catch(Exception e2) {
+			e2.printStackTrace();
 		}
-		jComboBoxAuthor.setModel(comboBoxModel);
-		jComboBoxAuthor.setRenderer(new AuthorCellRender());
 		
-		var catMd = new CategoriesModel();
-		DefaultComboBoxModel<Category> comboBoxModel2 = new DefaultComboBoxModel<>();
-		comboBoxModel2.addElement(null);
-		for (Category cate : catMd.findAll()) {
-			comboBoxModel2.addElement(cate);
-		}
-		jComboBoxCategory.setModel(comboBoxModel2);
-		jComboBoxCategory.setRenderer(new CategoryCellRender());
-		
-		
+		((AbstractDocument) jTextFieldPrice.getDocument())
+        .setDocumentFilter(new DecimalFilter());
         ((AbstractDocument) jTextFieldPublicationYear.getDocument())
         .setDocumentFilter(new NumberOnlyFilter());
         ((AbstractDocument) jTextFieldStock.getDocument())
         .setDocumentFilter(new NumberOnlyFilter());
-        ((AbstractDocument) jTextFieldPrice.getDocument())
-        .setDocumentFilter(new DecimalFilter());
 	}
+	
+	
 	
 	private class AuthorCellRender extends DefaultListCellRenderer {
 
@@ -349,10 +392,13 @@ public class AddBookPanel extends JPanel {
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG File(*.jpg)", "jpg"));
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("GIF File(*.gif)", "gif"));
 		
+//		var result = fileChooser.showOpenDialog(this);
 		var result = fileChooser.showOpenDialog(this);
 
 		if (result == JFileChooser.APPROVE_OPTION) {
+
 		    File file = fileChooser.getSelectedFile();
+
 		    // check size 2MB
 		    if (file.length() > 2 * 1024 * 1024) {
 		        JOptionPane.showMessageDialog(this,
@@ -361,8 +407,12 @@ public class AddBookPanel extends JPanel {
 		    }
 
 		    try {
+		        // 👉 lưu file để dùng sau (nếu cần)
 		        this.file = file;
+
+		        // 👉 đọc ảnh thành byte[] để lưu DB
 		        this.imageData = Files.readAllBytes(file.toPath());
+
 		        // 👉 preview ảnh
 		        Image image = new ImageIcon(file.getAbsolutePath())
 		                .getImage()
@@ -371,7 +421,9 @@ public class AddBookPanel extends JPanel {
 		                        photo.getHeight(),
 		                        Image.SCALE_SMOOTH
 		                );
+
 		        photo.setIcon(new ImageIcon(image));
+
 		    } catch (Exception ex) {
 		        JOptionPane.showMessageDialog(this,
 		                "Cannot read image file",
@@ -382,123 +434,73 @@ public class AddBookPanel extends JPanel {
 
 	}
 	
-	
-	//generateCallNumber
-	public String generateCallNumber(String title, String authorName) {
-	    String titlePrefix = title.substring(0, Math.min(2, title.length())).toUpperCase();
-	    String authorPrefix = authorName.substring(0, Math.min(2, authorName.length())).toUpperCase();
-	    String prefix = titlePrefix + "-" + authorPrefix; 
-	    int nextNumber = 1;
-	    String sql = """
-	        SELECT MAX(
-	            CAST(SUBSTRING(call_number, -3) AS UNSIGNED)
-	        ) AS max_suffix
-	        FROM book
-	        WHERE call_number LIKE ?
-	    """;
-
-	    try (
-	        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql)
-	    ) {
-	        ps.setString(1, prefix + "-%");
-
-	        ResultSet rs = ps.executeQuery();
-	        if (rs.next() && rs.getInt("max_suffix") > 0) {
-	            nextNumber = rs.getInt("max_suffix") + 1;
-	        }
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    String suffix = String.format("%03d", nextNumber);
-
-	    return prefix + "-" + suffix;
-	}
-	
-	//generateIsbnByCategory
-	public String generateIsbnByCategory(int categoryId) {
-	    String categoryPrefix = String.format("%03d", categoryId);
-	    int nextNumber = 1;
-	    String sql = """
-	        SELECT MAX(
-	            CAST(SUBSTRING(isbn, -4) AS UNSIGNED)
-	        ) AS max_suffix
-	        FROM book
-	        WHERE isbn LIKE ?
-	    """;
-
-	    try (
-	        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql)
-	    ) {
-	        ps.setString(1, categoryPrefix + "-%");
-	        ResultSet rs = ps.executeQuery();
-	        if (rs.next() && rs.getInt("max_suffix") > 0) {
-	            nextNumber = rs.getInt("max_suffix") + 1;
-	        }
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    String suffix = String.format("%04d", nextNumber);
-	    return categoryPrefix + "-" + suffix;
-	}
-
-	//button-save
-	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
+	//update-button
+	protected void do_jBtnUpdate_actionPerformed(ActionEvent e) {
 		try {
 			if (!validateForm()) {
 		        return;
 		    }
-			
-			var bookMd = new BooksModel();
-			var book = new Book();
-			
-			book.setTitle(jTextFieldTitle.getText());
-			book.setPublication_year(Integer.parseInt(jTextFieldPublicationYear.getText()));
-			var category = (Category) jComboBoxCategory.getSelectedItem();
-			book.setCategory_id(category.getId());
-			var author = (Author) jComboBoxAuthor.getSelectedItem();
-			book.setAuthor_id(author.getId());
-			String isbn = generateIsbnByCategory(category.getId());
-			book.setIsbn(isbn);
-			String callNumber = generateCallNumber(book.getTitle(), author.getName());
-			book.setCall_number(callNumber);
-			book.setDescription(jTextAreaDesc.getText());
-			book.setStock(Integer.parseInt(jTextFieldStock.getText()));
-			book.setAvailable_quantity(Integer.parseInt(jTextFieldStock.getText()));
-			book.setPrice(Double.parseDouble(jTextFieldPrice.getText()));
-			if( this.file != null) {
-				book.setPhoto(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-			} 
-			int value = JOptionPane.showConfirmDialog(null, "Important: Please double-check the book title, category, and author before proceeding", "Confirm Book Information", JOptionPane.YES_NO_OPTION);			
-			  if (value == JOptionPane.YES_OPTION) {
-		        if (bookMd.create(book)) {
-					JOptionPane.showMessageDialog(null, "Success", "Add Book", JOptionPane.INFORMATION_MESSAGE);
-						if (bookPanel != null) {
-							bookPanel.reloadTable();
-					    }
-						SwingUtilities.getWindowAncestor(this).setVisible(false);
-					} else {
-						JOptionPane.showMessageDialog(null, "Failed", "Add Book", JOptionPane.ERROR_MESSAGE);
-					}
 
-		        } else {
-		        	return;
-		        }
-		} catch (Exception e2) {
-			JOptionPane.showMessageDialog(null, "Failed", "Add Book", JOptionPane.ERROR_MESSAGE);
+			int id = ((Number) data.get("id")).intValue();
+			var bookMd = new BooksModel();
+			Book book =  bookMd.findById(id);
+
+		book.setId(id);
+		
+		book.setPublication_year(
+		    Integer.parseInt(jTextFieldPublicationYear.getText().trim())
+		);
+		book.setDescription(jTextAreaDesc.getText().trim());
+		book.setStock(
+		    Integer.parseInt(jTextFieldStock.getText().trim())
+		);
+		book.setPrice(
+		    Double.parseDouble(jTextFieldPrice.getText().trim())
+		);
+		
+		// ⚠️ available_quantity KHÔNG set lại nếu không có logic riêng
+		int ava = Integer.parseInt(jTextFieldAvailable.getText().trim());
+		int sto = Integer.parseInt(jTextFieldStock.getText().trim());
+		book.setAvailable_quantity((sto - stock) + ava);
+		
+		if (this.file != null) {
+		    book.setPhoto(
+		        Files.readAllBytes(Paths.get(file.getAbsolutePath()))
+		    );
+		} else {
+		    // giữ ảnh cũ
+		    book.setPhoto(bookMd.findById(id).getPhoto());
+		}
+		
+		if (bookMd.update(book)) {
+		    JOptionPane.showMessageDialog(null, "Success", "Edit Book",
+		            JOptionPane.INFORMATION_MESSAGE);
+		
+		    if (bookPanel != null) {
+		        bookPanel.reloadTable();
+		    }
+		
+		    SwingUtilities.getWindowAncestor(this).setVisible(false);
+		} else {
+		    JOptionPane.showMessageDialog(null, "Update failed",
+		            "Edit Book", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		} catch (Exception ex) {
+		ex.printStackTrace();
+		JOptionPane.showMessageDialog(null, "Error",
+		        "Edit Book", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	//method validate
 	private boolean validateForm() {
 	    String pubYear = jTextFieldPublicationYear.getText().trim();
-	    String title = jTextFieldTitle.getText().trim();
-	    var aut = (Author) jComboBoxAuthor.getSelectedItem();
-	    var cate = (Category) jComboBoxCategory.getSelectedItem();
 	    String sto = jTextFieldStock.getText().trim();
 	    String price = jTextFieldPrice.getText().trim();
+
 	    boolean fal = true;
+	    
 	    if (pubYear.isEmpty()) {
 	    	validatePubYear.setText("Publication year cannot be empty!");
 	    	fal = false;
@@ -506,29 +508,8 @@ public class AddBookPanel extends JPanel {
 	    	validatePubYear.setText("");
 	    }
 	    
-	    if (title.isEmpty()) {
-	    	validateTitle.setText("Title cannot be empty!");
-	    	fal = false;
-	    }else {
-	    	validateTitle.setText("");
-	    }
-	    
-	    if (aut == null) {
-	    	validateAuthor.setText("Author cannot be Null!");
-	    	fal = false;
-	    }else {
-	    	validateAuthor.setText("");
-	    }
-	    
-	    if (cate == null) {
-	    	validateCate.setText("Category cannot be Null!");
-	    	fal = false;
-	    }else {
-	    	validateCate.setText("");
-	    }
-	    
 	    if (sto.isEmpty()) {
-	    	validateStock.setText("Stock cannot be empty!");
+	    	validateStock.setText("Stock  cannot be empty!");
 	    	fal = false;
 	    }else {
 	    	validateStock.setText("");
@@ -540,6 +521,7 @@ public class AddBookPanel extends JPanel {
 	    }else {
 	    	validatePrice.setText("");
 	    }
+	    
 	    return fal;
 	}
 	
@@ -548,3 +530,7 @@ public class AddBookPanel extends JPanel {
 		SwingUtilities.getWindowAncestor(this).setVisible(false);
 	}
 }
+
+
+
+

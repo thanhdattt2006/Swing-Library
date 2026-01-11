@@ -11,9 +11,17 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
+import apps.renderers.ButtonEditor;
+import apps.renderers.ButtonRenderer;
 import apps.renderers.ImageRenderer;
+import entities.Book;
+import entities.Loan_Details;
+import models.BooksModel;
 import models.ConnectDB;
+import models.LoanDetailsModel;
+
 import java.awt.Color;
+import java.awt.FlowLayout;
 
 public class RepairQueuePanel extends JPanel {
 
@@ -32,7 +40,7 @@ public class RepairQueuePanel extends JPanel {
 	public RepairQueuePanel() {
 		setLayout(new BorderLayout());
 		initUI();
-		// loadTableData(); // gọi khi cần
+		 loadTableData(); // gọi khi cần
 	}
 
 	// ================= UI =================
@@ -102,7 +110,7 @@ public class RepairQueuePanel extends JPanel {
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 7; // ACTION
+				return column == 8; // ACTION
 			}
 		};
 
@@ -130,6 +138,15 @@ public class RepairQueuePanel extends JPanel {
 
 		scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
+		
+		JPanel panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setHgap(10);
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		add(panel, BorderLayout.SOUTH);
+		
+		JButton btnBack = new JButton("Back");
+		panel.add(btnBack);
 	}
 
 	// ================= DB =================
@@ -137,35 +154,49 @@ public class RepairQueuePanel extends JPanel {
 		tableModel.setRowCount(0);
 
 		try {
-			String sql = """
-					    SELECT
-					        b.id,
-					        b.isbn,
-					        b.title,
-					        b.call_number,
-					        a.name AS author,
-					        c.name AS category,
-					        b.photo
-					    FROM book b
-					    JOIN author a ON b.author_id = a.id
-					    JOIN category c ON b.category_id = c.id
-					    WHERE b.status = 'REPAIR'
-					      AND b.title LIKE ?
-					      AND a.name LIKE ?
-					      AND c.name LIKE ?
-					""";
+//			String sql = """
+//					    SELECT
+//					        b.id,
+//					        b.isbn,
+//					        b.title,
+//					        b.call_number,
+//					        a.name AS author,
+//					        c.name AS category,
+//					        b.photo
+//					    FROM book b
+//					    JOIN author a ON b.author_id = a.id
+//					    JOIN category c ON b.category_id = c.id
+//					    WHERE b.status = 'REPAIR'
+//					      AND b.title LIKE ?
+//					      AND a.name LIKE ?
+//					      AND c.name LIKE ?
+//					""";
+//
+//			PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+//			ps.setString(1, "%" + textField.getText() + "%");
+//			ps.setString(2, "%" + textField_1.getText() + "%");
+//			ps.setString(3, "%" + textField_2.getText() + "%");
+//
+//			ResultSet rs = ps.executeQuery();
+//
+//			while (rs.next()) {
+//				tableModel.addRow(new Object[] { rs.getBytes("photo"), rs.getString("isbn"), rs.getString("title"),
+//						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "REPAIR", "Fix",
+//						rs.getInt("id") });
+//			}
+			
+			var loDtM = new LoanDetailsModel();
+			for(Loan_Details bo : loDtM.findAllRepair()) {
+				tableModel.addRow(new Object[] { bo.getPhoto(), bo.getIsbn(), bo.getTitle(),
+						bo.getCall_number(), bo.getAuthor_name(), bo.getCategory_name(), bo.getStatus(),
+						bo.getId() });
+				int actionCol = table.getColumnCount() - 1;
 
-			PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
-			ps.setString(1, "%" + textField.getText() + "%");
-			ps.setString(2, "%" + textField_1.getText() + "%");
-			ps.setString(3, "%" + textField_2.getText() + "%");
+				table.getColumnModel().getColumn(actionCol)
+				        .setCellRenderer(new ButtonRenderer());
 
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				tableModel.addRow(new Object[] { rs.getBytes("photo"), rs.getString("isbn"), rs.getString("title"),
-						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "REPAIR", "Fix",
-						rs.getInt("id") });
+				table.getColumnModel().getColumn(actionCol)
+				        .setCellEditor(new ButtonEditor(table,this ));
 			}
 
 		} catch (Exception e) {
@@ -176,29 +207,24 @@ public class RepairQueuePanel extends JPanel {
 	}
 
 	// ================= ACTION =================
-	private void confirmFix(int row) {
+	public void confirmFix(int row) {
 		int modelRow = table.convertRowIndexToModel(row);
-		int bookId = (int) tableModel.getValueAt(modelRow, 8);
-
-		int confirm = JOptionPane.showConfirmDialog(this, "Confirm that the book has been corrected?", "Confirm Repair",
-				JOptionPane.YES_NO_OPTION);
-
+		int bookId = Integer.parseInt(tableModel.getValueAt(modelRow, 7).toString());
+		int confirm = JOptionPane.showConfirmDialog(this, "Confirm that the book has been corrected???", "Confirm Repair", JOptionPane.YES_NO_OPTION);
 		if (confirm == JOptionPane.YES_OPTION) {
 			try {
 				PreparedStatement ps1 = ConnectDB.connection()
-						.prepareStatement("UPDATE book SET status = 'GOOD' WHERE id = ?");
+				.prepareStatement("UPDATE loan_details SET status = 'GOOD' WHERE id = ?");
 				ps1.setInt(1, bookId);
 				ps1.executeUpdate();
 
 				PreparedStatement ps2 = ConnectDB.connection()
-						.prepareStatement("UPDATE book SET available_quantity = available_quantity + 1 WHERE id = ?");
+				.prepareStatement( "UPDATE book b " + "JOIN loan_details ld ON ld.book_id = b.id " + "SET b.available_quantity = b.available_quantity + 1 " +
+					    "WHERE ld.id = ?");
 				ps2.setInt(1, bookId);
 				ps2.executeUpdate();
-
-				JOptionPane.showMessageDialog(this, "Book updated");
-
+				JOptionPane.showMessageDialog(this, "Fix book success");
 				loadTableData();
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

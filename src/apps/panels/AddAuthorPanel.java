@@ -131,7 +131,7 @@ public class AddAuthorPanel extends JPanel {
         		do_btnNewButton_actionPerformed(e);
         	}
         });
-        btnNewButton.setBackground(new Color(53, 255, 53));
+        btnNewButton.setBackground(new Color(0, 153, 76));
         btnNewButton.setBounds(415, 210, 58, 28);
         panel.add(btnNewButton);
         
