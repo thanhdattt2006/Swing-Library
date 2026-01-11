@@ -12,9 +12,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator; 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import entities.Loan_Master;
+import entities.Loan_Details; // Import thêm cái này
 import models.LoanMasterModel;
+import models.LoanDetailsModel; // Import thêm cái này để lấy sách
 import models.MailModel;
 import utils.DetailsButtonRender;
 import utils.TableActionCellEditor;
@@ -56,11 +59,9 @@ public class LoanHistoryPanel extends JPanel {
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
         panelSouth.add(new JLabel("Employee ID:"));
         txtSearch = new JTextField(10);
         panelSouth.add(txtSearch);
-
         panelSouth.add(new JLabel("Status:"));
         cboFilterStatus = new JComboBox<>(new String[] { "All", "Borrowing", "Completed" });
         panelSouth.add(cboFilterStatus);
@@ -72,16 +73,13 @@ public class LoanHistoryPanel extends JPanel {
 
         panelSouth.add(new JSeparator(SwingConstants.VERTICAL));
 
-        // --- CÁCH LOAD ICON TỪ RESOURCES ---
-        // Mày nhớ thay đúng tên file ảnh mày đã bỏ vào folder resources nhé
         ImageIcon mailIcon = null;
         try {
             mailIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/mail_icon.png")));
-            // Nếu muốn scale icon cho vừa nút:
             Image img = mailIcon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
             mailIcon = new ImageIcon(img);
         } catch (Exception e) {
-            System.err.println("Icon not found, using text only.");
+            System.err.println("Icon error, skipping...");
         }
 
         btnWarn3Days = new JButton(" 3-Day Warning", mailIcon);
@@ -114,7 +112,6 @@ public class LoanHistoryPanel extends JPanel {
                 int masterId = (int) table.getValueAt(row, 0);
                 openDetailsDialog(masterId);
             }
-            // onDelete đã được gỡ bỏ để tránh lỗi Interface supertype
         };
         
         TableColumn actionCol = table.getColumnModel().getColumn(6);
@@ -126,53 +123,57 @@ public class LoanHistoryPanel extends JPanel {
 
     private void processBulkMail(int type) {
         if (currentList == null || currentList.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "The list is empty!", "Notification", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Empty list!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String confirmMsg = (type == 3) ? "Confirm sending 3-day reminders?" : "Confirm sending final notices?";
-        int confirm = JOptionPane.showConfirmDialog(this, confirmMsg, "Confirmation", JOptionPane.YES_NO_OPTION);
+        String msg = (type == 3) ? "Send 3-day reminders?" : "Send final notices for tomorrow?";
+        int confirm = JOptionPane.showConfirmDialog(this, msg, "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) return;
 
-        // Dialog hiện Loading để thủ thư không bấm loạn
-        JDialog loadingDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Processing", true);
-        loadingDialog.setLayout(new BorderLayout());
-        loadingDialog.add(new JLabel(" Sending emails, please wait...", JLabel.CENTER), BorderLayout.CENTER);
-        loadingDialog.setSize(300, 100);
-        loadingDialog.setLocationRelativeTo(this);
-        loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        JDialog loading = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Processing", true);
+        loading.setLayout(new BorderLayout());
+        loading.add(new JLabel(" Sending, please wait...", JLabel.CENTER), BorderLayout.CENTER);
+        loading.setSize(300, 100);
+        loading.setLocationRelativeTo(this);
+        loading.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-        // Dùng SwingWorker để gửi mail ở luồng phụ, tránh dead máy
         SwingWorker<int[], Void> worker = new SwingWorker<>() {
             @Override
             protected int[] doInBackground() {
-                toggleButtons(false); // Khóa nút khi đang chạy
+                toggleButtons(false);
                 MailModel mailModel = new MailModel();
+                LoanDetailsModel detailModel = new LoanDetailsModel(); // Khai báo model lấy sách
                 int sent = 0, fail = 0, skipped = 0;
                 LocalDate today = LocalDate.now();
 
                 for (Loan_Master m : currentList) {
-                    // Logic lọc Borrowing
-                    String statusStr = (m.getStatus() != null) ? m.getStatus().toString().trim() : "";
-                    if (!"Borrowing".equalsIgnoreCase(statusStr)) {
-                        skipped++; continue;
-                    }
+                    String status = (m.getStatus() != null) ? m.getStatus().toString().trim() : "";
+                    if (!"Borrowing".equalsIgnoreCase(status)) { skipped++; continue; }
 
                     if (m.getDue_date() != null) {
                         try {
                             LocalDate dueDate = m.getDue_date().toLocalDate();
                             long diff = ChronoUnit.DAYS.between(today, dueDate);
-                            
-                            // Logic tính ngày: 3 ngày nhắc sớm, 1 ngày hạn cuối
-                            boolean shouldSend = (type == 3 && diff >= 2 && diff <= 3) || (type == 1 && diff >= 0 && diff <= 1);
+                            boolean match = (type == 3 && diff >= 2 && diff <= 3) || (type == 1 && diff >= 0 && diff <= 1);
 
-                            if (shouldSend) {
+                            if (match) {
+                                // Lấy tên các cuốn sách đang mượn của đơn này
+                                List<Loan_Details> details = detailModel.findByMasterId(m.getId());
+                                String bookNames = details.stream()
+                                    .map(d -> d.getBookTitle()) // Giả định getter là getBookTitle()
+                                    .collect(Collectors.joining(", "));
+                                
+                                if (bookNames.isEmpty()) bookNames = "N/A";
+
                                 String template = (type == 3) ? "reminder_3days.html" : "final_notice.html";
-                                String subject = (type == 3) ? "[Library] Reminder" : "[Library] Urgent Final Notice";
+                                String subject = (type == 3) ? "[Library] Reminder" : "[Library] Urgent Notice";
                                 String html = mailModel.readTemplate("src/mail_template/" + template);
                                 
+                                // Replace các placeholder bao gồm cả sách
                                 html = html.replace("{{name}}", m.getUsername())
                                            .replace("{{id}}", String.valueOf(m.getId()))
+                                           .replace("{{books}}", bookNames) // Đã thêm replace sách ở đây
                                            .replace("{{due_date}}", new SimpleDateFormat("dd-MM-yyyy").format(m.getDue_date()));
 
                                 if (mailModel.send("thanhdattt2006@gmail.com", m.getUsername(), subject, html)) sent++;
@@ -188,20 +189,20 @@ public class LoanHistoryPanel extends JPanel {
             protected void done() {
                 try {
                     int[] res = get();
-                    loadingDialog.dispose(); 
-                    toggleButtons(true); // Mở lại nút
-                    String resultMsg = String.format("Process completed!\n- Sent: %d\n- Failed: %d\n- Skipped: %d", res[0], res[1], res[2]);
-                    JOptionPane.showMessageDialog(LoanHistoryPanel.this, resultMsg, "Result", JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception e) {
-                    loadingDialog.dispose();
+                    loading.dispose(); 
                     toggleButtons(true);
-                    JOptionPane.showMessageDialog(LoanHistoryPanel.this, "System error occurred!", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(LoanHistoryPanel.this, 
+                        String.format("Done!\nSent: %d\nFailed: %d\nSkipped: %d", res[0], res[1], res[2]));
+                } catch (Exception e) {
+                    loading.dispose();
+                    toggleButtons(true);
+                    JOptionPane.showMessageDialog(LoanHistoryPanel.this, "System error!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
 
         worker.execute();
-        loadingDialog.setVisible(true); 
+        loading.setVisible(true); 
     }
 
     private void toggleButtons(boolean enabled) {
@@ -215,9 +216,7 @@ public class LoanHistoryPanel extends JPanel {
         try {
             currentList = new LoanMasterModel().findAll();
             fillTable(currentList);
-        } catch (Exception e) { 
-            JOptionPane.showMessageDialog(this, "Error loading data from database!", "Database Error", JOptionPane.ERROR_MESSAGE); 
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void performSearch() {

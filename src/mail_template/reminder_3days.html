@@ -2,26 +2,29 @@
 <html>
 <head>
     <style>
-        body { font-family: Arial, sans-serif; color: #000; line-height: 1.6; }
-        .container { width: 450px; border: 1px solid #000; padding: 20px; margin: 20px auto; }
-        .header { text-align: center; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; }
-        .details { margin: 20px 0; }
-        .footer { font-size: 11px; border-top: 1px solid #ccc; margin-top: 20px; padding-top: 10px; }
+        body { font-family: 'Times New Roman', serif; color: #000; line-height: 1.5; }
+        .container { width: 600px; border: 1px solid #000; padding: 30px; margin: 20px auto; }
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; text-transform: uppercase; }
+        .content { font-size: 16px; margin-top: 20px; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .info-table td { border: 1px solid #000; padding: 10px; }
+        .footer { margin-top: 30px; font-size: 12px; border-top: 1px solid #000; padding-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h3>Loan Return Reminder</h3>
+        <div class="header"><h2>Loan Return Reminder</h2></div>
+        <div class="content">
+            <p>Dear <b>{{name}}</b>,</p>
+            <p>This is a reminder that your book loan period is ending in <b>3 days</b>.</p>
+            <table class="info-table">
+                <tr><td><b>Loan ID</b></td><td>#{{id}}</td></tr>
+                <tr><td><b>Books</b></td><td>{{books}}</td></tr>
+                <tr><td><b>Due Date</b></td><td>{{due_date}}</td></tr>
+            </table>
+            <p>Please ensure all items are returned to the library on time.</p>
         </div>
-        <p>Dear <b>{{name}}</b>,</p>
-        <p>This is a friendly reminder that your loan is due in <b>3 days</b>.</p>
-        <div class="details">
-            <p><b>Loan ID:</b> #{{id}}</p>
-            <p><b>Due Date:</b> {{due_date}}</p>
-        </div>
-        <p>Please ensure the books are returned on time to avoid late fees.</p>
-        <div class="footer">This is an automated message. Please do not reply.</div>
+        <div class="footer">Library Management System - Automated Alert.</div>
     </div>
 </body>
 </html>
