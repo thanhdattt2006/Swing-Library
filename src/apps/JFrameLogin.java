@@ -72,6 +72,9 @@ public class JFrameLogin extends JFrame {
 		jbuttonLogin.setBounds(77, 155, 99, 28);
 		contentPane.add(jbuttonLogin);
 
+		// ENTER = LOGIN
+		getRootPane().setDefaultButton(jbuttonLogin);
+
 		JButton jbuttonCancel = new JButton("Cancel");
 		jbuttonCancel.setBounds(200, 155, 99, 28);
 		contentPane.add(jbuttonCancel);
@@ -84,7 +87,6 @@ public class JFrameLogin extends JFrame {
 	private void doLogin() {
 		String username = jtextFieldUsername.getText().trim();
 		String password = new String(jpasswordFieldPassword.getPassword());
-		
 
 		if (username.isEmpty() || password.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Please enter username and password");
@@ -98,7 +100,6 @@ public class JFrameLogin extends JFrame {
 			JOptionPane.showMessageDialog(this, "Invalid username or password");
 			return;
 		}
-							
 
 		// Login success
 		JFrameMain mainFrame = new JFrameMain(account);

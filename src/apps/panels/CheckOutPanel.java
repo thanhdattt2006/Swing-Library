@@ -172,6 +172,8 @@ public class CheckOutPanel extends JPanel {
     }
 
     public void addBookToCart(int id, String title, String author, String category, double originalPrice) {
+        loadSettings();
+
         for (int i = 0; i < cartModel.getRowCount(); i++) {
             int existingId = Integer.parseInt(cartModel.getValueAt(i, 0).toString());
             if (existingId == id) {
@@ -179,6 +181,17 @@ public class CheckOutPanel extends JPanel {
                 return;
             }
         }
+
+        if (this.currentAccountId != -1) {
+            if (isBookCurrentlyBorrowed(this.currentAccountId, id)) {
+                JOptionPane.showMessageDialog(this, 
+                    "This employee is currently borrowing this book (Not returned yet)!\nCannot borrow the same book twice.");
+                return; 
+            }
+        }
+        // -------------------------
+
+        // Code cũ: Thêm vào bảng
         cartModel.addRow(new Object[]{id, title, author, category, this.depositFeePerBook});
         updateTotalAmount();
     }
@@ -228,11 +241,23 @@ public class CheckOutPanel extends JPanel {
             return;
         }
         
+        loadSettings(); 
+
         if (currentAccountId == -1) {
             JOptionPane.showMessageDialog(null, "Please find and select the employee (borrower) first!");
             return;
         }
 
+        for (int i = 0; i < cartModel.getRowCount(); i++) {
+            int bookId = Integer.parseInt(cartModel.getValueAt(i, 0).toString());
+            String bookTitle = cartModel.getValueAt(i, 1).toString();
+
+            if (isBookCurrentlyBorrowed(currentAccountId, bookId)) {
+                JOptionPane.showMessageDialog(this, 
+                    "Cannot Checkout!\nBook: '" + bookTitle + "' is currently being borrowed by this employee and has not been returned.");
+                return;
+            }
+        }
         double totalFee = 0;
         try {
             String totalStr = lblTotalAmount.getText().replace("$", "").replace(",", ".").trim();
@@ -330,5 +355,26 @@ public class CheckOutPanel extends JPanel {
                 ex.printStackTrace();
             }
         }
+    }
+    private boolean isBookCurrentlyBorrowed(int accountId, int bookId) {
+        String sql = "SELECT COUNT(*) FROM loan_details d " +
+                     "JOIN loan_master m ON d.loan_master_id = m.id " +
+                     "WHERE m.account_id = ? AND d.book_id = ? AND d.return_date IS NULL";
+        
+        try (Connection conn = ConnectDB.connection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, accountId);
+            ps.setInt(2, bookId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
