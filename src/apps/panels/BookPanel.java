@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 import apps.JFrameMain;
+import apps.panels.AuthorPanel.AuthorComboRenderer;
+import apps.panels.CategoryPanel.CateComboRenderer;
 import apps.renderers.ImageRenderer;
 import apps.renderers.MultiLineTableCellRenderer;
 
@@ -28,17 +30,18 @@ public class BookPanel extends JPanel {
 	private JScrollPane scrollPane;
 	private JButton jBtnCheckOut;
 	private JPanel jpanelAction;
-	private JComboBox<String> jcomboBoxRole;
-	private JComboBox<String> jcomboBoxDepartment;
+	private JComboBox<Author> jComboboxAuthor;
+	private JComboBox<Category> jCoboboxCategory;
 	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
 	private JFrameMain mainFrame;
+	private Map<Integer, Author> autMap = new HashMap<>();
+	private Map<Integer, Category> cateMap = new HashMap<>();
 
 	public BookPanel(JFrameMain mainFrame) {
 		this.mainFrame = mainFrame;
 		setLayout(new BorderLayout());
 		initUI();
+		loadComboData();
 		loadTableData();
 	}
 
@@ -53,62 +56,41 @@ public class BookPanel extends JPanel {
 
 		// ===== NORTH - FILTER =====
 		jpanelFilter = new JPanel();
-		jpanelFilter.setPreferredSize(new Dimension(0, 100));
+		jpanelFilter.setPreferredSize(new Dimension(0, 65));
 		jpanelFilter.setLayout(null);
 
 		JLabel label = new JLabel("");
-		label.setBounds(6, 21, 394, 59);
+		label.setBounds(6, 6, 394, 59);
 		label.setBorder(new TitledBorder(null, "Search by title", TitledBorder.LEADING, TitledBorder.TOP, null,
 				new Color(59, 59, 59)));
 		jpanelFilter.add(label);
-		jcomboBoxDepartment = new JComboBox<>();
-		jcomboBoxDepartment.setBounds(698, 54, 186, 26);
-		jcomboBoxDepartment.setPreferredSize(new Dimension(180, 25));
-		jpanelFilter.add(jcomboBoxDepartment);
+		jCoboboxCategory = new JComboBox<>();
+		jCoboboxCategory.setBounds(642, 22, 186, 26);
+		jCoboboxCategory.setPreferredSize(new Dimension(180, 25));
+		jpanelFilter.add(jCoboboxCategory);
 
 		JButton jbuttonSearch = new JButton("Search");
-		jbuttonSearch.setBounds(320, 38, 66, 28);
+		jbuttonSearch.setBounds(320, 23, 66, 28);
 		jpanelFilter.add(jbuttonSearch);
-		jcomboBoxRole = new JComboBox<>();
-		jcomboBoxRole.setBounds(451, 54, 183, 26);
-		jcomboBoxRole.setPreferredSize(new Dimension(150, 25));
-		jpanelFilter.add(jcomboBoxRole);
+		jComboboxAuthor = new JComboBox<>();
+		jComboboxAuthor.setBounds(447, 22, 183, 26);
+		jComboboxAuthor.setPreferredSize(new Dimension(150, 25));
+		jpanelFilter.add(jComboboxAuthor);
 
 		add(jpanelFilter, BorderLayout.NORTH);
 
 		textField = new JTextField();
-		textField.setBounds(27, 38, 281, 28);
+		textField.setBounds(27, 23, 281, 28);
 		jpanelFilter.add(textField);
 		textField.setColumns(10);
 
 		JLabel label_3 = new JLabel("");
-		label_3.setBorder(new TitledBorder(null, "Search by Author", TitledBorder.LEADING, TitledBorder.TOP, null,
-				new Color(59, 59, 59)));
-		label_3.setBounds(436, 6, 214, 92);
+		label_3.setBorder(new TitledBorder(null, "Search by Author & Category", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(59, 59, 59)));
+		label_3.setBounds(432, 6, 490, 56);
 		jpanelFilter.add(label_3);
 
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(451, 23, 112, 28);
-		jpanelFilter.add(textField_1);
-
-		JButton jbuttonSearch_1 = new JButton("Search");
-		jbuttonSearch_1.setBounds(571, 23, 66, 28);
-		jpanelFilter.add(jbuttonSearch_1);
-
-		JLabel label_3_1 = new JLabel("");
-		label_3_1.setBorder(new TitledBorder(null, "Search by category", TitledBorder.LEADING, TitledBorder.TOP, null,
-				new Color(59, 59, 59)));
-		label_3_1.setBounds(683, 6, 214, 92);
-		jpanelFilter.add(label_3_1);
-
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(698, 23, 112, 28);
-		jpanelFilter.add(textField_2);
-
 		JButton jbuttonSearch_1_1 = new JButton("Search");
-		jbuttonSearch_1_1.setBounds(818, 23, 66, 28);
+		jbuttonSearch_1_1.setBounds(840, 20, 66, 28);
 		jpanelFilter.add(jbuttonSearch_1_1);
 
 		// ===== CENTER - TABLE =====
@@ -241,40 +223,95 @@ public class BookPanel extends JPanel {
 					book.getId() });
 		}
 	}
+	
+	//
+	private void loadComboData() {
 
+		// ===== ROLE =====
+		DefaultComboBoxModel<Author> autModel = new DefaultComboBoxModel<>();
+		autModel.addElement(null); // ALL
+
+		for (Author r : new AuthorsModel().findAll()) {
+			autModel.addElement(r);
+			autMap.put(r.getId(), r);
+		}
+		
+		jComboboxAuthor.setModel(autModel);
+		jComboboxAuthor.setRenderer(new AuthorComboRenderer());
+		
+		// ===== ROLE =====
+		DefaultComboBoxModel<Category> cateModel = new DefaultComboBoxModel<>();
+		cateModel.addElement(null); // ALL
+
+		for (Category r : new CategoriesModel().findAll()) {
+			cateModel.addElement(r);
+			cateMap.put(r.getId(), r);
+		}
+		jCoboboxCategory.setModel(cateModel);
+		jCoboboxCategory.setRenderer(new CateComboRenderer());
+	}
+	
+	public class AuthorComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			if (value == null) {
+				return super.getListCellRendererComponent(list, "ALL", index, isSelected, cellHasFocus);
+			}
+
+			var r = (Author) value;
+			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
+		}
+	}
+
+
+	public class CateComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			if (value == null) {
+				return super.getListCellRendererComponent(list, "ALL", index, isSelected, cellHasFocus);
+			}
+
+			var r = (Category) value;
+			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
+		}
+	}
+	
 	// ================= ACTIONS =================
 	private void doCheckOut(ActionEvent e) {
-		int selectedRow = jtableBooks.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a book");
-            return;
-        }
-        int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
-        try {
-            int bookId = Integer.parseInt(tableModel.getValueAt(modelRow, 11).toString()); 
-            String title = tableModel.getValueAt(modelRow, 2).toString();   
-            String author = tableModel.getValueAt(modelRow, 6).toString();  
-            String category = tableModel.getValueAt(modelRow, 7).toString(); 
-            
-            double price = 0;
-            Object priceObj = tableModel.getValueAt(modelRow, 5);
-            if (priceObj != null) {
-                price = Double.parseDouble(priceObj.toString());
-            }
-
-            if (JFrameMain.checkOutPanel != null) {
-                JFrameMain.checkOutPanel.addBookToCart(bookId, title, author, category, price);
-                this.mainFrame.showCheckOutPanel(); 
-            } else {
-                System.out.println("Error: JFrameMain.checkOutPanel not found!");
-                JOptionPane.showMessageDialog(this, "System Error: Not found.");
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-        }
+    int selectedRow = jtableBooks.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select a book");
+        return;
     }
+
+    int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
+
+    try {
+        int bookId = Integer.parseInt(
+            tableModel.getValueAt(modelRow, 11).toString()
+        );
+
+        String title    = tableModel.getValueAt(modelRow, 2).toString();
+        String author   = tableModel.getValueAt(modelRow, 4).toString();
+        String category = tableModel.getValueAt(modelRow, 5).toString();
+        double price    = Double.parseDouble(
+            tableModel.getValueAt(modelRow, 7).toString()
+        );
+
+        JFrameMain.checkOutPanel.addBookToCart(
+            bookId, title, author, category, price
+        );
+        this.mainFrame.showCheckOutPanel();
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+}
 
 	// ================= ROLE SUPPORT =================
 	public void hideActionPanel() {
@@ -353,3 +390,4 @@ public class BookPanel extends JPanel {
 	    }
 	}
 }
+

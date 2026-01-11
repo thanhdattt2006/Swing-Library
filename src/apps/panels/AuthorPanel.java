@@ -28,6 +28,7 @@ public class AuthorPanel extends JPanel {
 	private DefaultTableModel tableModel;
 
 	private Map<Integer, Author> AuthorMap = new HashMap<>();
+	
 	private JButton jBtnAdd;
 	private JButton jBtnEdit;
 	private JButton jBtnDelete;
@@ -220,17 +221,6 @@ public class AuthorPanel extends JPanel {
 	}
 
 
-//	// ===== TABLE RENDERERS =====
-//	private class RoleTableRenderer extends DefaultTableCellRenderer {
-//		@Override
-//		protected void setValue(Object value) {
-//			Author r = AuthorMap.get(value);
-//			setText(r != null ? r.getName() : "");
-//		}
-//	}
-
-
-	
 	//AddAuthor
 	protected void do_button_actionPerformed(ActionEvent e) {
 		 // Tạo JDialog

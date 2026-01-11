@@ -529,6 +529,7 @@ public class EditBookPanel extends JPanel {
 	protected void do_btnNewButton_1_actionPerformed(ActionEvent e) {
 		SwingUtilities.getWindowAncestor(this).setVisible(false);
 	}
+	
 }
 
 
