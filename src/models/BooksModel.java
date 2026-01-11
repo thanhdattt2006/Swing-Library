@@ -326,5 +326,82 @@ public class BooksModel {
 	    return list;
 	}
 	
+	//searchkeyword
+	public List<Book> searchByKeyword(String keyword) {
+
+	    List<Book> list = new ArrayList<>();
+
+	    String sql = """
+	        SELECT 
+	            b.id,
+	            b.photo,
+	            b.isbn,
+	            b.title,
+	            b.call_number,
+	            b.description,
+	            b.price,
+	            b.publication_year,
+	            b.stock,
+	            b.available_quantity,
+
+	            a.name AS author_name,
+	            c.name AS category_name
+
+	        FROM book b
+	        JOIN author a   ON b.author_id = a.id
+	        JOIN category c ON b.category_id = c.id
+
+	        WHERE 
+	              b.title       LIKE ?
+	           OR b.isbn        LIKE ?
+	           OR b.call_number LIKE ?
+	           OR a.name        LIKE ?
+	           OR c.name        LIKE ?
+
+	        ORDER BY b.id DESC
+	        """;
+
+	    try {
+	        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+
+	        String key = "%" + keyword + "%";
+	        ps.setString(1, key);
+	        ps.setString(2, key);
+	        ps.setString(3, key);
+	        ps.setString(4, key);
+	        ps.setString(5, key);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            Book b = new Book();
+
+	            b.setId(rs.getInt("id"));
+	            b.setPhoto(rs.getBytes("photo"));
+	            b.setIsbn(rs.getString("isbn"));
+	            b.setTitle(rs.getString("title"));
+	            b.setCall_number(rs.getString("call_number"));
+	            b.setDescription(rs.getString("description"));
+	            b.setPrice(rs.getDouble("price"));
+	            b.setPublication_year(rs.getInt("publication_year"));
+	            b.setStock(rs.getInt("stock"));
+	            b.setAvailable_quantity(rs.getInt("available_quantity"));
+
+	            b.setAuthor_name(rs.getString("author_name"));
+	            b.setCategory_name(rs.getString("category_name"));
+
+	            list.add(b);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        ConnectDB.disconnect();
+	    }
+
+	    return list;
+	}
+
+	
 
 }

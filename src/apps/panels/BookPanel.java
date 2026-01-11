@@ -18,6 +18,9 @@ import entities.*;
 import models.*;
 import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.event.ActionListener;
 
 public class BookPanel extends JPanel {
@@ -33,7 +36,7 @@ public class BookPanel extends JPanel {
 	private JPanel jpanelAction;
 	private JComboBox<Author> jComboboxAuthor;
 	private JComboBox<Category> jCoboboxCategory;
-	private JTextField textField;
+	private JTextField textFieldSearch;
 	private JFrameMain mainFrame;
 	private Map<Integer, Author> autMap = new HashMap<>();
 	private Map<Integer, Category> cateMap = new HashMap<>();
@@ -80,10 +83,52 @@ public class BookPanel extends JPanel {
 
 		add(jpanelFilter, BorderLayout.NORTH);
 
-		textField = new JTextField();
-		textField.setBounds(27, 23, 281, 28);
-		jpanelFilter.add(textField);
-		textField.setColumns(10);
+		textFieldSearch = new JTextField();
+		textFieldSearch.setBounds(27, 23, 281, 28);
+		jpanelFilter.add(textFieldSearch);
+		textFieldSearch.setColumns(10);
+		textFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+
+		    private void search() {
+		        String keyword = textFieldSearch.getText().trim();
+		        BooksModel model = new BooksModel();
+		        List<Book> list = model.searchByKeyword(keyword);
+
+		        tableModel.setRowCount(0);
+		        for (Book b : list) {
+		            tableModel.addRow(new Object[] {
+		                b.getPhoto(),
+		                b.getIsbn(),
+		                b.getTitle(),
+		                b.getCall_number(),
+		                b.getAuthor_name(),
+		                b.getCategory_name(),
+		                b.getDescription(),
+		                b.getPrice(),
+		                b.getPublication_year(),
+		                b.getStock(),
+		                b.getAvailable_quantity(),
+		                b.getId()
+		            });
+		        }
+		    }
+
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		        search();
+		    }
+		});
+
 
 		JLabel label_3 = new JLabel("");
 		label_3.setBorder(new TitledBorder(null, "Search by Author & Category", TitledBorder.LEADING, TitledBorder.TOP,
