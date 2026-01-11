@@ -16,6 +16,7 @@ public class LoanMasterModel {
         master.setAccount_id(rs.getInt("account_id"));
         master.setBorrow_date(rs.getDate("borrow_date"));
         master.setUsername(rs.getString("username"));
+        master.setDue_date(rs.getDate("due_date"));
         master.setEmployeeIdDisplay(rs.getString("employee_id")); 
         String dbStatusString = rs.getString("status");
         String dbStatus = rs.getString("status"); 

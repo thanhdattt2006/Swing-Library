@@ -306,7 +306,7 @@ public class LoanDetailsModel {
 		            ld.setIsbn(rs.getString("isbn"));
 		            ld.setTitle(rs.getString("title"));
 		            ld.setCall_number(rs.getString("call_number"));
-		            ld.setAuthor_name(rs.getString("author_name"));
+		            ld.setAuthor_name(rs.getString("author_name")); 
 		            ld.setCategory_name(rs.getString("category_name"));
 
 		            list.add(ld);

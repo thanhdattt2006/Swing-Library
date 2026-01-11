@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; color: #000; line-height: 1.6; }
+        .container { width: 450px; border: 2px solid #000; padding: 20px; margin: 20px auto; }
+        .header { text-align: center; background-color: #000; color: #fff; padding: 5px; }
+        .details { margin: 20px 0; border: 1px dashed #000; padding: 10px; }
+        .warning { color: red; font-weight: bold; }
+        .footer { font-size: 11px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>FINAL NOTICE</h2>
+        </div>
+        <p>Dear <b>{{name}}</b>,</p>
+        <p class="warning">Your loan period ends TOMORROW.</p>
+        <div class="details">
+            <p><b>Loan ID:</b> #{{id}}</p>
+            <p><b>Items:</b> {{books}}</p>
+            <p><b>Deadline:</b> {{due_date}}</p>
+        </div>
+        <p>Failure to return by tomorrow will result in immediate late fee charges.</p>
+        <div class="footer">Library Management System - Automated Alert.</div>
+    </div>
+</body>
+</html>
