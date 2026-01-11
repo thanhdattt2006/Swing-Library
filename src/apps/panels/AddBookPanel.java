@@ -323,34 +323,25 @@ public class AddBookPanel extends JPanel {
 	}
 	
 	private class CategoryCellRender extends DefaultListCellRenderer {
-
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			
 			if (value == null) {
 				return super.getListCellRendererComponent(list, "Null", index, isSelected, cellHasFocus);
 			}
-			
 			Category cate = (Category) value;
 			return super.getListCellRendererComponent(list, cate.getName(), index, isSelected, cellHasFocus);
 		}
-
 	}
 	
 	protected void do_btnNewButton_2_actionPerformed(ActionEvent e) {
 		JFileChooser fileChooser = new JFileChooser("E:\\anh");
-		
 		fileChooser.setDialogTitle("Chon file anh");
-		
-		//Đóng laij, cấm chọn mặc định All file
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG File(*.png)", "png"));
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG File(*.jpg)", "jpg"));
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("GIF File(*.gif)", "gif"));
-		
 		var result = fileChooser.showOpenDialog(this);
-
 		if (result == JFileChooser.APPROVE_OPTION) {
 		    File file = fileChooser.getSelectedFile();
 		    // check size 2MB
@@ -359,11 +350,10 @@ public class AddBookPanel extends JPanel {
 		                "The selected file exceeds 2MB. Please upload a smaller file");
 		        return;
 		    }
-
 		    try {
 		        this.file = file;
 		        this.imageData = Files.readAllBytes(file.toPath());
-		        // 👉 preview ảnh
+		        // 👉 preview photo
 		        Image image = new ImageIcon(file.getAbsolutePath())
 		                .getImage()
 		                .getScaledInstance(
@@ -379,9 +369,7 @@ public class AddBookPanel extends JPanel {
 		                JOptionPane.ERROR_MESSAGE);
 		    }
 		}
-
 	}
-	
 	
 	//generateCallNumber
 	public String generateCallNumber(String title, String authorName) {
@@ -396,22 +384,18 @@ public class AddBookPanel extends JPanel {
 	        FROM book
 	        WHERE call_number LIKE ?
 	    """;
-
 	    try (
 	        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql)
 	    ) {
 	        ps.setString(1, prefix + "-%");
-
 	        ResultSet rs = ps.executeQuery();
 	        if (rs.next() && rs.getInt("max_suffix") > 0) {
 	            nextNumber = rs.getInt("max_suffix") + 1;
 	        }
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	    String suffix = String.format("%03d", nextNumber);
-
 	    return prefix + "-" + suffix;
 	}
 	

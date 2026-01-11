@@ -329,7 +329,7 @@ public class EditBookPanel extends JPanel {
 			jTextFieldStock.setText(String.valueOf(book.getStock()));
 			jTextFieldPrice.setText(String.valueOf(book.getPrice()));
 
-			//kiểm tra ảnh có null không
+			//checking photo have null 
 			if(book.getPhoto() != null) {
 				Image image = new ImageIcon(book.getPhoto()).getImage().getScaledInstance(photo.getWidth(),
 				photo.getHeight(), Image.SCALE_DEFAULT);
@@ -347,52 +347,37 @@ public class EditBookPanel extends JPanel {
         .setDocumentFilter(new NumberOnlyFilter());
 	}
 	
-	
-	
 	private class AuthorCellRender extends DefaultListCellRenderer {
-
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			
 			if (value == null) {
 				return super.getListCellRendererComponent(list, "Null", index, isSelected, cellHasFocus);
-			}
-			
+			}	
 			Author aut = (Author) value;
 			return super.getListCellRendererComponent(list, aut.getName(), index, isSelected, cellHasFocus);
 		}
-
 	}
 	
 	private class CategoryCellRender extends DefaultListCellRenderer {
-
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			
 			if (value == null) {
 				return super.getListCellRendererComponent(list, "Null", index, isSelected, cellHasFocus);
 			}
-			
 			Category cate = (Category) value;
 			return super.getListCellRendererComponent(list, cate.getName(), index, isSelected, cellHasFocus);
 		}
-
 	}
 	
 	protected void do_btnNewButton_2_actionPerformed(ActionEvent e) {
 		JFileChooser fileChooser = new JFileChooser("E:\\anh");
-		
 		fileChooser.setDialogTitle("Chon file anh");
-		
-		//Đóng laij, cấm chọn mặc định All file
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG File(*.png)", "png"));
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG File(*.jpg)", "jpg"));
 		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("GIF File(*.gif)", "gif"));
-		
-//		var result = fileChooser.showOpenDialog(this);
 		var result = fileChooser.showOpenDialog(this);
 
 		if (result == JFileChooser.APPROVE_OPTION) {
@@ -407,13 +392,13 @@ public class EditBookPanel extends JPanel {
 		    }
 
 		    try {
-		        // 👉 lưu file để dùng sau (nếu cần)
+		        // 👉 saving file for after using 
 		        this.file = file;
 
-		        // 👉 đọc ảnh thành byte[] để lưu DB
+		        // 👉 read photo to bytes[] 
 		        this.imageData = Files.readAllBytes(file.toPath());
 
-		        // 👉 preview ảnh
+		        // 👉 preview photo
 		        Image image = new ImageIcon(file.getAbsolutePath())
 		                .getImage()
 		                .getScaledInstance(
@@ -458,7 +443,7 @@ public class EditBookPanel extends JPanel {
 		    Double.parseDouble(jTextFieldPrice.getText().trim())
 		);
 		
-		// ⚠️ available_quantity KHÔNG set lại nếu không có logic riêng
+		// available_quantity can't set again ,if having not private logic 
 		int ava = Integer.parseInt(jTextFieldAvailable.getText().trim());
 		int sto = Integer.parseInt(jTextFieldStock.getText().trim());
 		book.setAvailable_quantity((sto - stock) + ava);
@@ -468,7 +453,7 @@ public class EditBookPanel extends JPanel {
 		        Files.readAllBytes(Paths.get(file.getAbsolutePath()))
 		    );
 		} else {
-		    // giữ ảnh cũ
+		    // keep old photo
 		    book.setPhoto(bookMd.findById(id).getPhoto());
 		}
 		

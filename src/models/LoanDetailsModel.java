@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.Book;
 import entities.DetailStatus;
 import entities.Loan_Details;
 import entities.Loan_Master;
@@ -321,103 +322,483 @@ public class LoanDetailsModel {
 		    return list;
 		}
 			
-			//findAllDamaged
-			public List<Loan_Details> findAllDamaged() {
-		    List<Loan_Details> list = new ArrayList<>();
+		//findAllDamaged
+		public List<Loan_Details> findAllDamaged() {
+	    List<Loan_Details> list = new ArrayList<>();
 
-			    try {
-			        String sql = """
-			            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
-			        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
-			                a.name AS author_name,
-			                c.name AS category_name
-			            FROM loan_details ld
-			            JOIN book b       ON ld.book_id = b.id
-			            JOIN author a     ON b.author_id = a.id
-			            JOIN category c   ON b.category_id = c.id
-			            WHERE ld.status = 'Damaged';
-			        """;
+		    try {
+		        String sql = """
+		            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
+		        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
+		                a.name AS author_name,
+		                c.name AS category_name
+		            FROM loan_details ld
+		            JOIN book b       ON ld.book_id = b.id
+		            JOIN author a     ON b.author_id = a.id
+		            JOIN category c   ON b.category_id = c.id
+		            WHERE ld.status = 'Damaged';
+		        """;
+	
+		        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+		        ResultSet rs = ps.executeQuery();
+	
+		        while (rs.next()) {
+		            var ld = new Loan_Details();
+	
+		            ld.setId(rs.getInt("id"));
+		            ld.setLoan_master_id(rs.getInt("loan_master_id"));
+		            ld.setBook_id(rs.getInt("book_id"));
+	
+		            ld.setLate_fee(rs.getDouble("late_fee"));
+		            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
+		            ld.setReturn_date(rs.getDate("return_date"));
+		            String dbStatus = rs.getString("status");
+		    		ld.setStatus(DetailStatus.fromString(dbStatus));
+		            ld.setPhoto(rs.getBytes("photo"));
+		            ld.setIsbn(rs.getString("isbn"));
+		            ld.setTitle(rs.getString("title"));
+		            ld.setCall_number(rs.getString("call_number"));
+		            ld.setAuthor_name(rs.getString("author_name"));
+		            ld.setCategory_name(rs.getString("category_name"));
+		            list.add(ld);
+		        }
 		
-			        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
-			        ResultSet rs = ps.executeQuery();
-		
-			        while (rs.next()) {
-			            var ld = new Loan_Details();
-		
-			            ld.setId(rs.getInt("id"));
-			            ld.setLoan_master_id(rs.getInt("loan_master_id"));
-			            ld.setBook_id(rs.getInt("book_id"));
-		
-			            ld.setLate_fee(rs.getDouble("late_fee"));
-			            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
-			            ld.setReturn_date(rs.getDate("return_date"));
-			            String dbStatus = rs.getString("status");
-			    		ld.setStatus(DetailStatus.fromString(dbStatus));
-			            ld.setPhoto(rs.getBytes("photo"));
-			            ld.setIsbn(rs.getString("isbn"));
-			            ld.setTitle(rs.getString("title"));
-			            ld.setCall_number(rs.getString("call_number"));
-			            ld.setAuthor_name(rs.getString("author_name"));
-			            ld.setCategory_name(rs.getString("category_name"));
-			            list.add(ld);
-			        }
-			
-			    } catch (Exception e) {
-			        e.printStackTrace();
-			    } finally {
-			        ConnectDB.disconnect();
-			    }
-			
-			    return list;
-			}
-			
-			//findAllRepair
-			public List<Loan_Details> findAllLost() {
-			    List<Loan_Details> list = new ArrayList<>();
-			
-			    try {
-			        String sql = """
-			            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
-			        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
-			                a.name AS author_name,
-			                c.name AS category_name
-			            FROM loan_details ld
-			            JOIN book b       ON ld.book_id = b.id
-			            JOIN author a     ON b.author_id = a.id
-			            JOIN category c   ON b.category_id = c.id
-			            WHERE ld.status = 'Lost';
-			        """;
-			
-			        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
-			        ResultSet rs = ps.executeQuery();
-			
-			        while (rs.next()) {
-			            var ld = new Loan_Details();
-			
-			            ld.setId(rs.getInt("id"));
-			            ld.setLoan_master_id(rs.getInt("loan_master_id"));
-			            ld.setBook_id(rs.getInt("book_id"));
-			
-			            ld.setLate_fee(rs.getDouble("late_fee"));
-			            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
-			            ld.setReturn_date(rs.getDate("return_date"));
-			            String dbStatus = rs.getString("status");
-			    		ld.setStatus(DetailStatus.fromString(dbStatus));
-			            ld.setPhoto(rs.getBytes("photo"));
-			            ld.setIsbn(rs.getString("isbn"));
-			            ld.setTitle(rs.getString("title"));
-			            ld.setCall_number(rs.getString("call_number"));
-			            ld.setAuthor_name(rs.getString("author_name"));
-			            ld.setCategory_name(rs.getString("category_name"));
-			            list.add(ld);
-			        }
-			
-			    } catch (Exception e) {
-			        e.printStackTrace();
-			    } finally {
-			        ConnectDB.disconnect();
-			    }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    } finally {
+		        ConnectDB.disconnect();
+		    }
 		
 		    return list;
-			}
+		}
+			
+		//findAllRepair
+		public List<Loan_Details> findAllLost() {
+		    List<Loan_Details> list = new ArrayList<>();
+		
+		    try {
+		        String sql = """
+		            SELECT ld.id AS id, ld.loan_master_id, ld.late_fee, ld.compensation_fee, ld.return_date, ld.status,
+		        		b.id AS book_id, b.photo, b.isbn, b.title, b.call_number,
+		                a.name AS author_name,
+		                c.name AS category_name
+		            FROM loan_details ld
+		            JOIN book b       ON ld.book_id = b.id
+		            JOIN author a     ON b.author_id = a.id
+		            JOIN category c   ON b.category_id = c.id
+		            WHERE ld.status = 'Lost';
+		        """;
+		
+		        PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
+		        ResultSet rs = ps.executeQuery();
+		
+		        while (rs.next()) {
+		            var ld = new Loan_Details();
+		
+		            ld.setId(rs.getInt("id"));
+		            ld.setLoan_master_id(rs.getInt("loan_master_id"));
+		            ld.setBook_id(rs.getInt("book_id"));
+		
+		            ld.setLate_fee(rs.getDouble("late_fee"));
+		            ld.setCompensation_fee(rs.getDouble("compensation_fee"));
+		            ld.setReturn_date(rs.getDate("return_date"));
+		            String dbStatus = rs.getString("status");
+		    		ld.setStatus(DetailStatus.fromString(dbStatus));
+		            ld.setPhoto(rs.getBytes("photo"));
+		            ld.setIsbn(rs.getString("isbn"));
+		            ld.setTitle(rs.getString("title"));
+		            ld.setCall_number(rs.getString("call_number"));
+		            ld.setAuthor_name(rs.getString("author_name"));
+		            ld.setCategory_name(rs.getString("category_name"));
+		            list.add(ld);
+		        }
+		
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    } finally {
+		        ConnectDB.disconnect();
+		    }
+	
+	    return list;
+		}
+		
+		//searchByStatusRepaired
+		public static List<Loan_Details> searchByStatusRepaired(Integer authorId, Integer categoryId) {
+	
+	    List<Loan_Details> list = new ArrayList<>();
+	
+	    StringBuilder sql = new StringBuilder("""
+	        SELECT DISTINCT
+	            b.id            AS book_id,
+	            b.photo,
+	            b.isbn,
+	            b.title,
+	            b.call_number,
+	            a.name          AS author_name,
+	            c.name          AS category_name,
+	            b.description,
+	            b.price,
+	            b.publication_year,
+	            b.stock,
+	            b.available_quantity
+	        FROM loan_details ld
+	        JOIN book b      ON ld.book_id = b.id
+	        JOIN author a    ON b.author_id = a.id
+	        JOIN category c  ON b.category_id = c.id
+	        WHERE ld.status = 'Repaired'
+	    """);
+	
+	    List<Object> params = new ArrayList<>();
+	
+	    if (authorId != null) {
+	        sql.append(" AND b.author_id = ?");
+	        params.add(authorId);
+	    }
+	
+	    if (categoryId != null) {
+	        sql.append(" AND b.category_id = ?");
+	        params.add(categoryId);
+	    }
+	
+	    try (PreparedStatement ps =
+	            ConnectDB.connection().prepareStatement(sql.toString())) {
+	
+	        for (int i = 0; i < params.size(); i++) {
+	            ps.setObject(i + 1, params.get(i));
+	        }
+	
+	        ResultSet rs = ps.executeQuery();
+	
+	        while (rs.next()) {
+	        	Loan_Details b = new Loan_Details();
+	            b.setId(rs.getInt("book_id")); // ⭐ QUAN TRỌNG
+	            b.setPhoto(rs.getBytes("photo"));
+	            b.setIsbn(rs.getString("isbn"));
+	            b.setTitle(rs.getString("title"));
+	            b.setCall_number(rs.getString("call_number"));
+	            b.setAuthor_name(rs.getString("author_name"));
+	            b.setCategory_name(rs.getString("category_name"));
+	            list.add(b);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	
+	    return list;
+	}
+
+	//searchByStatusDamaged
+			public static List<Loan_Details> searchByStatusDamaged(Integer authorId, Integer categoryId) {
+		
+		    List<Loan_Details> list = new ArrayList<>();
+		
+		    StringBuilder sql = new StringBuilder("""
+		        SELECT DISTINCT
+		            b.id            AS book_id,
+		            b.photo,
+		            b.isbn,
+		            b.title,
+		            b.call_number,
+		            a.name          AS author_name,
+		            c.name          AS category_name,
+		            b.description,
+		            b.price,
+		            b.publication_year,
+		            b.stock,
+		            b.available_quantity
+		        FROM loan_details ld
+		        JOIN book b      ON ld.book_id = b.id
+		        JOIN author a    ON b.author_id = a.id
+		        JOIN category c  ON b.category_id = c.id
+		        WHERE ld.status = 'Damaged'
+		    """);
+		
+		    List<Object> params = new ArrayList<>();
+		
+		    if (authorId != null) {
+		        sql.append(" AND b.author_id = ?");
+		        params.add(authorId);
+		    }
+		
+		    if (categoryId != null) {
+		        sql.append(" AND b.category_id = ?");
+		        params.add(categoryId);
+		    }
+		
+		    try (PreparedStatement ps =
+		            ConnectDB.connection().prepareStatement(sql.toString())) {
+		
+		        for (int i = 0; i < params.size(); i++) {
+		            ps.setObject(i + 1, params.get(i));
+		        }
+		
+		        ResultSet rs = ps.executeQuery();
+		
+		        while (rs.next()) {
+		        	Loan_Details b = new Loan_Details();
+		            b.setId(rs.getInt("book_id")); // ⭐ QUAN TRỌNG
+		            b.setPhoto(rs.getBytes("photo"));
+		            b.setIsbn(rs.getString("isbn"));
+		            b.setTitle(rs.getString("title"));
+		            b.setCall_number(rs.getString("call_number"));
+		            b.setAuthor_name(rs.getString("author_name"));
+		            b.setCategory_name(rs.getString("category_name"));
+		            list.add(b);
+		        }
+
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		
+		    return list;
+		}
+			
+		//searchByStatusLost
+		public static List<Loan_Details> searchByStatusLost(Integer authorId, Integer categoryId) {
+	
+	    List<Loan_Details> list = new ArrayList<>();
+	
+	    StringBuilder sql = new StringBuilder("""
+	        SELECT DISTINCT
+	            b.id            AS book_id,
+	            b.photo,
+	            b.isbn,
+	            b.title,
+	            b.call_number,
+	            a.name          AS author_name,
+	            c.name          AS category_name,
+	            b.description,
+	            b.price,
+	            b.publication_year,
+	            b.stock,
+	            b.available_quantity
+	        FROM loan_details ld
+	        JOIN book b      ON ld.book_id = b.id
+	        JOIN author a    ON b.author_id = a.id
+	        JOIN category c  ON b.category_id = c.id
+	        WHERE ld.status = 'Lost'
+	    """);
+	
+	    List<Object> params = new ArrayList<>();
+	
+	    if (authorId != null) {
+	        sql.append(" AND b.author_id = ?");
+	        params.add(authorId);
+	    }
+	
+	    if (categoryId != null) {
+	        sql.append(" AND b.category_id = ?");
+	        params.add(categoryId);
+	    }
+	
+	    try (PreparedStatement ps =
+	            ConnectDB.connection().prepareStatement(sql.toString())) {
+	
+	        for (int i = 0; i < params.size(); i++) {
+	            ps.setObject(i + 1, params.get(i));
+	        }
+	
+	        ResultSet rs = ps.executeQuery();
+	
+	        while (rs.next()) {
+	        	Loan_Details b = new Loan_Details();
+	            b.setId(rs.getInt("book_id")); // ⭐ QUAN TRỌNG
+	            b.setPhoto(rs.getBytes("photo"));
+	            b.setIsbn(rs.getString("isbn"));
+	            b.setTitle(rs.getString("title"));
+	            b.setCall_number(rs.getString("call_number"));
+	            b.setAuthor_name(rs.getString("author_name"));
+	            b.setCategory_name(rs.getString("category_name"));
+	            list.add(b);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	
+	    return list;
+	}
+
+	//==============================search by key word===========================
+	//searchTitleRepair
+	public static List<Loan_Details> searchByKeyWordRepair(String keyword) {
+	    List<Loan_Details> list = new ArrayList<>();
+
+	    String sql = """
+	        SELECT DISTINCT
+	            b.id            AS book_id,
+	            b.photo,
+	            b.isbn,
+	            b.title,
+	            b.call_number,
+	            a.name          AS author_name,
+	            c.name          AS category_name,
+	            ld.status
+	        FROM loan_details ld
+	        JOIN book b      ON ld.book_id = b.id
+	        JOIN author a    ON b.author_id = a.id
+	        JOIN category c  ON b.category_id = c.id
+	        WHERE ld.status = 'Repaired'
+	          AND (
+	                b.title       LIKE ?
+	             OR b.isbn        LIKE ?
+	             OR b.call_number LIKE ?
+	             OR a.name        LIKE ?
+	          )
+	        ORDER BY b.title
+	    """;
+
+	    try (PreparedStatement ps =
+	            ConnectDB.connection().prepareStatement(sql)) {
+
+	        String key = "%" + keyword + "%";
+
+	        ps.setString(1, key);
+	        ps.setString(2, key);
+	        ps.setString(3, key);
+	        ps.setString(4, key);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            var b = new Loan_Details();
+	            b.setId(rs.getInt("book_id"));
+	            b.setPhoto(rs.getBytes("photo"));
+	            b.setIsbn(rs.getString("isbn"));
+	            b.setTitle(rs.getString("title"));
+	            b.setCall_number(rs.getString("call_number"));
+	            b.setAuthor_name(rs.getString("author_name"));
+	            b.setCategory_name(rs.getString("category_name"));
+
+	            list.add(b);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
+	
+	//searchTitleLost
+	public static List<Loan_Details> searchByKeyWordLost(String keyword) {
+	    List<Loan_Details> list = new ArrayList<>();
+
+	    String sql = """
+	        SELECT DISTINCT
+	            b.id            AS book_id,
+	            b.photo,
+	            b.isbn,
+	            b.title,
+	            b.call_number,
+	            a.name          AS author_name,
+	            c.name          AS category_name,
+	            ld.status
+	        FROM loan_details ld
+	        JOIN book b      ON ld.book_id = b.id
+	        JOIN author a    ON b.author_id = a.id
+	        JOIN category c  ON b.category_id = c.id
+	        WHERE ld.status = 'Lost'
+	          AND (
+	                b.title       LIKE ?
+	             OR b.isbn        LIKE ?
+	             OR b.call_number LIKE ?
+	             OR a.name        LIKE ?
+	          )
+	        ORDER BY b.title
+	    """;
+
+	    try (PreparedStatement ps =
+	            ConnectDB.connection().prepareStatement(sql)) {
+
+	        String key = "%" + keyword + "%";
+
+	        ps.setString(1, key);
+	        ps.setString(2, key);
+	        ps.setString(3, key);
+	        ps.setString(4, key);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            var b = new Loan_Details();
+	            b.setId(rs.getInt("book_id"));
+	            b.setPhoto(rs.getBytes("photo"));
+	            b.setIsbn(rs.getString("isbn"));
+	            b.setTitle(rs.getString("title"));
+	            b.setCall_number(rs.getString("call_number"));
+	            b.setAuthor_name(rs.getString("author_name"));
+	            b.setCategory_name(rs.getString("category_name"));
+
+	            list.add(b);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
+	
+	//searchTitleDamaged
+		public static List<Loan_Details> searchByKeyWordDamaged(String keyword) {
+		    List<Loan_Details> list = new ArrayList<>();
+
+		    String sql = """
+		        SELECT DISTINCT
+		            b.id            AS book_id,
+		            b.photo,
+		            b.isbn,
+		            b.title,
+		            b.call_number,
+		            a.name          AS author_name,
+		            c.name          AS category_name,
+		            ld.status
+		        FROM loan_details ld
+		        JOIN book b      ON ld.book_id = b.id
+		        JOIN author a    ON b.author_id = a.id
+		        JOIN category c  ON b.category_id = c.id
+		        WHERE ld.status = 'Damaged'
+		          AND (
+		                b.title       LIKE ?
+		             OR b.isbn        LIKE ?
+		             OR b.call_number LIKE ?
+		             OR a.name        LIKE ?
+		          )
+		        ORDER BY b.title
+		    """;
+
+		    try (PreparedStatement ps =
+		            ConnectDB.connection().prepareStatement(sql)) {
+
+		        String key = "%" + keyword + "%";
+
+		        ps.setString(1, key);
+		        ps.setString(2, key);
+		        ps.setString(3, key);
+		        ps.setString(4, key);
+
+		        ResultSet rs = ps.executeQuery();
+
+		        while (rs.next()) {
+		            var b = new Loan_Details();
+		            b.setId(rs.getInt("book_id"));
+		            b.setPhoto(rs.getBytes("photo"));
+		            b.setIsbn(rs.getString("isbn"));
+		            b.setTitle(rs.getString("title"));
+		            b.setCall_number(rs.getString("call_number"));
+		            b.setAuthor_name(rs.getString("author_name"));
+		            b.setCategory_name(rs.getString("category_name"));
+
+		            list.add(b);
+		        }
+
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+
+		    return list;
+		}
+
 }
