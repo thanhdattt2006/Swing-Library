@@ -12,11 +12,15 @@ import apps.renderers.MultiLineTableCellRenderer;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import entities.*;
 import models.*;
 import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.event.ActionListener;
 
 public class BookPanel extends JPanel {
@@ -32,7 +36,7 @@ public class BookPanel extends JPanel {
 	private JPanel jpanelAction;
 	private JComboBox<Author> jComboboxAuthor;
 	private JComboBox<Category> jCoboboxCategory;
-	private JTextField textField;
+	private JTextField textFieldSearch;
 	private JFrameMain mainFrame;
 	private Map<Integer, Author> autMap = new HashMap<>();
 	private Map<Integer, Category> cateMap = new HashMap<>();
@@ -79,22 +83,70 @@ public class BookPanel extends JPanel {
 
 		add(jpanelFilter, BorderLayout.NORTH);
 
-		textField = new JTextField();
-		textField.setBounds(27, 23, 281, 28);
-		jpanelFilter.add(textField);
-		textField.setColumns(10);
+		textFieldSearch = new JTextField();
+		textFieldSearch.setBounds(27, 23, 281, 28);
+		jpanelFilter.add(textFieldSearch);
+		textFieldSearch.setColumns(10);
+		textFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+
+		    private void search() {
+		        String keyword = textFieldSearch.getText().trim();
+		        BooksModel model = new BooksModel();
+		        List<Book> list = model.searchByKeyword(keyword);
+
+		        tableModel.setRowCount(0);
+		        for (Book b : list) {
+		            tableModel.addRow(new Object[] {
+		                b.getPhoto(),
+		                b.getIsbn(),
+		                b.getTitle(),
+		                b.getCall_number(),
+		                b.getAuthor_name(),
+		                b.getCategory_name(),
+		                b.getDescription(),
+		                b.getPrice(),
+		                b.getPublication_year(),
+		                b.getStock(),
+		                b.getAvailable_quantity(),
+		                b.getId()
+		            });
+		        }
+		    }
+
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		        search();
+		    }
+		});
+
 
 		JLabel label_3 = new JLabel("");
-		label_3.setBorder(new TitledBorder(null, "Search by Author & Category", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(59, 59, 59)));
+		label_3.setBorder(new TitledBorder(null, "Search by Author & Category", TitledBorder.LEADING, TitledBorder.TOP,
+				null, new Color(59, 59, 59)));
 		label_3.setBounds(432, 6, 490, 56);
 		jpanelFilter.add(label_3);
 
 		JButton jbuttonSearch_1_1 = new JButton("Search");
+		jbuttonSearch_1_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_jbuttonSearch_1_1_actionPerformed(e);
+			}
+		});
 		jbuttonSearch_1_1.setBounds(840, 20, 66, 28);
 		jpanelFilter.add(jbuttonSearch_1_1);
 
 		// ===== CENTER - TABLE =====
-		String[] columns = { "PHOTO", "ISBN", "TITLE", "CALL NUMBER", "AUTHOR", "CATEGORY", "DESCRIPTION",  "PRICE",
+		String[] columns = { "PHOTO", "ISBN", "TITLE", "CALL NUMBER", "AUTHOR", "CATEGORY", "DESCRIPTION", "PRICE",
 				"PUBLICATION YEAR", "STOCK", "AVAILABLE", "ID" };
 
 		tableModel = new DefaultTableModel(columns, 0) {
@@ -218,12 +270,11 @@ public class BookPanel extends JPanel {
 		BooksModel booksModel = new BooksModel();
 		for (Book book : booksModel.findAll()) {
 			tableModel.addRow(new Object[] { book.getPhoto(), book.getIsbn(), book.getTitle(), book.getCall_number(),
-					  book.getAuthor_name(), book.getCategory_name(), book.getDescription(), book.getPrice(),
-					book.getPublication_year(), book.getStock(), book.getAvailable_quantity(), 
-					book.getId() });
+					book.getAuthor_name(), book.getCategory_name(), book.getDescription(), book.getPrice(),
+					book.getPublication_year(), book.getStock(), book.getAvailable_quantity(), book.getId() });
 		}
 	}
-	
+
 	//
 	private void loadComboData() {
 
@@ -235,10 +286,10 @@ public class BookPanel extends JPanel {
 			autModel.addElement(r);
 			autMap.put(r.getId(), r);
 		}
-		
+
 		jComboboxAuthor.setModel(autModel);
 		jComboboxAuthor.setRenderer(new AuthorComboRenderer());
-		
+
 		// ===== ROLE =====
 		DefaultComboBoxModel<Category> cateModel = new DefaultComboBoxModel<>();
 		cateModel.addElement(null); // ALL
@@ -250,7 +301,7 @@ public class BookPanel extends JPanel {
 		jCoboboxCategory.setModel(cateModel);
 		jCoboboxCategory.setRenderer(new CateComboRenderer());
 	}
-	
+
 	public class AuthorComboRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -265,7 +316,6 @@ public class BookPanel extends JPanel {
 		}
 	}
 
-
 	public class CateComboRenderer extends DefaultListCellRenderer {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -279,39 +329,33 @@ public class BookPanel extends JPanel {
 			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
 		}
 	}
-	
+
 	// ================= ACTIONS =================
 	private void doCheckOut(ActionEvent e) {
-    int selectedRow = jtableBooks.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Please select a book");
-        return;
-    }
+		int selectedRow = jtableBooks.getSelectedRow();
+		if (selectedRow == -1) {
+			JOptionPane.showMessageDialog(this, "Please select a book");
+			return;
+		}
 
-    int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
+		int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
 
-    try {
-        int bookId = Integer.parseInt(
-            tableModel.getValueAt(modelRow, 11).toString()
-        );
+		try {
+			int bookId = Integer.parseInt(tableModel.getValueAt(modelRow, 11).toString());
 
-        String title    = tableModel.getValueAt(modelRow, 2).toString();
-        String author   = tableModel.getValueAt(modelRow, 4).toString();
-        String category = tableModel.getValueAt(modelRow, 5).toString();
-        double price    = Double.parseDouble(
-            tableModel.getValueAt(modelRow, 7).toString()
-        );
+			String title = tableModel.getValueAt(modelRow, 2).toString();
+			String author = tableModel.getValueAt(modelRow, 4).toString();
+			String category = tableModel.getValueAt(modelRow, 5).toString();
+			double price = Double.parseDouble(tableModel.getValueAt(modelRow, 7).toString());
 
-        JFrameMain.checkOutPanel.addBookToCart(
-            bookId, title, author, category, price
-        );
-        this.mainFrame.showCheckOutPanel();
+			JFrameMain.checkOutPanel.addBookToCart(bookId, title, author, category, price);
+			this.mainFrame.showCheckOutPanel();
 
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-    }
-}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+		}
+	}
 
 	// ================= ROLE SUPPORT =================
 	public void hideActionPanel() {
@@ -319,75 +363,109 @@ public class BookPanel extends JPanel {
 			jpanelAction.setVisible(false);
 		}
 	}
-	
-	//reloadTable
+
+	// reloadTable
 	public void reloadTable() {
-	    loadTableData();
+		loadTableData();
 	}
-	
-	//add-btn
-	protected void do_button_actionPerformed(ActionEvent e) {                                                           
-	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Add Book", true);
-	    dialog.setResizable(false);
-	    var addPanel = new AddBookPanel(dialog, this);
-	    dialog.setContentPane(addPanel);
-	    dialog.setSize(456, 760);
-	    dialog.setLocationRelativeTo(this);
-	    dialog.setVisible(true);
+
+	// search-btn
+	private void searchBooks() {
+		Author author = (Author) jComboboxAuthor.getSelectedItem();
+		Category category = (Category) jCoboboxCategory.getSelectedItem();
+
+		Integer authorId = (author != null) ? author.getId() : null;
+		Integer categoryId = (category != null) ? category.getId() : null;
+
+		BooksModel model = new BooksModel();
+		List<Book> books = model.search(authorId, categoryId);
+
+		tableModel.setRowCount(0);
+		for (Book b : books) {
+			tableModel.addRow(new Object[] { b.getPhoto(), b.getIsbn(), b.getTitle(), b.getCall_number(),
+					b.getAuthor_name(), b.getCategory_name(), b.getDescription(), b.getPrice(), b.getPublication_year(),
+					b.getStock(), b.getAvailable_quantity(), b.getId() });
+		}
 	}
-	
-	//edit-btn
-	protected void do_button_1_actionPerformed(ActionEvent e) {             
-	    JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Edit Book", true);
-	    int selectedRow = jtableBooks.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a row to edit");
-            return;
-        }
-        int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
-        int bookId = (int) tableModel.getValueAt(modelRow, 11);
-	    dialog.setResizable(false);
-	    Map<String, Object> data = new HashMap<String, Object>();
+
+	protected void do_jbuttonSearch_1_1_actionPerformed(ActionEvent e) {
+		searchBooks();
+	}
+
+	// add-btn
+	protected void do_button_actionPerformed(ActionEvent e) {
+
+		Window parentWindow = SwingUtilities.getWindowAncestor(this);
+
+		JDialog dialog = new JDialog(parentWindow, "Add Book", Dialog.ModalityType.APPLICATION_MODAL);
+
+		dialog.setResizable(false);
+		dialog.setContentPane(new AddBookPanel(dialog, this));
+
+		dialog.setSize(456, 760);
+		dialog.setLocationRelativeTo(parentWindow);
+
+		dialog.setVisible(true);
+	}
+
+	// edit-btn
+	protected void do_button_1_actionPerformed(ActionEvent e) {
+
+		int selectedRow = jtableBooks.getSelectedRow();
+		if (selectedRow == -1) {
+			JOptionPane.showMessageDialog(this, "Please select a row to edit");
+			return;
+		}
+
+		int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
+		int bookId = (int) tableModel.getValueAt(modelRow, 11);
+
+		Window parentWindow = SwingUtilities.getWindowAncestor(this);
+
+		JDialog dialog = new JDialog(parentWindow, "Edit Book", Dialog.ModalityType.APPLICATION_MODAL);
+
+		Map<String, Object> data = new HashMap<>();
 		data.put("id", bookId);
-	    var editPn = new EditBookPanel(data, dialog, this);
-	    dialog.setContentPane(editPn);
-	    dialog.setSize(456, 780);
-	    dialog.setLocationRelativeTo(this);
-	    dialog.setVisible(true);
+
+		dialog.setResizable(false);
+		dialog.setContentPane(new EditBookPanel(data, dialog, this));
+		dialog.setSize(456, 780);
+		dialog.setLocationRelativeTo(parentWindow);
+
+		dialog.setVisible(true);
 	}
-	
-	//delete-btn
+
+	// delete-btn
 	protected void do_button_2_actionPerformed(ActionEvent e) {
 		try {
 			int selectedRow = jtableBooks.getSelectedRow();
 
-	        if (selectedRow == -1) {
-	            JOptionPane.showMessageDialog(this,
-	                    "Please select a row to delete");
-	            return;
-	        }
-			 int value = JOptionPane.showConfirmDialog(null, "Are you sure to delete?", "Delete", JOptionPane.YES_NO_OPTION);
-			 var autMd = new BooksModel();
-        
-        if (value == JOptionPane.YES_OPTION) {
-        	int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
- 	        int id = (int) tableModel.getValueAt(modelRow, 11);
+			if (selectedRow == -1) {
+				JOptionPane.showMessageDialog(this, "Please select a row to delete");
+				return;
+			}
+			int value = JOptionPane.showConfirmDialog(null, "Are you sure to delete?", "Delete",
+					JOptionPane.YES_NO_OPTION);
+			var autMd = new BooksModel();
 
-            if (autMd.delete(id)) {
-            	reloadTable();
-                JOptionPane.showMessageDialog(null, "Success", "Delete Book", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Failed", "Delete Book", JOptionPane.ERROR_MESSAGE);
-            }
+			if (value == JOptionPane.YES_OPTION) {
+				int modelRow = jtableBooks.convertRowIndexToModel(selectedRow);
+				int id = (int) tableModel.getValueAt(modelRow, 11);
 
-        } else {
-        	reloadTable();
-        }
+				if (autMd.delete(id)) {
+					reloadTable();
+					JOptionPane.showMessageDialog(null, "Success", "Delete Book", JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "Failed", "Delete Book", JOptionPane.ERROR_MESSAGE);
+				}
 
-	    } catch (Exception e2) {
-	        JOptionPane.showMessageDialog(null, "Failed", "Delete", JOptionPane.ERROR_MESSAGE);
-	    }
+			} else {
+				reloadTable();
+			}
+
+		} catch (Exception e2) {
+			JOptionPane.showMessageDialog(null, "Failed", "Delete", JOptionPane.ERROR_MESSAGE);
+		}
 	}
-}
 
+}

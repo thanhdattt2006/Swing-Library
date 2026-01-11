@@ -2,26 +2,41 @@ package apps.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
+import apps.panels.BookPanel.AuthorComboRenderer;
+import apps.panels.BookPanel.CateComboRenderer;
 import apps.renderers.ButtonEditor;
 import apps.renderers.ButtonRenderer;
 import apps.renderers.ImageRenderer;
+import entities.Author;
 import entities.Book;
+import entities.Category;
+import entities.DetailStatus;
 import entities.Loan_Details;
+import models.AuthorsModel;
 import models.BooksModel;
+import models.CategoriesModel;
 import models.ConnectDB;
 import models.LoanDetailsModel;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 
 public class RepairQueuePanel extends JPanel {
 
@@ -33,14 +48,21 @@ public class RepairQueuePanel extends JPanel {
 	private JPanel panelFilter;
 	private JScrollPane scrollPane;
 
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField jTextFieldSearch;
+	private JComboBox<Category> jCoboboxCategory;
+	private JComboBox<Author> jComboboxAuthor;
+	private JLabel label_1;
+	private JButton jbuttonSearch_1;
+	private Map<Integer, Author> autMap = new HashMap<>();
+	private Map<Integer, Category> cateMap = new HashMap<>();
+	private JButton jbuttonSearch;
+
 
 	public RepairQueuePanel() {
 		setLayout(new BorderLayout());
 		initUI();
-		 loadTableData(); // gọi khi cần
+		loadTableData(); 
+		loadComboData();
 	}
 
 	// ================= UI =================
@@ -48,60 +70,87 @@ public class RepairQueuePanel extends JPanel {
 
 		// ===== NORTH - FILTER =====
 		panelFilter = new JPanel(null);
-		panelFilter.setPreferredSize(new Dimension(0, 100));
+		panelFilter.setPreferredSize(new Dimension(0, 65));
 		add(panelFilter, BorderLayout.NORTH);
 
 		JLabel label = new JLabel("");
 		label.setBorder(new TitledBorder(null, "Search by title", TitledBorder.LEADING, TitledBorder.TOP, null,
 				new Color(59, 59, 59)));
-		label.setBounds(0, 15, 394, 59);
+		label.setBounds(0, 6, 394, 59);
 		panelFilter.add(label);
 
-		JButton jbuttonSearch = new JButton("Search");
-		jbuttonSearch.setBounds(314, 32, 66, 28);
+		jbuttonSearch = new JButton("Search");
+		jbuttonSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_jbuttonSearch_actionPerformed(e);
+			}
+		});
+		jbuttonSearch.setBounds(314, 23, 66, 28);
 		panelFilter.add(jbuttonSearch);
 
-		textField = new JTextField();
-		textField.setBounds(21, 32, 281, 28);
-		panelFilter.add(textField);
+		jTextFieldSearch = new JTextField();
+		jTextFieldSearch.setBounds(21, 23, 281, 28);
+		panelFilter.add(jTextFieldSearch);
+		jTextFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+		    private void search() {
+		        String keyword = jTextFieldSearch.getText().trim();
+		        var model = new LoanDetailsModel();
+			    List<Loan_Details> loaDt = model.searchByKeyWordRepair(keyword);
 
-		JLabel label_3 = new JLabel("");
-		label_3.setBorder(new TitledBorder(null, "Search by Author", TitledBorder.LEADING, TitledBorder.TOP, null,
-				new Color(59, 59, 59)));
-		label_3.setBounds(430, 0, 214, 92);
-		panelFilter.add(label_3);
+			    tableModel.setRowCount(0);
+			    for (Loan_Details b : loaDt) {
+			        tableModel.addRow(new Object[] {
+			            b.getPhoto(),
+			            b.getIsbn(),
+			            b.getTitle(),
+			            b.getCall_number(),
+			            b.getAuthor_name(),
+			            b.getCategory_name(),
+			             b.getStatus().fromString("Repaired"),
+			            b.getId()
+			        });
+			    }
+		    }
 
-		textField_1 = new JTextField();
-		textField_1.setBounds(445, 17, 112, 28);
-		panelFilter.add(textField_1);
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		        search();
+		    }
 
-		JButton jbuttonSearch_1 = new JButton("Search");
-		jbuttonSearch_1.setBounds(565, 17, 66, 28);
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		        search();
+		    }
+		});
+		
+		jCoboboxCategory = new JComboBox<Category>();
+		jCoboboxCategory.setPreferredSize(new Dimension(180, 25));
+		jCoboboxCategory.setBounds(644, 22, 186, 26);
+		panelFilter.add(jCoboboxCategory);
+		
+		jComboboxAuthor = new JComboBox<Author>();
+		jComboboxAuthor.setPreferredSize(new Dimension(150, 25));
+		jComboboxAuthor.setBounds(449, 22, 183, 26);
+		panelFilter.add(jComboboxAuthor);
+		
+		label_1 = new JLabel("");
+		label_1.setBorder(new TitledBorder(null, "Search by Author & Category", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(59, 59, 59)));
+		label_1.setBounds(434, 6, 490, 56);
+		panelFilter.add(label_1);
+		
+		jbuttonSearch_1 = new JButton("Search");
+		jbuttonSearch_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_jbuttonSearch_1_actionPerformed(e);
+			}
+		});
+		jbuttonSearch_1.setBounds(842, 20, 66, 28);
 		panelFilter.add(jbuttonSearch_1);
-
-		JLabel label_3_1 = new JLabel("");
-		label_3_1.setBorder(new TitledBorder(null, "Search by category", TitledBorder.LEADING, TitledBorder.TOP, null,
-				new Color(59, 59, 59)));
-		label_3_1.setBounds(677, 0, 214, 92);
-		panelFilter.add(label_3_1);
-
-		textField_2 = new JTextField();
-		textField_2.setBounds(692, 17, 112, 28);
-		panelFilter.add(textField_2);
-
-		JButton jbuttonSearch_1_1 = new JButton("Search");
-		jbuttonSearch_1_1.setBounds(812, 17, 66, 28);
-		panelFilter.add(jbuttonSearch_1_1);
-
-		JComboBox<String> jcomboBoxRole = new JComboBox<String>();
-		jcomboBoxRole.setPreferredSize(new Dimension(150, 25));
-		jcomboBoxRole.setBounds(445, 48, 186, 26);
-		panelFilter.add(jcomboBoxRole);
-
-		JComboBox<String> jcomboBoxRole_1 = new JComboBox<String>();
-		jcomboBoxRole_1.setPreferredSize(new Dimension(150, 25));
-		jcomboBoxRole_1.setBounds(692, 48, 186, 26);
-		panelFilter.add(jcomboBoxRole_1);
 
 		// ===== CENTER - TABLE =====
 		String[] columns = { "PHOTO", "ISBN", "TITLE", "CALL NUMBER", "AUTHOR", "CATEGORY", "STATUS", "ACTION",
@@ -110,7 +159,7 @@ public class RepairQueuePanel extends JPanel {
 		tableModel = new DefaultTableModel(columns, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == 8; // ACTION
+				return column == 8; 
 			}
 		};
 
@@ -138,15 +187,62 @@ public class RepairQueuePanel extends JPanel {
 
 		scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
+	}
+	
+	//loadCombobox
+	private void loadComboData() {
+
+		// ===== ROLE =====
+		DefaultComboBoxModel<Author> autModel = new DefaultComboBoxModel<>();
+		autModel.addElement(null); // ALL
+
+		for (Author r : new AuthorsModel().findAll()) {
+			autModel.addElement(r);
+			autMap.put(r.getId(), r);
+		}
 		
-		JPanel panel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
-		flowLayout.setHgap(10);
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		add(panel, BorderLayout.SOUTH);
+		jComboboxAuthor.setModel(autModel);
+		jComboboxAuthor.setRenderer(new AuthorComboRenderer());
 		
-		JButton btnBack = new JButton("Back");
-		panel.add(btnBack);
+		// ===== ROLE =====
+		DefaultComboBoxModel<Category> cateModel = new DefaultComboBoxModel<>();
+		cateModel.addElement(null); // ALL
+
+		for (Category r : new CategoriesModel().findAll()) {
+			cateModel.addElement(r);
+			cateMap.put(r.getId(), r);
+		}
+		jCoboboxCategory.setModel(cateModel);
+		jCoboboxCategory.setRenderer(new CateComboRenderer());
+	}
+	
+	public class AuthorComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			if (value == null) {
+				return super.getListCellRendererComponent(list, "ALL", index, isSelected, cellHasFocus);
+			}
+
+			var r = (Author) value;
+			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
+		}
+	}
+
+
+	public class CateComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+
+			if (value == null) {
+				return super.getListCellRendererComponent(list, "ALL", index, isSelected, cellHasFocus);
+			}
+
+			var r = (Category) value;
+			return super.getListCellRendererComponent(list, r.getName(), index, isSelected, cellHasFocus);
+		}
 	}
 
 	// ================= DB =================
@@ -154,37 +250,6 @@ public class RepairQueuePanel extends JPanel {
 		tableModel.setRowCount(0);
 
 		try {
-//			String sql = """
-//					    SELECT
-//					        b.id,
-//					        b.isbn,
-//					        b.title,
-//					        b.call_number,
-//					        a.name AS author,
-//					        c.name AS category,
-//					        b.photo
-//					    FROM book b
-//					    JOIN author a ON b.author_id = a.id
-//					    JOIN category c ON b.category_id = c.id
-//					    WHERE b.status = 'REPAIR'
-//					      AND b.title LIKE ?
-//					      AND a.name LIKE ?
-//					      AND c.name LIKE ?
-//					""";
-//
-//			PreparedStatement ps = ConnectDB.connection().prepareStatement(sql);
-//			ps.setString(1, "%" + textField.getText() + "%");
-//			ps.setString(2, "%" + textField_1.getText() + "%");
-//			ps.setString(3, "%" + textField_2.getText() + "%");
-//
-//			ResultSet rs = ps.executeQuery();
-//
-//			while (rs.next()) {
-//				tableModel.addRow(new Object[] { rs.getBytes("photo"), rs.getString("isbn"), rs.getString("title"),
-//						rs.getString("call_number"), rs.getString("author"), rs.getString("category"), "REPAIR", "Fix",
-//						rs.getInt("id") });
-//			}
-			
 			var loDtM = new LoanDetailsModel();
 			for(Loan_Details bo : loDtM.findAllRepair()) {
 				tableModel.addRow(new Object[] { bo.getPhoto(), bo.getIsbn(), bo.getTitle(),
@@ -237,5 +302,74 @@ public class RepairQueuePanel extends JPanel {
 	public void addRepairItem(byte[] photo, String isbn, String title, String callNumber, String author,
 			String category, int bookId) {
 		tableModel.addRow(new Object[] { photo, isbn, title, callNumber, author, category, "REPAIR", "Fix", bookId });
+	}
+	
+	//search-category&author-btn
+	private void searchBooks() {
+		Author author = (Author) jComboboxAuthor.getSelectedItem();
+		Category category = (Category) jCoboboxCategory.getSelectedItem();
+
+	    Integer authorId = (author != null) ? author.getId() : null;
+	    Integer categoryId = (category != null) ? category.getId() : null;
+
+	    var model = new LoanDetailsModel();
+	    List<Loan_Details> loaDt = model.searchByStatusRepaired(authorId, categoryId);
+
+	    tableModel.setRowCount(0);
+	    for (Loan_Details b : loaDt) {
+	        tableModel.addRow(new Object[] {
+	            b.getPhoto(),
+	            b.getIsbn(),
+	            b.getTitle(),
+	            b.getCall_number(),
+	            b.getAuthor_name(),
+	            b.getCategory_name(),
+	            b.getId()
+	        });
+	    }
+	}
+
+	protected void do_jbuttonSearch_1_actionPerformed(ActionEvent e) {
+		searchBooks();
+	}
+	
+	//searchkeyword-btn
+	protected void do_jbuttonSearch_actionPerformed(ActionEvent e) {
+		jTextFieldSearch.getDocument().addDocumentListener(new DocumentListener() {
+
+		    private void search() {
+		        String keyword = jTextFieldSearch.getText().trim();
+		        var model = new LoanDetailsModel();
+			    List<Loan_Details> loaDt = model.searchByKeyWordRepair(keyword);
+
+			    tableModel.setRowCount(0);
+			    for (Loan_Details b : loaDt) {
+			        tableModel.addRow(new Object[] {
+			            b.getPhoto(),
+			            b.getIsbn(),
+			            b.getTitle(),
+			            b.getCall_number(),
+			            b.getAuthor_name(),
+			            b.getCategory_name(),
+			            b.getId()
+			        });
+			    }
+		    }
+
+		    @Override
+		    public void insertUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void removeUpdate(DocumentEvent e) {
+		        search();
+		    }
+
+		    @Override
+		    public void changedUpdate(DocumentEvent e) {
+		        search();
+		    }
+		});
 	}
 }

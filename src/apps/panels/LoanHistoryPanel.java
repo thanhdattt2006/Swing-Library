@@ -15,9 +15,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import entities.Loan_Master;
-import entities.Loan_Details; // Import thêm cái này
+import entities.Loan_Details; 
 import models.LoanMasterModel;
-import models.LoanDetailsModel; // Import thêm cái này để lấy sách
+import models.LoanDetailsModel; 
 import models.MailModel;
 import utils.DetailsButtonRender;
 import utils.TableActionCellEditor;
@@ -45,6 +45,7 @@ public class LoanHistoryPanel extends JPanel {
         setLayout(new BorderLayout(10, 10)); 
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Header setup
         JPanel pnlHeader = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pnlHeader.setBackground(SystemColor.activeCaption);
         pnlHeader.setPreferredSize(new Dimension(800, 50));
@@ -58,6 +59,7 @@ public class LoanHistoryPanel extends JPanel {
         initTable();
         add(new JScrollPane(table), BorderLayout.CENTER);
 
+        // Control panel phía dưới
         JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSouth.add(new JLabel("Employee ID:"));
         txtSearch = new JTextField(10);
@@ -73,13 +75,14 @@ public class LoanHistoryPanel extends JPanel {
 
         panelSouth.add(new JSeparator(SwingConstants.VERTICAL));
 
+        // Load icon từ resources (Fix lỗi hiển thị Eclipse)
         ImageIcon mailIcon = null;
         try {
             mailIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/resources/mail_icon.png")));
             Image img = mailIcon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
             mailIcon = new ImageIcon(img);
         } catch (Exception e) {
-            System.err.println("Icon error, skipping...");
+            System.err.println("Icon error, using text only.");
         }
 
         btnWarn3Days = new JButton(" 3-Day Warning", mailIcon);
@@ -112,6 +115,7 @@ public class LoanHistoryPanel extends JPanel {
                 int masterId = (int) table.getValueAt(row, 0);
                 openDetailsDialog(masterId);
             }
+            // onDelete removed to avoid supertype errors
         };
         
         TableColumn actionCol = table.getColumnModel().getColumn(6);
@@ -123,14 +127,15 @@ public class LoanHistoryPanel extends JPanel {
 
     private void processBulkMail(int type) {
         if (currentList == null || currentList.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Empty list!", "Notice", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "The list is empty!", "Notice", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String msg = (type == 3) ? "Send 3-day reminders?" : "Send final notices for tomorrow?";
-        int confirm = JOptionPane.showConfirmDialog(this, msg, "Confirm", JOptionPane.YES_NO_OPTION);
+        String confirmMsg = (type == 3) ? "Send 3-day reminders?" : "Send final notices for tomorrow?";
+        int confirm = JOptionPane.showConfirmDialog(this, confirmMsg, "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) return;
 
+        // Dialog loading để tránh spam
         JDialog loading = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Processing", true);
         loading.setLayout(new BorderLayout());
         loading.add(new JLabel(" Sending, please wait...", JLabel.CENTER), BorderLayout.CENTER);
@@ -143,7 +148,7 @@ public class LoanHistoryPanel extends JPanel {
             protected int[] doInBackground() {
                 toggleButtons(false);
                 MailModel mailModel = new MailModel();
-                LoanDetailsModel detailModel = new LoanDetailsModel(); // Khai báo model lấy sách
+                LoanDetailsModel detailModel = new LoanDetailsModel(); // Model lấy sách
                 int sent = 0, fail = 0, skipped = 0;
                 LocalDate today = LocalDate.now();
 
@@ -158,10 +163,10 @@ public class LoanHistoryPanel extends JPanel {
                             boolean match = (type == 3 && diff >= 2 && diff <= 3) || (type == 1 && diff >= 0 && diff <= 1);
 
                             if (match) {
-                                // Lấy tên các cuốn sách đang mượn của đơn này
+                                // Lấy tên sách cho template {{books}}
                                 List<Loan_Details> details = detailModel.findByMasterId(m.getId());
                                 String bookNames = details.stream()
-                                    .map(d -> d.getBookTitle()) // Giả định getter là getBookTitle()
+                                    .map(d -> d.getBookTitle()) 
                                     .collect(Collectors.joining(", "));
                                 
                                 if (bookNames.isEmpty()) bookNames = "N/A";
@@ -170,10 +175,9 @@ public class LoanHistoryPanel extends JPanel {
                                 String subject = (type == 3) ? "[Library] Reminder" : "[Library] Urgent Notice";
                                 String html = mailModel.readTemplate("src/mail_template/" + template);
                                 
-                                // Replace các placeholder bao gồm cả sách
                                 html = html.replace("{{name}}", m.getUsername())
                                            .replace("{{id}}", String.valueOf(m.getId()))
-                                           .replace("{{books}}", bookNames) // Đã thêm replace sách ở đây
+                                           .replace("{{books}}", bookNames) 
                                            .replace("{{due_date}}", new SimpleDateFormat("dd-MM-yyyy").format(m.getDue_date()));
 
                                 if (mailModel.send("thanhdattt2006@gmail.com", m.getUsername(), subject, html)) sent++;
@@ -192,7 +196,7 @@ public class LoanHistoryPanel extends JPanel {
                     loading.dispose(); 
                     toggleButtons(true);
                     JOptionPane.showMessageDialog(LoanHistoryPanel.this, 
-                        String.format("Done!\nSent: %d\nFailed: %d\nSkipped: %d", res[0], res[1], res[2]));
+                        String.format("Done!\nSent: %d\nFailed: %d\nSkipped: %d", res[0], res[1], res[2]), "Result", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception e) {
                     loading.dispose();
                     toggleButtons(true);
@@ -216,7 +220,9 @@ public class LoanHistoryPanel extends JPanel {
         try {
             currentList = new LoanMasterModel().findAll();
             fillTable(currentList);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) { 
+            JOptionPane.showMessageDialog(this, "Error loading data!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void performSearch() {
@@ -242,12 +248,12 @@ public class LoanHistoryPanel extends JPanel {
 
     private void openDetailsDialog(int loanId) {
         try {
-            JDialog dialog = new JDialog();
-            dialog.setTitle("Details #" + loanId);
-            dialog.setModal(true); 
+            Window parent = SwingUtilities.getWindowAncestor(this);
+            JDialog dialog = new JDialog(parent, "Details #" + loanId, Dialog.ModalityType.APPLICATION_MODAL);
             dialog.setContentPane(new LoanDetailsPanel(loanId));
-            dialog.pack();
+            dialog.setSize(1000, 550); // Fix size chuẩn incoming
             dialog.setLocationRelativeTo(this);
+            dialog.setResizable(true);
             dialog.setVisible(true);
             loadData();
         } catch (Exception e) { e.printStackTrace(); }

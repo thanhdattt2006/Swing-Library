@@ -25,13 +25,15 @@ public class JFrameMain extends JFrame {
 	private JPanel jpanelMainPage;
 	private CardLayout cardLayout;
 	private Account currentAccount;
+	private BookPanel bookPanel;
 
 	public void showCustomPanel(String name, JPanel panel) {
 		jpanelMainPage.add(panel, name);
 		cardLayout.show(jpanelMainPage, name);
 	}
+
 	public void showCheckOutPanel() {
-	    cardLayout.show(jpanelMainPage, MenuType.CHECKOUT.name());
+		cardLayout.show(jpanelMainPage, MenuType.CHECKOUT.name());
 	}
 
 	// ===== MENU CONFIG =====
@@ -113,11 +115,14 @@ public class JFrameMain extends JFrame {
 			break;
 
 		case 2: // LIBRARIAN
-			// panel placeholder để test
 			jpanelMainPage.add(new LoanHistoryPanel(), MenuType.LOAN_HISTORY.name());
-			jpanelMainPage.add(new BookPanel(this), MenuType.BOOK.name());
+
+			bookPanel = new BookPanel(this); // ✅ GÁN FIELD
+			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
+
 			jpanelMainPage.add(new AuthorPanel(), MenuType.AUTHOR.name());
 			jpanelMainPage.add(new CategoryPanel(), MenuType.CATEGORY.name());
+
 			checkOutPanel = new CheckOutPanel();
 			jpanelMainPage.add(checkOutPanel, MenuType.CHECKOUT.name());
 
@@ -126,13 +131,15 @@ public class JFrameMain extends JFrame {
 			break;
 
 		case 3: // EMPLOYEE
-			BookPanel bookPanel = new BookPanel(this);
+			bookPanel = new BookPanel(this); // ✅ GÁN FIELD
 			bookPanel.hideActionPanel();
+
 			jpanelMainPage.add(bookPanel, MenuType.BOOK.name());
 			jpanelMainPage.add(new MyLoansPanel(currentAccount.getId()), MenuType.MY_LOANS.name());
 			jpanelMainPage.add(new MyInforEmployeePanel(currentAccount.getId()), MenuType.MY_INFOR.name());
+
 			buildMenu(EMPLOYEE_MENU);
-			cardLayout.show(jpanelMainPage, MenuType.BOOK.name()); 
+			cardLayout.show(jpanelMainPage, MenuType.BOOK.name());
 			break;
 
 		}
@@ -163,6 +170,10 @@ public class JFrameMain extends JFrame {
 			return;
 		}
 
+		if (type == MenuType.BOOK && bookPanel != null) {
+			bookPanel.reloadTable(); // 🔥 REFRESH CHO CẢ 2 ROLE
+		}
+
 		cardLayout.show(jpanelMainPage, type.name());
 	}
 
@@ -170,5 +181,5 @@ public class JFrameMain extends JFrame {
 		dispose();
 		new JFrameLogin().setVisible(true);
 	}
-	
+
 }
