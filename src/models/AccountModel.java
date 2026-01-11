@@ -154,41 +154,48 @@ public class AccountModel {
 	}
 
 	public boolean update(Account account) {
-		boolean result = false;
-		try {
-			PreparedStatement preparedStatement = ConnectDB.connection()
-					.prepareStatement("UPDATE account SET "
-							+ "employee_id = ?, username = ?, `password` = ?, `name` = ?, "
-							+ "department_id = ?, role_id = ?, birthday = ?, address = ?, phone = ? " + "WHERE id = ?");
+    try (Connection conn = ConnectDB.connection()) {
 
-			preparedStatement.setString(1, account.getEmployee_id());
-			preparedStatement.setString(2, account.getUsername());
-			preparedStatement.setString(3, account.getPassword());
-			preparedStatement.setString(4, account.getName());
-			preparedStatement.setInt(5, account.getDepartment_id());
-			preparedStatement.setInt(6, account.getRole_id());
+        String sql;
+        PreparedStatement ps;
 
-			// FIX DATE
-			if (account.getBirthday() != null) {
-				preparedStatement.setDate(7, new java.sql.Date(account.getBirthday().getTime()));
-			} else {
-				preparedStatement.setNull(7, java.sql.Types.DATE);
-			}
+        if (account.getPassword() != null) {
+            sql = "UPDATE account SET employee_id=?, username=?, password=?, name=?, phone=?, birthday=?, address=?, role_id=?, department_id=? WHERE id=?";
+            ps = conn.prepareStatement(sql);
 
-			preparedStatement.setString(8, account.getAddress());
-			preparedStatement.setString(9, account.getPhone());
-			preparedStatement.setInt(10, account.getId()); // WHERE id = ?
+            ps.setString(1, account.getEmployee_id());
+            ps.setString(2, account.getUsername());
+            ps.setString(3, account.getPassword());
+            ps.setString(4, account.getName());
+            ps.setString(5, account.getPhone());
+            ps.setDate(6, (Date) account.getBirthday());
+            ps.setString(7, account.getAddress());
+            ps.setInt(8, account.getRole_id());
+            ps.setInt(9, account.getDepartment_id());
+            ps.setInt(10, account.getId());
 
-			result = preparedStatement.executeUpdate() > 0;
+        } else {
+            sql = "UPDATE account SET employee_id=?, username=?, name=?, phone=?, birthday=?, address=?, role_id=?, department_id=? WHERE id=?";
+            ps = conn.prepareStatement(sql);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			result = false;
-		} finally {
-			ConnectDB.disconnect();
-		}
-		return result;
-	}
+            ps.setString(1, account.getEmployee_id());
+            ps.setString(2, account.getUsername());
+            ps.setString(3, account.getName());
+            ps.setString(4, account.getPhone());
+            ps.setDate(5, (Date) account.getBirthday());
+            ps.setString(6, account.getAddress());
+            ps.setInt(7, account.getRole_id());
+            ps.setInt(8, account.getDepartment_id());
+            ps.setInt(9, account.getId());
+        }
+
+        return ps.executeUpdate() > 0;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
 
 	public boolean delete(int id) {
 		boolean result = false;

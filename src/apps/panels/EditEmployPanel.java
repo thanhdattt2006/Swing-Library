@@ -283,7 +283,10 @@ public class EditEmployPanel extends JPanel {
 
 	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
 		try {
+			int id = Integer.parseInt(data.get("id").toString());
 			Account account = new Account();
+			AccountModel accountModel = new AccountModel();
+			 Account oldAccount = accountModel.findbyId(id);
 
 			account.setId(Integer.parseInt(jId.getText().trim()));
 			account.setEmployee_id(jEmployeeID.getText().trim());
@@ -292,6 +295,9 @@ public class EditEmployPanel extends JPanel {
 			    // Có tích → reset password = 123
 				String hashedPassword = BCrypt.hashpw("123", BCrypt.gensalt());
 				account.setPassword(hashedPassword);
+			}
+			else {
+				account.setPassword(oldAccount.getPassword());
 			}
 			account.setName(jName.getText().trim());
 			account.setPhone(jPhone.getText().trim());
@@ -318,7 +324,7 @@ public class EditEmployPanel extends JPanel {
 			}
 			account.setDepartment_id(dept.getId());
 
-			AccountModel accountModel = new AccountModel();
+			
 			if (accountModel.update(account)) {
 				JOptionPane.showMessageDialog(this, "Edit success!", "Success", JOptionPane.INFORMATION_MESSAGE);
 				if (accountPanel != null) {
@@ -339,6 +345,7 @@ public class EditEmployPanel extends JPanel {
 			JOptionPane.showMessageDialog(this, ex.getMessage(), "Exception", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
 
 	protected void do_btnNewButton_1_actionPerformed(ActionEvent e) {
 		parentDialog.dispose();
